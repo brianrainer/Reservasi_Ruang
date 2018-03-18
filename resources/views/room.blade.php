@@ -5,9 +5,18 @@
 @endsection
 
 @section('content')
+  @php
+    {{ 
+      $hours = ['07:00', '07:30', '08:00', '08:30', '09:30'];
+      $class = ['IF-101', 'IF-102', 'IF-103','AULA-207', 'RTV-210',  'LP-305' ]; 
+    }}
+  @endphp
+
   <h2>Room Management</h2>
   <h4>Available/Reserved Room</h4>
-  <h5>datex - datey</h5>
+  <h5>
+    <span id="start_date_x"></span> - <span id="end_date_y"></span>
+  </h5>
   <form class="col s12">
     <div class="row">
       <div class="input-field col s12 m5 l4">
@@ -32,36 +41,33 @@
     <thead>
       <tr>
         <th>Room</th>
-          @php
-            {{ $hours = ['07.00', '07.30', '08.00']; }}
-          @endphp
-
-          @foreach ($hours as $h)
-            <th>{{$h}}</th>
-          @endforeach
+        @foreach ($hours as $h)
+          <th>{{$h}}</th>
+        @endforeach
   	  </tr>
   	</thead>
     <tbody>
-      @php
-        {{ 
-          $class = ['IF-101', 'IF-102', 'IF-103','AULA-207', 'RTV-210',  'LP-305' ]; 
-        }}
-      @endphp
-
       @foreach ($class as $c)
         <tr>
           <td>{{$c}}</td>
-          @for ($i = 0; $i < sizeof($hours); $i++)
+          @foreach ($hours as $h)
             <td>
               Available
             </td>
-          @endfor
+          @endforeach
         </tr>
       @endforeach
     </tbody>
-  </table>
-
+  </table>  
 @endsection
 
 @section('jscripts')
+  <script type="text/javascript">
+    $('.datepicker').pickadate({
+      selectYears: 4,
+      selectMonths: true, 
+      close: 'OK',
+      closeOnSelect: false
+    });
+  </script>
 @endsection
