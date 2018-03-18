@@ -26,19 +26,19 @@
         <div class="row">
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">phone</i>
-            <input type="text" name="phone_number" placeholder="e.g. 081234345777" class="validate">
+            <input type="text" name="phone_number" placeholder="e.g., 081234345777" class="validate">
             <label for="phone_number">Phone Number</label>
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">email</i>
-            <input type="email" name="email" placeholder="e.g. andy{{'@'}}gmail.com" class="validate">
+            <input type="email" name="email" placeholder="e.g., andy{{'@'}}gmail.com" class="validate">
             <label for="email">Email</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">event</i>
-            <input type="text" name="event_title" placeholder="e.g. Substitute Class for OOP B" class="validate">
+            <input type="text" name="event_title" placeholder="e.g., Substitute Class for Course OOP B" class="validate">
             <label for="event_title">Event Title</label>
           </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">group</i>
-            <input type="text" name="agencies" placeholder="e.g. HMTC" class="validate">
+            <input type="text" name="agencies" placeholder="e.g., HMTC, or Lecturer" class="validate">
             <label for="agencies">Agencies</label>
           </div>
         </div>
@@ -92,7 +92,7 @@
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix"></i>
-            <input type="number" name="howmanytimes" class="validate">
+            <input type="number" id="howmanytimes" class="validate">
             <label for="howmanytimes">How many times</label>
           </div>
         </div>
@@ -125,16 +125,18 @@
 
 @section('jscripts')
   <script type="text/javascript">
+    $('#howmanytimes').val(1);
     $('#event_description').trigger('autoresize');
-    
+
     $('.datepicker').pickadate({
-      selectYears: 4,
+      selectYears: 2,
       selectMonths: true, 
       close: 'OK',
+      today: '',
       closeOnSelect: false,
+      min: true,
       disable: [
-        true, // disable all, but 2 years ahead
-        {from: true, to:720}
+        {from:true, to:2}
       ]
     });
 
