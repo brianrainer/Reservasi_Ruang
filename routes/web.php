@@ -12,11 +12,12 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('room');
 });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/room', 'MainController@test')->name('room');
-Route::get('/form', 'MainController@form')->name('form');
+Route::get('/form', 'ReservationController@create')->name('form');
+Route::post('/form/submit', 'ReservationController@store')->name('formsubmit');

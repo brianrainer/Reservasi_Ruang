@@ -14,38 +14,48 @@
   @endphp
 
   <h2>Reservation Form</h2>
+  @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+  @endif
     <div class="row">
-      <form class="col s12">
+      <form class="col s12" method="POST" action="{{ route('formsubmit') }}">
+        {{ csrf_field() }}
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">account_circle</i>
-            <input type="text" id="full_name" placeholder="Full Name" class="validate">
+            <input type="text" value="{{ old('name') }}" id="name" name="name" placeholder="Full Name" class="validate">
             <label for="full_name">Full Name</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">phone</i>
-            <input type="text" name="phone_number" placeholder="e.g., 081234345777" class="validate">
+            <input type="text" value="{{ old('phone_number') }}" name="phone_number" placeholder="e.g., 081234345777" class="validate">
             <label for="phone_number">Phone Number</label>
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">email</i>
-            <input type="email" name="email" placeholder="e.g., andy{{'@'}}gmail.com" class="validate">
+            <input type="email" value="{{ old('email') }}" name="email" placeholder="e.g., andy{{'@'}}gmail.com" class="validate">
             <label for="email">Email</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">event</i>
-            <input type="text" name="event_title" placeholder="e.g., Substitute Class for Course OOP B" class="validate">
+            <input type="text" value="{{ old('title') }}" name="title" placeholder="e.g., Substitute Class for Course OOP B" class="validate">
             <label for="event_title">Event Title</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">room</i>            
-            <select>
+            <select name='room' value="{{ old('room') }}">
               <option value="" disabled selected>Choose Room</option>
               @foreach ($class as $c)
                 <option value='{{$c}}'> {{$c}} </option>
@@ -57,33 +67,33 @@
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">group</i>
-            <input type="text" name="agencies" placeholder="e.g., HMTC, or Lecturer" class="validate">
+            <input type="text" value="{{ old('agencies') }}" name="agencies" placeholder="e.g., HMTC, or Lecturer" class="validate">
             <label for="agencies">Agencies</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">date_range</i>
-            <input type="text" class="datepicker" id="start_date" class="validate">
+            <input type="text" value="{{ old('start_data') }}" class="datepicker" id="start_date" name="start_date" class="validate">
             <label for="start_date">Start Date</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">access_time</i>
-            <input type="text" class="timepicker" id="start_time" class="validate">
+            <input type="text" value="{{ old('start_time') }}" class="timepicker" id="start_time" name="start_time" class="validate">
             <label for="start_time">Start Time</label>
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix"></i>
-            <input type="number" id="duration" class="validate">
+            <input type="number" value="{{ old('duration') }}" id="duration" name="duration" class="validate">
             <label for="duration">Duration (minutes)</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">timeline</i>
-            <select>
+            <select name='routine'>
               @foreach ($routine as $r)
                 <option value="{{$r}}">{{$r}}</option>
               @endforeach
@@ -92,14 +102,14 @@
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix"></i>
-            <input type="number" id="howmanytimes" class="validate">
+            <input type="number" value="{{ old('howmanytimes') }}" id="howmanytimes" name="howmanytimes" class="validate">
             <label for="howmanytimes">How many times</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">view_quilt</i>
-            <select>
+            <select name='category' value="{{ old('category') }}">
               @foreach ($category as $c)
                 <option value="{{$c}}">{{$c}}</option>
               @endforeach
@@ -110,7 +120,7 @@
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">event_note</i>
-            <textarea id='event_description' class='materialize-textarea' data-length='240' placeholder="Brief description about the event"></textarea>
+            <textarea id='event_desc' value="{{ old('event_desc') }}" name='event_desc' class='materialize-textarea' data-length='240' placeholder="Brief description about the event"></textarea>
             <label for="event_description">Event Description</label>
           </div>
         </div>
