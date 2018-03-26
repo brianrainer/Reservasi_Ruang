@@ -6,11 +6,24 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/materialize.min.css"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    /* sticky footer */
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+  </style>
+  @yield('cssScripts')
 </head>
 <body>
   @php
     {{ 
-      $menu = ['room'=>'Schedule', 'form'=>'Reservation']; 
+      $menu = ['room'=>'Schedule', 'form'=>'Reservation', 'admin'=>'Admin']; 
     }}
   @endphp
 
@@ -39,10 +52,10 @@
           <img src="http://materializecss.com/images/office.jpg">
         </div>
         <a href="#">
-          <span class="white-text name"> John Doe </span>
+          <span class="white-text name"> Test1 </span>
         </a>
         <a href="#">
-          <span class="white-text email">jdanturk{{'@'}}gmail.com </span>
+          <span class="white-text email">Test2</span>
         </a>
       </div>
     </li>
@@ -51,9 +64,13 @@
     @endforeach
   </ul>
 
-  <div class="container">
-    @yield('content')
-  </div>
+  <header></header>
+
+  <main>
+    <div class="container">
+      @yield('content')
+    </div>
+  </main>
 
   <footer class="page-footer teal">
     <div class="footer-copyright">
@@ -80,7 +97,7 @@
     });
   </script>
 
-  @yield('jscripts')
+  @yield('jsScripts')
   
 </body>
 </html>

@@ -18,6 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/room', 'MainController@test')->name('room');
+Route::get('/room', 'MainController@room')->name('room');
+Route::get('/admin', 'MainController@admin')->name('admin');
 Route::get('/form', 'ReservationController@create')->name('form');
 Route::post('/form/submit', 'ReservationController@store')->name('formsubmit');
