@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use DateTime;
+use Session;
+use Redirect;
 
 class ReservationController extends Controller
 {
@@ -43,7 +46,7 @@ class ReservationController extends Controller
             'email'         => 'required|email',
             'title'         => 'required',
             'room'          => 'required',
-            'agency'        => 'required',
+            'agencies'      => 'required',
             'start_date'    => 'required',
             'start_time'    => 'required',
             'duration'      => 'required|numeric',
@@ -54,16 +57,23 @@ class ReservationController extends Controller
         ]);
 
         //store data
-        $booking = new bookings;
-        $booking->name = $request->name;
-        $booking->phone_number = $request->phone_number;
-        $booking->email = $request->email;
-        $booking->room = $request->room;
-        $booking->start = $request->start;
-        $booking->end = $request->end;
-        $booking->agency = $request->routine;
-        $booking->event_desc = $request->event_desc;
-        $booking->save();
+        // $timestamp = \Carbon\Carbon::createFromFormat('Y/m/d H:m', $request->start_date." ".$request->start_time)->timestamp;
+        // dd($timestamp);
+        $dt = DateTime::createFromFormat('Y/m/d H:m', $request->start_date." ".$request->start_time);
+        DB::table('bookings')->insert([
+            'name'          => $request->name,
+            'phone_number'  => $request->phone_number,
+            'email'         => $request->email,
+            'room'          => $request->room,
+            'start'         => $dt,
+            'duration'      => $request->duration,
+            'routine'       => $request->routine,
+            'howmanytimes'  => $request->howmanytimes,
+            'agencies'      => $request->agencies,
+            'category'      => $request->category,
+            'event_desc'    => $request->event_desc,
+            'accept'        => 0
+        ]);
 
         //redirect
         Session::flash('message', 'Reservasi berhasil~~ Kalau udah disetujui bakal diberitahu di email ya~');
@@ -113,5 +123,23 @@ class ReservationController extends Controller
     public function destroy($id)
     {
         //
+        $booking = bookings::findOrFail($id);
+        $booking->delete();
+        Session::flash('message', 'Booking berhasil dihapus~');
+        return Redirect::to('/bookings');
+    }
+
+    public function accept_booking($id){
+        //accept booking
+        $booking = bookings::findOrFail($id);
+        $booking->accpt = 1;
+        $booking->save();
+
+        //create schedule data
+
+
+        
+        Session::flash('message', 'Booking berhasil diterima dan dimasukkan ke jadwal~');
+        return Redirect::to('/bookings');
     }
 }

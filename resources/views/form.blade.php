@@ -74,7 +74,7 @@
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">date_range</i>
-            <input type="text" value="{{ old('start_data') }}" class="datepicker" id="start_date" name="start_date" class="validate">
+            <input type="text" value="{{ old('start_date') }}" class="datepicker" id="start_date" name="start_date" class="validate">
             <label for="start_date">Start Date</label>
           </div>
         </div>
@@ -147,7 +147,8 @@
       min: true,
       disable: [
         {from:true, to:2}
-      ]
+      ],
+      format: "yyyy/mm/dd"
     });
 
     $('.timepicker').pickatime({
