@@ -14,11 +14,13 @@ class Rooms extends Migration
     public function up()
     {
         //
-        Schema::dropIfExists('rooms');
         Schema::create('rooms', function (Blueprint $table) {
-            $table->increments('room_id')->index();
+            $table->increments('room_id');
             $table->string('room_name');
+            $table->integer('tech_id');
             $table->timestamp('created_at')->nullable();
+            
+            // $table->foreign('tech_id')->references('tech_id')->on('technicians');
         });
     }
 
@@ -30,5 +32,6 @@ class Rooms extends Migration
     public function down()
     {
         //
+        Schema::dropIfExists('rooms');
     }
 }

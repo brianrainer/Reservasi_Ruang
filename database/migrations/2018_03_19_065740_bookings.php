@@ -14,21 +14,25 @@ class Bookings extends Migration
     public function up()
     {
         //
-        Schema::dropIfExists('bookings');
         Schema::create('bookings', function (Blueprint $table) {
             $table->increments('booking_id');
             $table->string('name');
             $table->string('phone_number');
             $table->string('email');
-            $table->json('room');
-            $table->string('agency');
-            //$table->string('start');
-            //$table->string('end');
-            $table->integer('routine');
-            $table->string('category');
+            $table->string('room');
             $table->string('event_desc');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->dateTime('start');
+            $table->integer('duration');
+            $table->string('agencies');
+            $table->string('routine');
+            $table->integer('howmanytimes');
+            $table->string('category');
+            $table->boolean('accept');
+            $table->timestamp('created_at')->nullable();
+
+            $table->index(['start','created_at']);
+
+
         });
     }
 
@@ -40,5 +44,6 @@ class Bookings extends Migration
     public function down()
     {
         //
+        Schema::dropIfExists('bookings');
     }
 }
