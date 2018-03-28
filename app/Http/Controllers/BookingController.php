@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 
-class AdminController extends Controller
+class BookingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,6 +15,8 @@ class AdminController extends Controller
     public function index()
     {
         //
+        $bookings = DB::table('bookings')->paginate(15);
+        return view('booklist',$bookings);
     }
 
     /**
@@ -66,10 +69,22 @@ class AdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function accept(Request $request, $id)
     {
         //
+        $booking = bookings::findOrFail($id);
+        $booking->accept = 1;
+        $booking->save();
+
+        //create schedule data
+        $endtime = $booking->start->add(new DateInterval('PT'.$booking->duration.'M'));
+        $schedule = new Schedules;
+        $schedule->booking_id = $booking->booking_id;
+        $schedule->room_id = $booking->room_id;
+        $schedule->start = $booking->start;
+        $schedule->end = $endtime;
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -77,8 +92,10 @@ class AdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function reject($id)
     {
         //
+        $booking = bookings::findOrFail($id);
+        $booking->delete();
     }
 }

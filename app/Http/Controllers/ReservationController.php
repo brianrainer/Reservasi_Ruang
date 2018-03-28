@@ -28,7 +28,8 @@ class ReservationController extends Controller
     public function create()    
     {
         //
-        return view('form');
+        $rooms = DB::table('rooms')->get();
+        return view('form',$rooms);
     }
 
     /**
@@ -129,17 +130,4 @@ class ReservationController extends Controller
         return Redirect::to('/bookings');
     }
 
-    public function accept_booking($id){
-        //accept booking
-        $booking = bookings::findOrFail($id);
-        $booking->accpt = 1;
-        $booking->save();
-
-        //create schedule data
-
-
-        
-        Session::flash('message', 'Booking berhasil diterima dan dimasukkan ke jadwal~');
-        return Redirect::to('/bookings');
-    }
 }
