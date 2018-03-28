@@ -145,7 +145,9 @@
       close: 'OK',
       today: '',
       closeOnSelect: true,
-      min: true
+      min: true,
+      format: 'd mmmm yyyy',
+      formatSubmit: 'yyyy/mm/dd'
     });
 
     $('.timepicker').pickatime({

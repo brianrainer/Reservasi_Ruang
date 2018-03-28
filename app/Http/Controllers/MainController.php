@@ -18,4 +18,8 @@ class MainController extends Controller
     public function admin(){
       return view('admin');
     }
+
+    public function calendar(){
+        return view('calendar');
+    }
 }

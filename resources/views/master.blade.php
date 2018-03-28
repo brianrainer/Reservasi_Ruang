@@ -5,7 +5,7 @@
   <link rel="shortcut icon" href="https://www.its.ac.id/wp-content/themes/ITS/assets/img/favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/materialize.min.css"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="fullcalendar/fullcalendar.min.css">
   <style type="text/css">
     /* sticky footer */
     body {
@@ -19,6 +19,8 @@
     }
   </style>
   @yield('cssScripts')
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   @php
@@ -84,12 +86,17 @@
     </div>
   </footer>
 
+  <!-- always import the jquery first -->
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 
   <script type="text/javascript" src="js/materialize.min.js"></script>
+
+  <script type="text/javascript" src="js/moment.min.js"></script>
+
+  <script type="text/javascript" src="fullcalendar/fullcalendar.min.js"></script>
 
   <script type="text/javascript">
     $(document).ready(function(){
