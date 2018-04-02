@@ -22,4 +22,5 @@ Route::get('/room', 'MainController@room')->name('room');
 Route::get('/admin', 'MainController@admin')->name('admin');
 Route::get('/calendar', 'MainController@calendar')->name('calendar');
 Route::get('/form', 'ReservationController@create')->name('form');
+Route::get('/booklist', 'BookingController@index')->name('booklist');
 Route::post('/form/submit', 'ReservationController@store')->name('formsubmit');

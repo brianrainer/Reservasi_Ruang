@@ -20,6 +20,7 @@ class Bookings extends Migration
             $table->string('phone_number');
             $table->string('email');
             $table->string('room');
+            $table->string('event_title');
             $table->string('event_desc');
             $table->dateTime('start');
             $table->integer('duration');
