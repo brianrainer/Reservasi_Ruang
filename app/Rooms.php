@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Schedules extends Model
+class Rooms extends Model
 {
     //
      /**
@@ -13,7 +13,7 @@ class Schedules extends Model
      * @var array
      */
     protected $fillable = [
-        'booking_id' ,'room_id' ,'start' ,'end',
+        'room_name', 'tech_id',
     ];
 
     /**
@@ -22,6 +22,6 @@ class Schedules extends Model
      * @var array
      */
     protected $hidden = [
-        
+      
     ];
 }

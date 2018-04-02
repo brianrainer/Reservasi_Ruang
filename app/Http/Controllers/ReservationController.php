@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
+use App\Rooms;
+use App\Bookings;
 use DateTime;
 use Session;
 use Redirect;
@@ -28,7 +29,7 @@ class ReservationController extends Controller
     public function create()    
     {
         //
-        $rooms = DB::table('rooms')->get();
+        $rooms = Rooms::all();
         return view('form',$rooms);
     }
 
@@ -57,24 +58,22 @@ class ReservationController extends Controller
             'event_desc'    => 'required',
         ]);
 
-        //store data
-        // $timestamp = \Carbon\Carbon::createFromFormat('Y/m/d H:m', $request->start_date." ".$request->start_time)->timestamp;
-        // dd($timestamp);
-        $dt = DateTime::createFromFormat('Y/m/d H:m', $request->start_date." ".$request->start_time);
-        DB::table('bookings')->insert([
-            'name'          => $request->name,
-            'phone_number'  => $request->phone_number,
-            'email'         => $request->email,
-            'room'          => $request->room,
-            'start'         => $dt,
-            'duration'      => $request->duration,
-            'routine'       => $request->routine,
-            'howmanytimes'  => $request->howmanytimes,
-            'agencies'      => $request->agencies,
-            'category'      => $request->category,
-            'event_desc'    => $request->event_desc,
-            'accept'        => 0
-        ]);
+        $dt = DateTime::createFromFormat('Y/m/d H:i', $request->start_date_submit." ".$request->start_time);
+        $booking = new Bookings;
+        $booking->name = $request->name;
+        $booking->phone_number = $request->phone_number;
+        $booking->email = $request->email;
+        $booking->room = $request->room;
+        $booking->start = $dt;
+        $booking->duration = $request->duration;
+        $booking->routine = $request->routine;
+        $booking->howmanytimes = $request->howmanytimes;
+        $booking->agencies = $request->agencies;
+        $booking->category = $request->category;
+        $booking->event_title = $request->title;
+        $booking->event_desc = $request->event_desc;
+        $booking->accept = 0;
+        $booking->save();
 
         //redirect
         Session::flash('message', 'Reservasi berhasil~~ Kalau udah disetujui bakal diberitahu di email ya~');
@@ -124,10 +123,6 @@ class ReservationController extends Controller
     public function destroy($id)
     {
         //
-        $booking = bookings::findOrFail($id);
-        $booking->delete();
-        Session::flash('message', 'Booking berhasil dihapus~');
-        return Redirect::to('/bookings');
     }
 
 }

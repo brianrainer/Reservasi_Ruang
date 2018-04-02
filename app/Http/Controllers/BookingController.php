@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
+use app\Bookings;
 
 class BookingController extends Controller
 {
@@ -15,9 +15,10 @@ class BookingController extends Controller
     public function index()
     {
         //
-        $bookings = DB::table('bookings')->paginate(3);
+        $bookings = Bookings::all()->paginate(3);
         return view('booklist', ['bookings'=>$bookings]);
     }
+
 
     /**
      * Show the form for creating a new resource.

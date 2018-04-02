@@ -26,7 +26,7 @@
               <td>{{ $b->booking_id }}</td>
               <td>{{ $b->event_title }}</td>
               <td>{{ $b->start }}</td>
-              <td>{{ $b->duration }}</td>
+              <td>{{ $b->duration }} min</td>
               <td>{{ $b->name }}</td>
               <td>{{ $b->accept }}</td>
             </tr>
