@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use app\Bookings;
+use app\Schedules;
+use Session;
+use Redirect;
 
 class BookingController extends Controller
 {
@@ -72,18 +75,49 @@ class BookingController extends Controller
      */
     public function accept(Request $request, $id)
     {
-        //
         $booking = bookings::findOrFail($id);
+
+        //checking schedules data 
+        if ($booking->routine = 'Daily')
+            $interval = new DateInterval('P1D');
+        elseif ($booking->routine = 'Weekly')
+            $interval = new DateInterval('P7D');
+        elseif ($booking->routine = 'Biweekly')
+            $interval = new DateInterval('P14D');
+        else
+            $interval = new DateInterval('P1M');
+        $starttime = $booking->start;
+        $endtime = $booking->start->add(new DateInterval('PT'.$booking->duration.'M'));
+        $tstarttime = $startime;
+        $tendtime = $endtime;
+        for ($i=0; $i < $booking->howmanytimes; $i++) {
+            if(schedules::where('start','>=',$tstarttime,'and','end','<=',$tendtime)->where('start','<=',$tstarttime,'and','end','<=',$tendtime)->
+                where('start','>=',$tstarttime,'and','end','>=',$tendtime)->
+                where('start','<=',$tstarttime,'and','end','>=',$tendtime)->
+                exist()){
+
+                Session::flash('message', 'Reservasi ditolak, terdapat jadwal yang bertabrakan');
+                return Redirect::to('/booklist');
+            }
+            $tstarttime->add($interval);
+            $tendtime->add($interval);
+        }
+
+        //insert schedule(s) data
         $booking->accept = 1;
         $booking->save();
+        for ($i=0; $i < $booking->howmanytimes; $i++){
+            $schedule = new Schedules;
+            $schedule->booking_id = $booking->booking_id;
+            $schedule->room_id = $booking->room_id;
+            $schedule->start = $starttime;
+            $schedule->end = $endtime;
+            $schedule->save();
 
-        //create schedule data
-        $endtime = $booking->start->add(new DateInterval('PT'.$booking->duration.'M'));
-        $schedule = new Schedules;
-        $schedule->booking_id = $booking->booking_id;
-        $schedule->room_id = $booking->room_id;
-        $schedule->start = $booking->start;
-        $schedule->end = $endtime;
+            $starttime->add($interval);
+            $endtime->add($interval);
+        }
+        Session::flash('message', 'Reservasi diterima, jadwal berhasil dimasukkan');
     }
 
 
