@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Schedules;
 
-class ScheduleController extends Controller
+class RoomController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +14,6 @@ class ScheduleController extends Controller
     public function index()
     {
         //
-        $s = Schedules::paginate(10);
-        return view('schedule', ['schedule'=>$s]);
     }
 
     /**

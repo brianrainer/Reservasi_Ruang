@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Bookings extends Model
+class BookingStatus extends Model
 {
     //
      /**
@@ -13,9 +13,7 @@ class Bookings extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'phone_number', 'email', 'room', 'event_title',
-        'event_desc', 'start', 'duration', 'agencies', 'routine',
-        'howmanytimes', 'category', 'accept',
+        'booking_status_name',
     ];
 
     /**
@@ -26,4 +24,16 @@ class Bookings extends Model
     protected $hidden = [
         
     ];
+
+    /**
+     * Set timestamps off
+     */
+    public $timestamps = false;
+
+    /**
+     * Get the booking time
+     */
+    public function bookingTimes(){
+        return $this->hasMany('App\BookingTime');
+    }
 }

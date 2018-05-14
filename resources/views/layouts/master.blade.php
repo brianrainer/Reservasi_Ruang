@@ -18,14 +18,14 @@
       flex: 1 0 auto;
     }
   </style>
-  @yield('cssScripts')
+  @yield('css')
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   @php
     {{ 
-      $menu = ['room'=>'Schedule', 'form'=>'Reservation', 'admin'=>'Admin']; 
+      $menu = ['calendar'=>'Calendar', 'rooms'=>'Rooms' , 'availability'=>'Availability', 'booklist'=>'Bookings', 'schedule'=>'Schedules', 'form'=>'Reserve']; 
     }}
   @endphp
 
@@ -104,7 +104,7 @@
     });
   </script>
 
-  @yield('jsScripts')
+  @yield('js')
   
 </body>
 </html>

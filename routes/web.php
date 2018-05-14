@@ -11,16 +11,32 @@
 |
 */
 
-Route::get('/', function () {
-    return view('room');
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/room', 'MainController@room')->name('room');
-Route::get('/admin', 'MainController@admin')->name('admin');
-Route::get('/calendar', 'MainController@calendar')->name('calendar');
-Route::get('/form', 'ReservationController@create')->name('form');
-Route::get('/booklist', 'BookingController@index')->name('booklist');
-Route::post('/form/submit', 'ReservationController@store')->name('formsubmit');
+Route::get('/', function(){return view('welcome');});
+
+Route::get('/home', function(){return view('home');});
+
+Route::prefix('room')->group(function(){
+  Route::get('/', 'RoomController@index');
+});
+
+Route::prefix('reserve')->group(function(){
+  Route::get('/', 'ReservationController@index');
+  Route::post('/', 'ReservationController@store');
+
+});
+
+// Route::get('/home', 'HomeController@index')->name('home');
+
+// Route::get('/', 'MainController@availability');
+// Route::get('/availability', 'MainController@availability');
+// Route::get('/availability/{roomid}', function($roomid){
+//   echo 'Availability for Room ID: '.$roomid;
+// });
+// Route::get('/rooms', 'MainController@rooms')->name('rooms');
+// Route::get('/calendar', 'MainController@calendar')->name('calendar');
+// Route::get('/form', 'ReservationController@create')->name('form');
+// Route::post('/form', 'ReservationController@store')->name('formsubmit');
+// Route::get('/booklist', 'BookingController@index')->name('booklist');
+// Route::get('/schedule', 'ScheduleController@index');

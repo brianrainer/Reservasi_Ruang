@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Bookings;
-use app\Schedules;
+use App\Bookings;
+use App\Schedules;
 use Session;
 use Redirect;
 
@@ -18,7 +18,7 @@ class BookingController extends Controller
     public function index()
     {
         //
-        $bookings = Bookings::all()->paginate(3);
+        $bookings = Bookings::paginate(3);
         return view('booklist', ['bookings'=>$bookings]);
     }
 
@@ -75,7 +75,7 @@ class BookingController extends Controller
      */
     public function accept(Request $request, $id)
     {
-        $booking = bookings::findOrFail($id);
+        $booking = Bookings::findOrFail($id);
 
         //checking schedules data 
         if ($booking->routine = 'Daily')

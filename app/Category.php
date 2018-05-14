@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Technicians extends Model
+class Category extends Model
 {
     //
      /**
@@ -13,7 +13,7 @@ class Technicians extends Model
      * @var array
      */
     protected $fillable = [
-        'name' ,'email' ,'phone_number',
+        'category_name',
     ];
 
     /**
@@ -22,6 +22,19 @@ class Technicians extends Model
      * @var array
      */
     protected $hidden = [
-       
+        
     ];
+
+    /**
+     * Set timestamps off
+     */
+    public $timestamps = false;
+
+
+    /**
+     * Get the bookings which is in this category type
+     */
+    public function bookings(){
+        return $this->hasMany('App\Booking');
+    }
 }

@@ -7,7 +7,7 @@
 @section('content')
   @php
     {{
-      $class = ['IF-101', 'IF-102', 'IF-103','AULA-207', 'RTV-210',  'LP-305' ]; 
+      $class = ['IF-101', 'IF-102', 'IF-103', 'IF-104', 'IF-105A', 'IF-105B', 'AULA-207', 'RTV-210',  'LP-305' ]; 
       $routine = ['Daily', 'Weekly', 'Biweekly', 'Monthly']; 
       $category = ['Lecture/Course', 'Workshop', 'Organization', 'Meeting', 'Other']; 
     }}

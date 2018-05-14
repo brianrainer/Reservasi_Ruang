@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Rooms extends Model
+class Agency extends Model
 {
     //
      /**
@@ -13,7 +13,7 @@ class Rooms extends Model
      * @var array
      */
     protected $fillable = [
-        'room_name', 'tech_id',
+        'agency_name',
     ];
 
     /**
@@ -22,6 +22,19 @@ class Rooms extends Model
      * @var array
      */
     protected $hidden = [
-      
+        
     ];
+
+    /**
+     * Set timestamps off
+     */
+    public $timestamps = false;
+
+
+    /**
+     * Get the bookings which is in this category type
+     */
+    public function booking(){
+        return $this->hasMany('App\Booking');
+    }
 }
