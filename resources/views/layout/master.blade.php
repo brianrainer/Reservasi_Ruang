@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ReserveTC - @yield('title')</title>
+  <title>ReserveTC @yield('title')</title>
   <link rel="shortcut icon" href="https://www.its.ac.id/wp-content/themes/ITS/assets/img/favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/materialize.min.css"> 
@@ -25,7 +25,7 @@
 <body>
   @php
     {{ 
-      $menu = ['calendar'=>'Calendar', 'rooms'=>'Rooms' , 'availability'=>'Availability', 'booklist'=>'Bookings', 'schedule'=>'Schedules', 'form'=>'Reserve']; 
+      $menu = ['calendar'=>'Calendar', 'room'=>'Room' , 'availability'=>'Availability', 'booklist'=>'Bookings', 'schedule'=>'Schedules', 'form'=>'Reserve']; 
     }}
   @endphp
 
@@ -49,6 +49,7 @@
 
   <ul id="mobile-demo" class="side-nav">
     <li>
+{{-- 
       <div class="user-view">
         <div class="background">
           <img src="http://materializecss.com/images/office.jpg">
@@ -60,6 +61,7 @@
           <span class="white-text email">Test2</span>
         </a>
       </div>
+ --}}
     </li>
     @foreach ($menu as $m => $mval)
       <li><a href="{{$m}}">{{$mval}}</a></li>

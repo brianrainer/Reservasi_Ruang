@@ -63,7 +63,7 @@ class User extends Authenticatable
      * $return boolean
      */
     public function hasRole($check){
-        return in_array($check, array_fetch($this->roles->toArray(), 'role_name')); 
+        return in_array($check, array_pluck($this->roles->toArray(), 'role_name')); 
     }
 
     /**
@@ -76,7 +76,8 @@ class User extends Authenticatable
                 return $key;
             }
         }
-        throw new UnexpectedValueException;
+        // throw new UnexpectedValueException;
+        throw new \Exception("Unexpected Value Exception");
     }    
 
     /**
@@ -84,7 +85,7 @@ class User extends Authenticatable
      */
     public function setRole($title){
         $assigned = array();
-        $roles = array_fetch(Role::all()->toArray(), 'role_name');
+        $roles = array_pluck(Role::all()->toArray(), 'role_name');
 
         switch($title){
             case 'super_admin':
