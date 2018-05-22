@@ -91,10 +91,7 @@ class BookingController extends Controller
         $tstarttime = $startime;
         $tendtime = $endtime;
         for ($i=0; $i < $booking->howmanytimes; $i++) {
-            if(schedules::where('start','>=',$tstarttime,'and','end','<=',$tendtime)->where('start','<=',$tstarttime,'and','end','<=',$tendtime)->
-                where('start','>=',$tstarttime,'and','end','>=',$tendtime)->
-                where('start','<=',$tstarttime,'and','end','>=',$tendtime)->
-                exist()){
+            if(schedules::where('start','>=',$tstarttime,'and','end','<=',$tendtime)->doesntExist() && schedules::where('start','<=',$tstarttime,'and','end','<=',$tendtime)-> doesntExist() && where('start','>=',$tstarttime,'and','end','>=',$tendtime)->doesntExist() && where('start','<=',$tstarttime,'and','end','>=',$tendtime)->doesntExist()){
 
                 Session::flash('message', 'Reservasi ditolak, terdapat jadwal yang bertabrakan');
                 return Redirect::to('/booklist');
