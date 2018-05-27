@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ReserveTC @yield('title')</title>
+  <title>@yield('title')</title>
+
   <link rel="shortcut icon" href="https://www.its.ac.id/wp-content/themes/ITS/assets/img/favicon.ico">
+
+  <!--Import Google Icon Font-->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/materialize.min.css"> 
-  <link rel="stylesheet" type="text/css" href="fullcalendar/fullcalendar.min.css">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="{{asset('css/materialize.min.css')}}"  media="screen,projection"/>
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link rel="stylesheet" type="text/css" href="{{asset('fullcalendar/fullcalendar.min.css')}}">
+
   <style type="text/css">
     /* sticky footer */
     body {
@@ -19,8 +28,6 @@
     }
   </style>
   @yield('css')
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   @php
@@ -35,34 +42,20 @@
         <a href="/" class="brand-logo">
           <img src="https://www.its.ac.id/wp-content/uploads/2017/07/logo.png" style="max-width:100px;">
         </a>
-        <a href="#" data-activates="mobile-demo" class="button-collapse">
+        <a href="#" data-target="sidenav_id" class="sidenav-trigger">
           <i class="material-icons">menu</i>
         </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          @foreach ($menu as $m => $mval)
-            <li><a href="{{$m}}">{{$mval}}</a></li>
-          @endforeach
+          <li><a href="{{url('calendar')}}">Calendar</a></li>
+          <li><a href="{{url('room')}}">Room</a></li>
+          <li><a href="{{url('reserve/once')}}">Reserve</a></li>
+          <li><a href="{{url('profile')}}">Profile</a></li>
         </ul>
       </div>
     </nav>
   </div>
 
-  <ul id="mobile-demo" class="side-nav">
-    <li>
-{{-- 
-      <div class="user-view">
-        <div class="background">
-          <img src="http://materializecss.com/images/office.jpg">
-        </div>
-        <a href="#">
-          <span class="white-text name"> Test1 </span>
-        </a>
-        <a href="#">
-          <span class="white-text email">Test2</span>
-        </a>
-      </div>
- --}}
-    </li>
+  <ul id="sidenav_id" class="sidenav">
     @foreach ($menu as $m => $mval)
       <li><a href="{{$m}}">{{$mval}}</a></li>
     @endforeach
@@ -88,21 +81,17 @@
     </div>
   </footer>
 
-  <!-- always import the jquery first -->
-  <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.min.js')}}"></script>
 
-  <script type="text/javascript" src="js/materialize.min.js"></script>
+  <script type="text/javascript" src="{{asset('js/materialize.min.js')}}"></script>
 
-  <script type="text/javascript" src="js/moment.min.js"></script>
+  <script type="text/javascript" src="{{asset('js/moment.min.js')}}"></script>
 
-  <script type="text/javascript" src="fullcalendar/fullcalendar.min.js"></script>
+  <script type="text/javascript" src="{{asset('fullcalendar/fullcalendar.min.js')}}"></script>
 
   <script type="text/javascript">
     $(document).ready(function(){
-      $(".button-collapse").sideNav();
+      $(".sidenav").sidenav();
     });
   </script>
 

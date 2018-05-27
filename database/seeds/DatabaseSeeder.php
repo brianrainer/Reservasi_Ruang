@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
             BookingStatusSeeder::class,
             AgencySeeder::class,
             CategorySeeder::class,
+            RoutineSeeder::class,
             UserSeeder::class,
+            BookingSeeder::class,
         ]);
     }
 }

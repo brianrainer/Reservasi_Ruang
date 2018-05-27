@@ -34,6 +34,6 @@ class BookingStatus extends Model
      * Get the booking time
      */
     public function bookingTimes(){
-        return $this->hasMany('App\BookingTime');
+        return $this->hasMany('App\BookingDetail');
     }
 }

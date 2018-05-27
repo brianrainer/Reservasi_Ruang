@@ -40,6 +40,6 @@ class Room extends Model
      * Get the booking in which the room is used
      */
     public function bookings(){
-        return $this->belongsToMany('App\Booking', 'bookings_rooms', 'room_id', 'booking_id');
+        return $this->hasMany('App\BookingDetail');
     }
 }

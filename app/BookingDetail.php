@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingTime extends Model
+class BookingDetail extends Model
 {
     //
      /**
@@ -39,5 +39,11 @@ class BookingTime extends Model
         return $this->belongsTo('App\Booking');
     }
 
+    /**
+     * Get the booking rooms
+     */
+    public function rooms(){
+        return $this->belongsTo('App\Room');
+    }
 
 }

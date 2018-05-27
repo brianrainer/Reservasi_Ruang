@@ -34,5 +34,8 @@ class AgencySeeder extends Seeder
     Agency::create([
       'agency_name' => 'Alumni',
     ]);
+    Agency::create([
+      'agency_name' => 'Perorangan',
+    ]);
   }
 }

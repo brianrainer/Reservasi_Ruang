@@ -49,15 +49,14 @@ class Booking extends Model
     /**
      * Get the booking time(s)
      */
-    public function bookingTimes(){
-        return $this->hasMany('App\BookingTime');
+    public function bookingTime(){
+        return $this->hasMany('App\BookingDetail');
     }    
 
-    /**
-     * Get the booking room(s)
-     */
-    public function rooms(){
-        return $this->belongsToMany('App\Room', 'bookings_rooms', 'booking_id', 'room_id');
-    }
-
+    // /**
+    //  * Get the booking room(s)
+    //  */
+    // public function rooms(){
+    //     return $this->belongsToMany('App\Room', 'bookings_times', 'booking_id', 'room_id');
+    // }
 }

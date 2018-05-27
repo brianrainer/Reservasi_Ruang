@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Rooms;
-use App\Bookings;
+use App\Room;
+use App\Agency;
+use App\Category;
+use App\Routine;
+use App\BookingDetail;
+use App\Booking;
 use DateTime;
 use Session;
 use Redirect;
@@ -29,7 +33,7 @@ class ReservationController extends Controller
     public function create()    
     {
         //
-        $rooms = Rooms::all();
+        $rooms = Room::all();
         return view('form',$rooms);
     }
 
@@ -125,4 +129,11 @@ class ReservationController extends Controller
         //
     }
 
+    public function once_index(){
+        $data['rooms'] = Room::all();
+        $data['routines'] = Routine::all();
+        $data['agencies'] = Agency::all();
+        $data['categories'] = Category::all();
+        return view('reserve.once', $data);
+    }
 }

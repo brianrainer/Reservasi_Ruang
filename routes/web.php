@@ -24,12 +24,12 @@ Route::prefix('room')->group(function(){
 Route::prefix('reserve')->group(function(){
   Route::get('/', 'ReservationController@index');
   Route::post('/', 'ReservationController@store');
+  Route::get('/once', 'ReservationController@once_index');
 });
 
 Route::prefix('profile')->group(function(){
   Route::get('/', 'ProfileController@index');
 });
-
 
 
 // Route::get('/home', 'HomeController@index')->name('home');
@@ -45,6 +45,3 @@ Route::prefix('profile')->group(function(){
 // Route::post('/form', 'ReservationController@store')->name('formsubmit');
 // Route::get('/booklist', 'BookingController@index')->name('booklist');
 // Route::get('/schedule', 'ScheduleController@index');
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
