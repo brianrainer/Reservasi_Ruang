@@ -23,14 +23,23 @@ Route::prefix('room')->group(function(){
 
 Route::prefix('reserve')->group(function(){
   Route::get('/', 'ReservationController@index');
-  Route::post('/', 'ReservationController@store');
-  Route::get('/once', 'ReservationController@once_index');
+  Route::get('once', 'ReservationController@once_index');
+  Route::post('once', 'ReservationController@once');
+  Route::get('repeat', 'ReservationController@repeat_index');
+  Route::post('repeat', 'ReservationController@repeat');
+  Route::get('multionce', 'ReservationController@multionce_index');
+  Route::post('multionce', 'ReservationController@multionce');
+  Route::get('multirepeat', 'ReservationController@multirepeat_index');
+  Route::post('multirepeat', 'ReservationController@multirepeat');
+
+  Route::get('status', 'ReservationController@check_booking');
 });
 
 Route::prefix('profile')->group(function(){
   Route::get('/', 'ProfileController@index');
 });
 
+Route::get('terms', 'ReservationController@terms');
 
 // Route::get('/home', 'HomeController@index')->name('home');
 

@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('user_phone_number')->nullable();
             $table->string('password');
-            $table->string('index_number', 30)->nullable();
+            $table->string('nrp_nip', 20)->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

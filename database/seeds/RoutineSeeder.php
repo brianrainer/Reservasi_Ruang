@@ -34,26 +34,26 @@ class RoutineSeeder extends Seeder
       'routine_name' => 'Monthly',
       'repeat_in_sec' => 1 * 4 * 7 * 24 * 60 * 60,
     ]);
-    // Routine::create([
-    //   'routine_name' => 'BiMonthly',
-    //   'repeat_in_sec' => 2 * 4 * 7 * 24 * 60 * 60,
-    // ]);
-    // Routine::create([
-    //   'routine_name' => 'TriMonthly',
-    //   'repeat_in_sec' => 3 * 4 * 7 * 24 * 60 * 60,
-    // ]);
-    // Routine::create([
-    //   'routine_name' => 'Quarterly',
-    //   'repeat_in_sec' => 4 * 4 * 7 * 24 * 60 * 60,
-    // ]);
-    // Routine::create([
-    //   'routine_name' => 'Semi-Anually',
-    //   'repeat_in_sec' => 6 * 4 * 7 * 24 * 60 * 60,
-    // ]);
-    // Routine::create([
-    //   'routine_name' => 'Annually',
-    //   'repeat_in_sec' => 12 * 4 * 7 * 24 * 60 * 60,
-    // ]);
+    Routine::create([
+      'routine_name' => 'BiMonthly',
+      'repeat_in_sec' => 2 * 4 * 7 * 24 * 60 * 60,
+    ]);
+    Routine::create([
+      'routine_name' => 'TriMonthly',
+      'repeat_in_sec' => 3 * 4 * 7 * 24 * 60 * 60,
+    ]);
+    Routine::create([
+      'routine_name' => 'Quarterly',
+      'repeat_in_sec' => 4 * 4 * 7 * 24 * 60 * 60,
+    ]);
+    Routine::create([
+      'routine_name' => 'Semi-Anually',
+      'repeat_in_sec' => 6 * 4 * 7 * 24 * 60 * 60,
+    ]);
+    Routine::create([
+      'routine_name' => 'Annually',
+      'repeat_in_sec' => 12 * 4 * 7 * 24 * 60 * 60,
+    ]);
   }
 
 }

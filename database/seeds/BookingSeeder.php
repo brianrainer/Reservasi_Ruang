@@ -15,6 +15,7 @@ class BookingSeeder extends Seeder
     {
       $booking = Booking::create([
         'name' => 'Brian Rainer',
+        'nrp_nip' => '5115100061',
         'email' => 'brianrainer5497@gmail.com',
         'phone_number' => '081259262477',
         'agency_id' => '1',

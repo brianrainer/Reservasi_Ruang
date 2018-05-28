@@ -30,12 +30,6 @@
   @yield('css')
 </head>
 <body>
-  @php
-    {{ 
-      $menu = ['calendar'=>'Calendar', 'room'=>'Room' , 'availability'=>'Availability', 'booklist'=>'Bookings', 'schedule'=>'Schedules', 'form'=>'Reserve']; 
-    }}
-  @endphp
-
   <div class="navbar-fixed">
     <nav class="blue">
       <div class="nav-wrapper">
@@ -46,19 +40,22 @@
           <i class="material-icons">menu</i>
         </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="{{url('calendar')}}">Calendar</a></li>
-          <li><a href="{{url('room')}}">Room</a></li>
-          <li><a href="{{url('reserve/once')}}">Reserve</a></li>
-          <li><a href="{{url('profile')}}">Profile</a></li>
+          <li><a href="{{url('calendar')}}">Kalender</a></li>
+          <li><a href="{{url('room')}}">Ruangan</a></li>
+          <li><a href="{{url('reserve')}}">Reservasi</a></li>
+          <li><a href="{{url('profile')}}">Profil</a></li>
+          <li><a href="{{url('terms')}}">Syarat</a></li>
         </ul>
       </div>
     </nav>
   </div>
 
-  <ul id="sidenav_id" class="sidenav">
-    @foreach ($menu as $m => $mval)
-      <li><a href="{{$m}}">{{$mval}}</a></li>
-    @endforeach
+  <ul id="sidenav_id" class="sidenav sidenav_fixed">
+    <li><a href="{{url('calendar')}}">Kalender</a></li>
+    <li><a href="{{url('room')}}">Ruangan</a></li>
+    <li><a href="{{url('reserve')}}">Reservasi</a></li>
+    <li><a href="{{url('profile')}}">Profil</a></li>
+    <li><a href="{{url('terms')}}">Syarat</a></li>
   </ul>
 
   <header></header>
