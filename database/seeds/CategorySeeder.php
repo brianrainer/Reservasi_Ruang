@@ -23,9 +23,6 @@ class CategorySeeder extends Seeder
       'category_name' => 'Workshop / Pelatihan',
     ]);
     Category::create([
-      'category_name' => 'Keperluan Admin',
-    ]);
-    Category::create([
       'category_name' => 'Maintenance / Perbaikan',
     ]);
     Category::create([
@@ -37,8 +34,5 @@ class CategorySeeder extends Seeder
     Category::create([
       'category_name' => 'Forum Warga',
     ]);
-    Category::create([
-      'category_name' => 'Lain - Lain',
-    ]); 
   }
 }

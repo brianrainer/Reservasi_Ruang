@@ -89,30 +89,14 @@ class User extends Authenticatable
 
         switch($title){
             case 'super_admin':
-                $assigned[] = $this->getRoleID($roles, 'create_role');
-                $assigned[] = $this->getRoleID($roles, 'edit_role');
-                $assigned[] = $this->getRoleID($roles, 'delete_role');
-
-                $assigned[] = $this->getRoleID($roles, 'create_agency');
-                $assigned[] = $this->getRoleID($roles, 'edit_agency');
-                $assigned[] = $this->getRoleID($roles, 'delete_agency');
-
-                $assigned[] = $this->getRoleID($roles, 'create_category');
-                $assigned[] = $this->getRoleID($roles, 'edit_category');
-                $assigned[] = $this->getRoleID($roles, 'delete_category');
-                
-                $assigned[] = $this->getRoleID($roles, 'create_booking_status');
-                $assigned[] = $this->getRoleID($roles, 'edit_booking_status');
-                $assigned[] = $this->getRoleID($roles, 'delete_booking_status');
+                $assigned[] = $this->getRoleID($roles, 'manage_role');
+                $assigned[] = $this->getRoleID($roles, 'manage_agency');
+                $assigned[] = $this->getRoleID($roles, 'manage_category');                
+                $assigned[] = $this->getRoleID($roles, 'manage_booking_status');
             case 'admin':
-                $assigned[] = $this->getRoleID($roles, 'create_user');
-                $assigned[] = $this->getRoleID($roles, 'edit_user');
-                $assigned[] = $this->getRoleID($roles, 'delete_user');
+                $assigned[] = $this->getRoleID($roles, 'manage_user');
             case 'technician':
-                $assigned[] = $this->getRoleID($roles, 'create_room');
-                $assigned[] = $this->getRoleID($roles, 'edit_room');
-                $assigned[] = $this->getRoleID($roles, 'delete_room');
-
+                $assigned[] = $this->getRoleID($roles, 'manage_room');
                 $assigned[] = $this->getRoleID($roles, 'accept_booking');
                 $assigned[] = $this->getRoleID($roles, 'reject_booking');
                 $assigned[] = $this->getRoleID($roles, 'delete_booking');
@@ -120,7 +104,6 @@ class User extends Authenticatable
                 $assigned[] = $this->getRoleID($roles, 'create_booking');
                 $assigned[] = $this->getRoleID($roles, 'edit_booking');
                 $assigned[] = $this->getRoleID($roles, 'cancel_booking');
-
                 break;
             default:
                 throw new \Exception("Employee status entered doesn't exists");

@@ -11,7 +11,7 @@ class UserSeeder extends Seeder {
   public function run(){
     $user = User::create([
       'user_name' => 'Brian Rainer Suryaputra',
-      'email' => 'brian@gmail.com',
+      'email' => 'brianrainer5497@gmail.com',
       'password' => bcrypt('qweqwe'),
       'user_phone_number' => '081259262477',
       'nrp_nip' => '05111540000061',
@@ -26,13 +26,20 @@ class UserSeeder extends Seeder {
     ]);
     $user->setRole('super_admin');
 
+    $user = User::create([
+      'user_name' => 'Jumali',
+      'email' => 'jumali.if@gmail.com',
+      'password' => bcrypt('password'),
+      'user_phone_number' => '081803211009',
+    ]);
+    $user->setRole('super_admin');
 
     $user = User::create([
-      'user_name' => 'Normal User',
-      'email' => 'normal@gmail.com',
-      'password' => bcrypt('qweqwe'),
-      'nrp_nip' => '05111040000999',
+      'user_name' => 'Sukron',
+      'email' => 'dhensukron@gmail.com',
+      'password' => bcrypt('password'),
+      'user_phone_number' => '085101459913',
     ]);
-    $user->setRole('normal_user');
+    $user->setRole('super_admin');
   }
 }

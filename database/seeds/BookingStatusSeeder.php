@@ -14,6 +14,9 @@ class BookingStatusSeeder extends Seeder
       'booking_status_name' => 'MENUNGGU',
     ]);
     BookingStatus::create([
+      'booking_status_name' => 'DITERIMA',
+    ]);
+    BookingStatus::create([
       'booking_status_name' => 'DITOLAK',
     ]);
     BookingStatus::create([
@@ -24,9 +27,6 @@ class BookingStatusSeeder extends Seeder
     ]);
     BookingStatus::create([
       'booking_status_name' => 'DIALIHKAN',
-    ]);
-    BookingStatus::create([
-      'booking_status_name' => 'DITERIMA',
     ]);
   }
 }

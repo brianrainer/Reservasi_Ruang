@@ -32,8 +32,14 @@ Route::prefix('reserve')->group(function(){
   Route::get('multirepeat', 'ReservationController@multirepeat_index');
   Route::post('multirepeat', 'ReservationController@multirepeat');
 
-  Route::get('status', 'ReservationController@check_booking');
-  Route::get('status/{booking}', 'ReservationController@check_booking_detail');
+  Route::prefix('status')->group(function(){
+    Route::get('/', 'ReservationController@check_booking');
+    Route::get('{booking}', 'ReservationController@check_booking_detail');
+    Route::post('reject', 'ReservationController@reject_reservation_detail');
+    Route::post('reject_all', 'ReservationController@reject_reservation_all');
+    Route::post('accept', 'ReservationController@accept_reservation_detail');
+    Route::post('accept_all', 'ReservationController@accept_reservation_all');
+  });
 });
 
 Route::prefix('profile')->group(function(){

@@ -267,6 +267,15 @@ class ReservationController extends Controller
         $data['bookings'] = 
             Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
+            ->select(
+                'bookings.id',
+                'bookings.name',
+                'bookings.event_title',
+                'bookings.created_at',
+                'agencies.agency_name',
+                'categories.category_name'
+                )
+            ->orderBy('bookings.created_at', 'DESC')
             ->get();
         return view('status.status', $data); 
     }
@@ -295,8 +304,10 @@ class ReservationController extends Controller
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
             ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
             ->select(
+                'booking_details.id',
                 'booking_details.event_start',
                 'booking_details.event_end',
+                'rooms.id as room_id',
                 'rooms.room_code',
                 'rooms.room_name',
                 'booking_statuses.booking_status_name'
@@ -304,6 +315,54 @@ class ReservationController extends Controller
             ->get();
 
         return view('status.detail', $data);
+    }
+
+    protected function validator_booking(Request $request){
+        return Validator::make($request->all(), [
+            'booking_id' => 'required|numeric',
+        ], [
+            'booking_id.required' => 'Nomor Reservasi Diperlukan',
+            'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
+        ]);        
+    }
+
+    protected function validator_detail(Request $request){
+        return Validator::make($request->all(), [
+            'booking_id' => 'required|numeric',
+            'detail_id' => 'required|numeric',
+        ], [
+            'booking_id.required' => 'Nomor Reservasi Diperlukan',
+            'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
+            'detail_id.required' => 'Nomor Detail Reservasi Diperlukan',
+            'detail_id.numeric' => 'Nomor Detail Reservasi Tidak Valid',
+        ]);
+    }
+
+    public function accept_reservation_all(Request $request){
+        $this->validator_booking($request)->validate();
+
+        $data['status'] = 'Berhasil Menerima Reservasi #'.$request->booking_id;
+        return redirect('reserve/status');
+    }
+
+    public function accept_reservation_detail(Request $request){
+        $this->validator_detail($request)->validate();
+        $data['status'] = 'Berhasil Menerima Detail Reservasi #'.$request->detail_id;
+
+        return redirect('reserve/status/'.$request->booking_id);
+    }
+
+    public function reject_reservation_all(Request $request){
+        $this->validator_booking($request)->validate();
+        $data['status'] = 'Berhasil Menerima Reservasi #'.$request->booking_id;
+        return redirect('reserve/status');
+    }
+
+    public function reject_reservation_detail(Request $request){
+        $this->validator_detail($request)->validate();
+        $data['status'] = 'Berhasil Menerima Detail Reservasi #'.$request->detail_id;
+        return redirect('reserve/status/'.$request->booking_id);
+
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval

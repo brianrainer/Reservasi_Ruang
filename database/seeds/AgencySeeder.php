@@ -11,13 +11,13 @@ class AgencySeeder extends Seeder
    */
   public function run(){
     Agency::create([
-      'agency_name' => 'Dosen',
-    ]);
-    Agency::create([
-      'agency_name' => 'HMTC',
+      'agency_name' => 'Mahasiswa (Perseorangan)',
     ]);
     Agency::create([
       'agency_name' => 'BSO',
+    ]);
+    Agency::create([
+      'agency_name' => 'HMTC',
     ]);
     Agency::create([
       'agency_name' => 'UKM / Club',
@@ -29,13 +29,16 @@ class AgencySeeder extends Seeder
       'agency_name' => 'BEM ITS',
     ]);
     Agency::create([
-      'agency_name' => 'Organisasi Lain',
+      'agency_name' => 'Dosen / Karyawan',
     ]);
     Agency::create([
       'agency_name' => 'Alumni',
     ]);
     Agency::create([
-      'agency_name' => 'Perorangan',
+      'agency_name' => 'Perusahaan / Start-Up',
+    ]);
+    Agency::create([
+      'agency_name' => 'Non-Profit Organization',
     ]);
   }
 }
