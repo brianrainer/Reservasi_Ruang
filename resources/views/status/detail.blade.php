@@ -38,8 +38,11 @@
         @foreach ($booking_details as $detail)
           <tr>
             <th>Lokasi dan Waktu</th>
-            <td>{{$detail->room_name}}</td>
-            <td>{{$detail->start_time}}</td>
+            <td>
+              {{$detail->room_name}}
+              {{$detail->event_start}}
+              {{$detail->event_end}}
+            </td>
           </tr>
         @endforeach
       @endforeach

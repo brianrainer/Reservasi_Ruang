@@ -285,7 +285,7 @@ class ReservationController extends Controller
                 'bookings.event_title',
                 'bookings.event_description',
                 'agencies.agency_name',
-                'categories.category_name',
+                'categories.category_name'
                 )
             ->get();
 
@@ -295,12 +295,14 @@ class ReservationController extends Controller
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
             ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
             ->select(
+                'booking_details.event_start',
+                'booking_details.event_end',
                 'rooms.room_code',
                 'rooms.room_name',
                 'booking_statuses.booking_status_name'
                 )
             ->get();
-            dd($data);
+
         return view('status.detail', $data);
     }
 
