@@ -29,34 +29,20 @@ class Booking extends Model
      * Get the category the booking has
      */
     public function category(){
-        return $this->belongsTo('App\Category');
+        return $this->belongsTo('App\Category', 'category_id');
     }
     
     /**
      * Get the category the booking has
      */
     public function agency(){
-        return $this->belongsTo('App\Agency');
+        return $this->belongsTo('App\Agency', 'agency_id');
     }
 
     /**
-     * Get the user who proposes booking request
+     * Get the booking details: room and time
      */
-    public function user(){
-        return $this->belongsTo('App\User');
-    }
-
-    /**
-     * Get the booking time(s)
-     */
-    public function bookingTime(){
+    public function bookingDetail(){
         return $this->hasMany('App\BookingDetail');
     }    
-
-    // /**
-    //  * Get the booking room(s)
-    //  */
-    // public function rooms(){
-    //     return $this->belongsToMany('App\Room', 'bookings_times', 'booking_id', 'room_id');
-    // }
 }

@@ -34,7 +34,7 @@ class Category extends Model
     /**
      * Get the bookings which is in this category type
      */
-    public function bookings(){
+    public function booking(){
         return $this->hasMany('App\Booking');
     }
 }

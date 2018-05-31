@@ -33,6 +33,7 @@ Route::prefix('reserve')->group(function(){
   Route::post('multirepeat', 'ReservationController@multirepeat');
 
   Route::get('status', 'ReservationController@check_booking');
+  Route::get('status/{booking}', 'ReservationController@check_booking_detail');
 });
 
 Route::prefix('profile')->group(function(){

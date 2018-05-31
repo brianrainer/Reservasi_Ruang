@@ -6,14 +6,14 @@
   <h1>Status Reservasi</h1>
 
   @if ($bookings->count())
-  <table>
+  <table class="responsive-table">
     <thead>
       <tr>
         <th>No</th>
         <th>Peminjam</th>
         <th>Judul Kegiatan</th>
         <th>Dibuat</th>
-        <th>Details</th>
+        <th>Detail</th>
       </tr>
     </thead>
     <tbody>
@@ -24,9 +24,7 @@
           <td>{{$booking->event_title}}</td>
           <td>{{$booking->created_at}}</td>
           <td>
-            <a href="" class="btn btn-primary">Details</a>
-          </td>
-          <td>
+            <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary">Detail</a>
           </td>
         </tr>
       @endforeach

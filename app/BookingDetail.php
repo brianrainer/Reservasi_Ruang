@@ -29,21 +29,21 @@ class BookingDetail extends Model
      * Get the booking status
      */
     public function bookingStatus(){
-        return $this->belongsTo('App\BookingStatus');
+        return $this->belongsTo('App\BookingStatus', 'booking_status_id');
     }
 
     /**
      * Get the booking
      */
-    public function bookings(){
-        return $this->belongsTo('App\Booking');
+    public function booking(){
+        return $this->belongsTo('App\Booking', 'booking_id');
     }
 
     /**
      * Get the booking rooms
      */
-    public function rooms(){
-        return $this->belongsTo('App\Room');
+    public function room(){
+        return $this->belongsTo('App\Room', 'room_id');
     }
 
 }

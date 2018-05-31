@@ -264,18 +264,44 @@ class ReservationController extends Controller
      * Helper Functions - Check Booking Crash
      */
     public function check_booking(){
-        // $data['bookings'] = 
-        //     Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-        //     ->join('agencies', 'agencies.id','=','bookings.agency_id')
-        //     ->join('categories', 'categories.id','=','bookings.category_id')
-        //     ->join('rooms', 'rooms.id','=','booking_details.room_id')
-        //     ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
-        //     ->get();
         $data['bookings'] = 
             Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
             ->get();
-        return view('reserve.status', $data); 
+        return view('status.status', $data); 
+    }
+
+    public function check_booking_detail($booking_id){
+        $data['bookings'] = 
+            Booking::where('bookings.id', $booking_id)
+            ->join('agencies', 'agencies.id','=','bookings.agency_id')
+            ->join('categories', 'categories.id','=','bookings.category_id')
+            ->select(
+                'bookings.id',
+                'bookings.name',
+                'bookings.nrp_nip',
+                'bookings.email',
+                'bookings.phone_number',
+                'bookings.event_title',
+                'bookings.event_description',
+                'agencies.agency_name',
+                'categories.category_name',
+                )
+            ->get();
+
+        $data['booking_details'] = 
+            Booking::where('bookings.id', $booking_id)
+            ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'rooms.id','=','booking_details.room_id')
+            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
+            ->select(
+                'rooms.room_code',
+                'rooms.room_name',
+                'booking_statuses.booking_status_name'
+                )
+            ->get();
+            dd($data);
+        return view('status.detail', $data);
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval

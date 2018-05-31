@@ -31,9 +31,9 @@ class BookingStatus extends Model
     public $timestamps = false;
 
     /**
-     * Get the booking time
+     * Get the booking details: room and time
      */
-    public function bookingTimes(){
+    public function bookingDetail(){
         return $this->hasMany('App\BookingDetail');
     }
 }
