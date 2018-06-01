@@ -23,28 +23,30 @@
         {{$booking->name}}
       @endcomponent
 
-      @if (!empty($booking->nrp_nip))
+      @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+        @if (!empty($booking->nrp_nip))
+          @component('status.detail_div')
+            @slot('title')
+              NRP / NIP
+            @endslot
+            {{$booking->nrp_nip}}
+          @endcomponent
+        @endif
+
         @component('status.detail_div')
           @slot('title')
-            NRP / NIP
+            Email
           @endslot
-          {{$booking->nrp_nip}}
+          {{$booking->email}}
+        @endcomponent
+
+        @component('status.detail_div')
+          @slot('title')
+            Nomor Telepon
+          @endslot
+          {{$booking->phone_number}}
         @endcomponent
       @endif
-
-      @component('status.detail_div')
-        @slot('title')
-          Email
-        @endslot
-        {{$booking->email}}
-      @endcomponent
-
-      @component('status.detail_div')
-        @slot('title')
-          Nomor Telepon
-        @endslot
-        {{$booking->phone_number}}
-      @endcomponent
 
       @component('status.detail_div')
         @slot('title')
@@ -74,19 +76,21 @@
         {{$booking->event_description}}
       @endcomponent
 
-      @component('status.detail_div')
-        @slot('title')
-          Tolak/Terima Semua
-        @endslot
-          <div class="col s12">
-            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
-              Tolak Semua
-            </button>
-            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
-              Terima Semua
-            </button>
-          </div>
-      @endcomponent
+      @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+        @component('status.detail_div')
+          @slot('title')
+            Tolak/Terima Semua
+          @endslot
+            <div class="col s12">
+              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
+                Tolak Semua
+              </button>
+              <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
+                Terima Semua
+              </button>
+            </div>
+        @endcomponent
+      @endif
 
       @foreach ($booking_details as $detail)
         @component('status.detail_div')
@@ -104,6 +108,7 @@
               </strong>
               {{$detail->booking_status_name}}
             </div>
+          @if (Auth::check() && Auth::user()->hasRole('manage_room'))
             <div class="col s12">
               <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_id" onclick="fill_modal('reject_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
                 Tolak
@@ -112,6 +117,7 @@
                 Terima
               </button>
             </div>
+          @endif
         @endcomponent
       @endforeach
     @endif

@@ -7,6 +7,12 @@
   @include('layouts.status')
   @include('layouts.errors')
 
+  @if (session('message'))
+    <div class="card-panel teal">
+      {{session('message')}}
+    </div>
+  @endif
+
   @if ($bookings->count())
   <table class="responsive-table">
     <thead>
@@ -17,7 +23,7 @@
         <th>
             Dibuat
             {{-- todo: buat orderby sama search --}}
-            <button type="submit" class="btn btn-flat waves-light">
+            <button type="submit" class="btn btn-small btn-flat waves-light">
               <i class="material-icons">arrow_drop_down</i>
             </button>
         </th>

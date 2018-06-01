@@ -12,6 +12,7 @@
   <script type="text/javascript">
     $(document).ready(function(){
       $('#calendar').fullCalendar({
+        defaultView: 'agendaDay',
         eventSources : [
           {
             url: 'calendar/accepted',
@@ -33,7 +34,7 @@
             cache: true
           },
         ],
-        timeFormat: 'H:mm'
+        nowIndicator: true,
       })
     });
   </script>

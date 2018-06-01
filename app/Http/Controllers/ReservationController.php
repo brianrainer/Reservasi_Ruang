@@ -14,9 +14,14 @@ use DateTime;
 use Session;
 use Redirect;
 use Carbon\Carbon;
+use DB;
 
 class ReservationController extends Controller
 {
+    private $waiting_booking_status_id = 1;
+    private $accepted_booking_status_id = 2;
+    private $rejected_booking_status_id = 3;
+
     protected function view_reserve($data){
         return view('reserve.index', $data);
     }
@@ -51,6 +56,10 @@ class ReservationController extends Controller
 
     protected function view_calendar($data){
         return view('calendar', $data);
+    }
+
+    protected function view_agenda($data){
+        return view('agenda', $data);
     }
 
     protected function view_terms($data){
@@ -184,6 +193,173 @@ class ReservationController extends Controller
         ]);
     }
 
+    protected function set_one_detail($detail_id, $status_id){
+        $booking_detail = BookingDetail::findOrFail($detail_id);
+        $booking_detail->booking_status_id = $status_id;
+        return $booking_detail->save();
+    }
+
+    protected function accept_detail($detail_id){
+        return $this->set_one_detail($detail_id, $this->accepted_booking_status_id);
+    }
+    protected function reject_detail($detail_id){
+        return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
+    }
+
+    protected function get_all_booking(){
+        return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
+            ->join('categories', 'categories.id','=','bookings.category_id')
+            ->select(
+                'bookings.id',
+                'bookings.name',
+                'bookings.event_title',
+                'bookings.created_at',
+                'agencies.agency_name',
+                'categories.category_name'
+                )
+            ->orderBy('bookings.created_at', 'DESC')
+            ->get();
+    }
+
+    protected function get_all_booking_today(){
+        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'booking_details.room_id','=','rooms.id')
+            ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')
+            ->where('booking_details.event_start', '>=', Carbon::today())
+            ->where('booking_details.event_end', '<=', Carbon::tomorrow())           
+            ->where('booking_statuses.id','=', $this->accepted_booking_status_id)
+            ->select(
+                'bookings.id', 
+                'bookings.event_title', 
+                'rooms.room_code',
+                'rooms.room_name',
+                'booking_statuses.booking_status_name',
+                'booking_details.event_start',
+                'booking_details.event_end'
+                )
+            ->get();
+    }
+
+    protected function get_booking_calendar($status_id){
+        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'booking_details.room_id','=','rooms.id')
+            ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
+            ->where('booking_statuses.id','=', $status_id)
+            ->select(
+                DB::raw('CONCAT(
+                    "/reserve/status/",
+                    bookings.id
+                ) as url'), 
+                DB::raw("CONCAT(
+                    rooms.room_code,' ',
+                    bookings.event_title 
+                ) as title"),
+                'booking_details.event_start as start',
+                'booking_details.event_end as end'
+                )
+            ->get();
+    }
+
+    protected function get_booking_calendar_accepted(){
+        return $this->get_booking_calendar($this->accepted_booking_status_id);
+    }
+
+    protected function get_booking_calendar_waiting(){
+        return $this->get_booking_calendar($this->waiting_booking_status_id);
+    }
+
+    protected function get_booking_calendar_rejected(){
+        return $this->get_booking_calendar($this->rejected_booking_status_id);
+    }
+
+    protected function get_one_booking($booking_id){
+        return Booking::where('bookings.id', $booking_id)
+            ->join('agencies', 'agencies.id','=','bookings.agency_id')
+            ->join('categories', 'categories.id','=','bookings.category_id')
+            ->select(
+                'bookings.id',
+                'bookings.name',
+                'bookings.nrp_nip',
+                'bookings.email',
+                'bookings.phone_number',
+                'bookings.event_title',
+                'bookings.event_description',
+                'agencies.agency_name',
+                'categories.category_name'
+                )
+            ->get();        
+    }
+
+    protected function get_one_detail($detail_id){
+        return BookingDetail::where('booking_details.id', $detail_id)
+            ->join('rooms', 'rooms.id','=','booking_details.room_id')
+            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
+            ->select(
+                'booking_details.id',
+                'booking_details.event_start',
+                'booking_details.event_end',
+                'rooms.id as room_id',
+                'rooms.room_code',
+                'rooms.room_name',
+                'booking_statuses.booking_status_name'
+                )
+            ->get();
+        
+    }
+
+    protected function get_all_detail($booking_id){
+        return Booking::where('bookings.id', $booking_id)
+            ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'rooms.id','=','booking_details.room_id')
+            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
+            ->select(
+                'booking_details.id',
+                'booking_details.event_start',
+                'booking_details.event_end',
+                'rooms.id as room_id',
+                'rooms.room_code',
+                'rooms.room_name',
+                'booking_statuses.booking_status_name'
+                )
+            ->get();
+    }
+
+    /**
+     * Helper Functions - Create Booking
+     * @param  \Illuminate\Http\Request $request
+     * @return \App\Booking
+     */
+    protected function create_booking(Request $request){
+        return Booking::create([
+            'name' => $request->full_name,
+            'nrp_nip' => $request->nrp_nip,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'agency_id' => $request->agency,
+            'event_title' => $request->title,
+            'event_description' => $request->event_description,
+            'category_id' => $request->category,            
+        ]);
+    }
+
+    /**
+     * Helper Functions - Create Booking Detail
+     * @param  Integer $room_id
+     * @param  Integer $booking_id
+     * @param  String $start_time
+     * @param  String $end_time
+     * @return App\BookingDetail
+     */
+    protected function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
+        return BookingDetail::create([
+            'booking_id' => $booking_id,
+            'room_id' => $room_id,
+            'event_start' => $start_time,
+            'event_end' => $end_time,
+            'booking_status_id' => $this->waiting_booking_status_id,
+        ]);
+    }
+
 
 
     public function index_reserve(){
@@ -197,6 +373,10 @@ class ReservationController extends Controller
 
     public function index_calendar(){
         return $this->view_calendar([]);
+    }
+
+    public function index_agenda(){
+        return $this->view_agenda([]);
     }
 
     public function index_status(){
@@ -225,6 +405,97 @@ class ReservationController extends Controller
     
     public function index_multi_repeat(){
         return $this->view_multirepeat($this->load_reserve_form());
+    }
+
+    public function once(Request $request){
+        $this->validator_room($request, false)->validate();
+        $this->validator_form($request)->validate();
+
+        $booking = $this->create_booking($request);
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $bookingDetail = $this->create_booking_detail(
+            $request->room, 
+            $booking->id, 
+            $start_time->toDateTimeString(), 
+            $end_time->toDateTimeString()
+        );
+
+        return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+    }
+
+    public function repeat(Request $request){
+        $this->validator_room($request, false)->validate();
+        $this->validator_form($request)->validate();
+
+        $booking = $this->create_booking($request);
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $this->create_booking_detail(
+            $request->room, 
+            $booking->id, 
+            $start_time->toDateTimeString(), 
+            $end_time->toDateTimeString()
+        );
+        for ($i=1; $i < $request->howmanytimes; $i++) { 
+            $this->create_booking_detail(
+                $request->room, 
+                $booking->id, 
+                $start_time->addSeconds($request->routine)->toDateTimeString(), 
+                $end_time->addSeconds($request->routine)->toDateTimeString()
+            );
+        }
+
+        return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+    }
+
+
+    public function multionce(Request $request){
+        $this->validator_room($request, true)->validate();
+        $this->validator_form($request)->validate();
+
+        $booking = $this->create_booking($request);
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        foreach ($request->room as $key => $value) {
+            $this->create_booking_detail(
+                $value,
+                $booking->id,
+                $start_time->toDateTimeString(),
+                $end_time->toDateTimeString()
+            );
+        }
+
+        return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
+    }
+
+    public function multirepeat(Request $request){
+        $this->validator_room($request, true)->validate();
+        $this->validator_form($request)->validate();
+
+        $booking = $this->create_booking($request);
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        foreach ($request->room as $key => $value) {
+            $this->create_booking_detail(
+                $value,
+                $booking->id,
+                $start_time->toDateTimeString(),
+                $end_time->toDateTimeString()
+            );
+        }
+        for ($i=1; $i < $request->howmanytimes ; $i++) { 
+            foreach ($request->room as $key => $value) {
+                $this->create_booking_detail(
+                    $value,
+                    $booking->id,
+                    $start_time->addSeconds($request->routine)->toDateTimeString(),
+                    $end_time->addSeconds($request->routine)->toDateTimeString()
+                );
+            }
+        }
+
+        return redirect('reserve/multirepeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
 
     /**
@@ -291,154 +562,17 @@ class ReservationController extends Controller
         //
     }
 
-
-
-    /**
-     * Helper Functions - Create Booking
-     * @param  \Illuminate\Http\Request $request
-     * @return \App\Booking
-     */
-    protected function create_booking(Request $request){
-        return Booking::create([
-            'name' => $request->full_name,
-            'nrp_nip' => $request->nrp_nip,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'agency_id' => $request->agency,
-            'event_title' => $request->title,
-            'event_description' => $request->event_description,
-            'category_id' => $request->category,            
-        ]);
-    }
-
-    /**
-     * Helper Functions - Create Booking Detail
-     * @param  Integer $room_id
-     * @param  Integer $booking_id
-     * @param  String $start_time
-     * @param  String $end_time
-     * @return App\BookingDetail
-     */
-    protected function create_booking_detail($room_id, $booking_id, String $start_time, String $end_time){
-        return BookingDetail::create([
-            'booking_id' => $booking_id,
-            'room_id' => $room_id,
-            'event_start' => $start_time,
-            'event_end' => $end_time,
-            'booking_status_id' => '1',
-        ]);
-    }
-
     /**
      * Helper Functions - Check Booking Crash
      */
-    protected function get_all_booking(){
-        return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
-            ->join('categories', 'categories.id','=','bookings.category_id')
-            ->select(
-                'bookings.id',
-                'bookings.name',
-                'bookings.event_title',
-                'bookings.created_at',
-                'agencies.agency_name',
-                'categories.category_name'
-                )
-            ->orderBy('bookings.created_at', 'DESC')
-            ->get();
-    }
-
-    protected function get_all_booking_today(){
-        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'booking_details.room_id','=','rooms.id')
-            // ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')
-            ->where('booking_details.event_start', '>=', Carbon::today())
-            ->where('booking_details.event_end', '<=', Carbon::tomorrow())           
-            // ->where('booking_statuses.id','=','2')
-            ->select(
-                'bookings.id', 
-                'bookings.event_title', 
-                'rooms.room_code',
-                'rooms.room_name',
-                // 'booking_statuses.booking_status_name',
-                'booking_details.event_start',
-                'booking_details.event_end'
-                )
-            ->get();
-    }
-
-    protected function get_one_booking($booking_id){
-        return Booking::where('bookings.id', $booking_id)
-            ->join('agencies', 'agencies.id','=','bookings.agency_id')
-            ->join('categories', 'categories.id','=','bookings.category_id')
-            ->select(
-                'bookings.id',
-                'bookings.name',
-                'bookings.nrp_nip',
-                'bookings.email',
-                'bookings.phone_number',
-                'bookings.event_title',
-                'bookings.event_description',
-                'agencies.agency_name',
-                'categories.category_name'
-                )
-            ->get();        
-    }
-
-    protected function get_one_detail($detail_id){
-        return BookingDetail::where('booking_details.id', $detail_id)
-            ->join('rooms', 'rooms.id','=','booking_details.room_id')
-            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
-            ->select(
-                'booking_details.id',
-                'booking_details.event_start',
-                'booking_details.event_end',
-                'rooms.id as room_id',
-                'rooms.room_code',
-                'rooms.room_name',
-                'booking_statuses.booking_status_name'
-                )
-            ->get();
-        
-    }
-
-    protected function get_all_detail($booking_id){
-        return Booking::where('bookings.id', $booking_id)
-            ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'rooms.id','=','booking_details.room_id')
-            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
-            ->select(
-                'booking_details.id',
-                'booking_details.event_start',
-                'booking_details.event_end',
-                'rooms.id as room_id',
-                'rooms.room_code',
-                'rooms.room_name',
-                'booking_statuses.booking_status_name'
-                )
-            ->get();
-    }
-
-    protected function set_detail($detail_id, $status_id){
-        $booking_detail = BookingDetail::findOrFail($detail_id);
-        $booking_detail->booking_status_id = $status_id;
-        return $booking_detail->save();
-    }
-
-    protected function accept_detail($detail_id){
-        return $this->set_detail($detail_id, 2);
-    }
-    protected function reject_detail($detail_id){
-        return $this->set_detail($detail_id, 3);
-    }
-
     public function check_crash($detail_id, $room_id, $event_start, $event_end){
         return BookingDetail::join('rooms', 'rooms.id','=','booking_details.room_id')
-            // ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
+            ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
             ->where(function($query) use ($detail_id, $room_id, $event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
-                    // ->where('booking_status.id', '=', '2')
+                    ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
                     ->where('booking_details.event_start','>=', $event_start)
                     ->where('booking_details.event_start', '<=', $event_end);
                 })
@@ -446,7 +580,7 @@ class ReservationController extends Controller
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
-                    // ->where('booking_status.id', '=', '2')
+                    ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
                     ->where('booking_details.event_end','>=', $event_start)
                     ->where('booking_details.event_end', '<=', $event_end);
                 })
@@ -454,7 +588,7 @@ class ReservationController extends Controller
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
-                    // ->where('booking_status.id', '=', '2')
+                    ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
                     ->where('booking_details.event_start','<=', $event_start)
                     ->where('booking_details.event_end', '>=', $event_end);
                 })
@@ -466,10 +600,32 @@ class ReservationController extends Controller
             ->get();
     }
 
+    protected function session_message($is_all, $is_success, $booking_id, $detail_id){
+        if ($is_all) {
+            if ($is_success){
+                return 'Berhasil Menerima Seluruh Detail Reservasi #'.$booking_id;
+            } else {
+                return 'Berhasil Menolak Seluruh Detail Reservasi #'.$booking_id;
+            }
+        } else {
+            if ($is_success){
+                return 'Berhasil Menerima Detail #'.$detail_id.' milik Reservasi #'.$booking_id;
+            } else {
+                return 'Berhasil Menolak Detail #'.$detail_id.' milik Reservasi #'.$booking_id;
+            }
+        }
+    }
+
+    protected function error_message($booking_id, $detail_id){
+        return 'Gagal Menerima Detail #'.$detail_id.' Reservasi '.$booking_id.', Bentrok. '."";
+    }
+
     public function accept_all_reservation(Request $request){
         $this->validator_booking($request)->validate();
 
         $bookings = $this->get_all_detail($request->booking_id);
+        $any_crash = false;
+        $errors = '';
 
         foreach ($bookings as $booking_detail) {
             if ( $this->check_crash(
@@ -478,173 +634,58 @@ class ReservationController extends Controller
                     $booking_detail->event_start,
                     $booking_detail->event_end
                 )->count() ) {
-                // pake flag ?
-
+                $any_crash = true;
+                $this->reject_detail($booking_detail->id);
+                $errors = $errors.($this->error_message($request->booking_id, $booking_detail->id));
             } else {
                 $this->accept_detail($booking_detail->id);
             }
         }
 
-        $data = $this->load_booking();
-        $data['status'] = 'Berhasil Menerima Reservasi #'.$request->booking_id;
-        return $this->view_status($data);
+        if (!$any_crash) {
+            return redirect('reserve/status/'.$request->booking_id)
+                ->with('message', $this->session_message(true, true, $request->booking_id, $request->detail_id));
+        } else {
+            return redirect('reserve/status/'.$request->booking_id)->withErrors($errors);
+        }
     }
 
     public function reject_all_reservation(Request $request){
         $this->validator_booking($request)->validate();
-
         $bookings = $this->get_all_detail($request->booking_id);
-
         foreach ($bookings as $booking_detail) {
             $this->reject_detail($booking_detail->id);
         }
-
-        $data = $this->load_booking();
-        $data['status'] = 'Berhasil Menolak Reservasi #'.$request->booking_id;
-        return $this->view_status($data);
+        return redirect('reserve/status/'.$request->booking_id)
+            ->with('message', $this->session_message(true, false, $request->booking_id, $request->detail_id));
     }
 
     public function accept_one_reservation(Request $request){
         $this->validator_detail($request)->validate();
-
         $booking_detail = $this->get_one_detail($request->detail_id)[0];
-
         if ( $this->check_crash(
                 $request->detail_id,
                 $booking_detail->room_id, 
                 $booking_detail->event_start, 
                 $booking_detail->event_end
             )->count() ){
-            $data = $this->load_booking_detail($request->booking_id);
-            $data['error'] = 'Gagal Menerima Detail Reservasi #'.$request->detail_id." karena Bentrok";
+            return redirect('reserve/status/'.$request->booking_id)->withErrors($this->error_message($request->booking_id, $request->detail_id));
         } else {
             $this->accept_detail($request->detail_id);
-            $data = $this->load_booking_detail($request->booking_id);
-            $data['status'] = 'Berhasil Menerima Detail Reservasi #'.$request->detail_id;
+            return redirect('reserve/status/'.$request->booking_id)
+                ->with('message', $this->session_message(false, true, $request->booking_id, $request->detail_id));
         }
-        return $this->view_detail($data);
     }
 
     public function reject_one_reservation(Request $request){
         $this->validator_detail($request)->validate();
         $this->reject_detail($request->detail_id);
-        $data = $this->load_booking_detail($request->booking_id);
-        $data['status'] = 'Berhasil Menolak Detail Reservasi #'.$request->detail_id;
-        return $this->view_detail($data);
+        return redirect('reserve/status/'.$request->booking_id)
+            ->with('message', $this->session_message(false, false, $request->booking_id, $request->detail_id));
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval
     // to do : calendar view with fullcalendar.io
     // to do : middleware / auth separation
 
-    public function once(Request $request){
-        $this->validator_form($request)->validate();
-        $this->validator_room($request, false)->validate();
-
-        $booking = $this->create_booking($request);
-
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-        
-        $bookingDetail = $this->create_booking_detail(
-            $request->room, 
-            $booking->id, 
-            $start_time->toDateTimeString(), 
-            $end_time->toDateTimeString()
-        );
-
-        $data = $this->load_reserve_form();
-        $data['status'] = 'Berhasil Mengajukan Reservasi #'.$booking->id;
-        return $this->view_once($data);
-    }
-
-    public function repeat(Request $request){
-        $this->validator_room($request, false)->validate();
-        $this->validator_form($request)->validate();
-
-        $booking = $this->create_booking($request);
-
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-
-        $this->create_booking_detail(
-            $request->room, 
-            $booking->id, 
-            $start_time->toDateTimeString(), 
-            $end_time->toDateTimeString()
-        );
-        
-        for ($i=1; $i < $request->howmanytimes; $i++) { 
-            $this->create_booking_detail(
-                $request->room, 
-                $booking->id, 
-                $start_time->addSeconds($request->routine)->toDateTimeString(), 
-                $end_time->addSeconds($request->routine)->toDateTimeString()
-            );
-        }
-
-        $data = $this->load_reserve_form();
-        $data['status'] = 'Berhasil Mengajukan Reservasi #'.$booking->id;
-        return $this->view_repeat($data);
-    }
-
-
-    public function multionce(Request $request){
-        $this->validator_form($request)->validate();
-        $this->validator_room($request, true)->validate();
-
-        $booking = $this->create_booking($request);
-
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-
-        foreach ($request->room as $key => $value) {
-            $this->create_booking_detail(
-                $value,
-                $booking->id,
-                $start_time->toDateTimeString(),
-                $end_time->toDateTimeString()
-            );
-        }
-
-        $data = $this->load_reserve_form();
-        $data['status'] = 'Berhasil Mengajukan Reservasi #'.$booking->id;
-        return $this->view_multionce($data);
-    }
-
-    public function multirepeat(Request $request){
-        $this->validator_room($request, true)->validate();
-        $this->validator_form($request)->validate();
-
-        $booking = $this->create_booking($request);
-
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-
-        foreach ($request->room as $key => $value) {
-            $this->create_booking_detail(
-                $value,
-                $booking->id,
-                $start_time->toDateTimeString(),
-                $end_time->toDateTimeString()
-            );
-        }
-
-        for ($i=1; $i < $request->howmanytimes ; $i++) { 
-            $start_time->addSeconds($request->routine);
-            $end_time->addSeconds($request->routine);
-            foreach ($request->room as $key => $value) {
-                $this->create_booking_detail(
-                    $value,
-                    $booking->id,
-                    $start_time->toDateTimeString(),
-                    $end_time->toDateTimeString()
-                );
-            }
-        }
-
-        $data = $this->load_reserve_form();
-        $data['status'] = 'Berhasil Mengajukan Reservasi #'.$booking->id;
-        return $this->view_multirepeat($data);
-    }
 }

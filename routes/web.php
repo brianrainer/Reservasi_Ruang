@@ -49,8 +49,13 @@ Route::prefix('profile')->group(function(){
 
 Route::get('terms', 'ReservationController@terms');
 
+Route::get('agenda', 'ReservationController@index_agenda');
+
 Route::prefix('calendar')->group(function(){
   Route::get('/', 'ReservationController@index_calendar');
+  Route::get('accepted', 'ReservationController@get_booking_calendar_accepted');
+  Route::get('waiting', 'ReservationController@get_booking_calendar_waiting');
+  Route::get('rejected', 'ReservationController@get_booking_calendar_rejected');
 });
 
 // Route::get('/home', 'HomeController@index')->name('home');

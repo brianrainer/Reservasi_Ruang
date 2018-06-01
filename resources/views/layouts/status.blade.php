@@ -1,5 +1,5 @@
-  @if (!empty($status))
+  @if(session('message'))
     <div class="card-panel teal">
-      {{ $status }}
+      {{ session('message') }}
     </div>
   @endif

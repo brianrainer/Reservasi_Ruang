@@ -1,4 +1,3 @@
-
   @if ($errors->any())
     <div class="card-panel red">
       <ul>
@@ -8,11 +7,5 @@
           </li>
         @endforeach
       </ul>
-    </div>
-  @endif
-
-  @if (!empty($error))
-    <div class="card-panel red">
-      {{ $error }}
     </div>
   @endif
