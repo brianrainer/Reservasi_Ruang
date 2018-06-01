@@ -15,7 +15,7 @@
             <input type="text" value="{{ old('start_time') }}" class="timepicker" id="start_time" name="start_time" class="validate" required>
             <label for="start_time">Waktu Mulai</label>
             <span class="helper-text">
-              Pilih Waktu Mulai Acara
+              Pilih Waktu Mulai Acara (Format: YYYY-MM-DD)
               <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
             </span>
           </div>

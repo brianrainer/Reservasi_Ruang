@@ -17,13 +17,13 @@
                 @endif
               </div>
               <div class="card-content">
-                <span class="card-title activator gray-text text-darken-4">{{ $room->room_name }}<i class="material-icons right">more_vert</i>
+                <span class="card-title activator gray-text text-darken-4">{{ $room->room_code }} {{ $room->room_name }}<i class="material-icons right">more_vert</i>
                 </span>
                 <p>
-                  <a href="{{url('/room/'.$room->code)}}">Check Status</a>
+                  <a href="{{url('/room/'.$room->room_code)}}">Check Status</a>
                 </p>
                 <p>
-                  <a href="{{url('/room/edit/'.$room->code)}}">Edit Room</a>
+                  <a href="{{url('/room/edit/'.$room->room_code)}}">Edit Room</a>
                 </p>
               </div>
               <div class="card-reveal">

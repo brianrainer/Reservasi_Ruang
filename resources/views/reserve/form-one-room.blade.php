@@ -5,7 +5,7 @@
             <select name='room' required>
               <option value="" disabled>Choose Room</option>
               @foreach ($rooms as $room)
-                <option value='{{$room->id}}'> {{$room->room_name}} </option>
+                <option value='{{$room->id}}'> {{$room->room_code}} ({{$room->room_name}}) </option>
               @endforeach
             </select>
             <label for="room">Ruangan</label>

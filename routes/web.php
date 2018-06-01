@@ -13,7 +13,7 @@
 
 Auth::routes();
 
-Route::get('/', function(){return view('welcome');});
+Route::get('/', 'ReservationController@index_welcome');
 
 Route::get('/home', function(){return view('home');});
 
@@ -22,23 +22,24 @@ Route::prefix('room')->group(function(){
 });
 
 Route::prefix('reserve')->group(function(){
-  Route::get('/', 'ReservationController@index');
-  Route::get('once', 'ReservationController@once_index');
+  Route::get('/', 'ReservationController@index_reserve');
+  Route::get('once', 'ReservationController@index_once');
+  Route::get('repeat', 'ReservationController@index_repeat');
+  Route::get('multionce', 'ReservationController@index_multi_once');
+  Route::get('multirepeat', 'ReservationController@index_multi_repeat');
+
   Route::post('once', 'ReservationController@once');
-  Route::get('repeat', 'ReservationController@repeat_index');
   Route::post('repeat', 'ReservationController@repeat');
-  Route::get('multionce', 'ReservationController@multionce_index');
   Route::post('multionce', 'ReservationController@multionce');
-  Route::get('multirepeat', 'ReservationController@multirepeat_index');
   Route::post('multirepeat', 'ReservationController@multirepeat');
 
   Route::prefix('status')->group(function(){
-    Route::get('/', 'ReservationController@check_booking');
-    Route::get('{booking}', 'ReservationController@check_booking_detail');
-    Route::post('reject', 'ReservationController@reject_reservation_detail');
-    Route::post('reject_all', 'ReservationController@reject_reservation_all');
-    Route::post('accept', 'ReservationController@accept_reservation_detail');
-    Route::post('accept_all', 'ReservationController@accept_reservation_all');
+    Route::get('/', 'ReservationController@index_status');
+    Route::get('{booking}', 'ReservationController@index_detail');
+    Route::post('reject', 'ReservationController@reject_one_reservation');
+    Route::post('reject_all', 'ReservationController@reject_all_reservation');
+    Route::post('accept', 'ReservationController@accept_one_reservation');
+    Route::post('accept_all', 'ReservationController@accept_all_reservation');
   });
 });
 
@@ -47,6 +48,10 @@ Route::prefix('profile')->group(function(){
 });
 
 Route::get('terms', 'ReservationController@terms');
+
+Route::prefix('calendar')->group(function(){
+  Route::get('/', 'ReservationController@index_calendar');
+});
 
 // Route::get('/home', 'HomeController@index')->name('home');
 

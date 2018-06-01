@@ -10,3 +10,9 @@
       </ul>
     </div>
   @endif
+
+  @if (!empty($error))
+    <div class="card-panel red">
+      {{ $error }}
+    </div>
+  @endif

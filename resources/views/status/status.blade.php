@@ -4,6 +4,8 @@
 
 @section('content')
   <h1>Status Reservasi</h1>
+  @include('layouts.status')
+  @include('layouts.errors')
 
   @if ($bookings->count())
   <table class="responsive-table">
@@ -12,17 +14,23 @@
         <th>No</th>
         <th>Peminjam</th>
         <th>Judul Kegiatan</th>
-        <th>Dibuat</th>
+        <th>
+            Dibuat
+            {{-- todo: buat orderby sama search --}}
+            <button type="submit" class="btn btn-flat waves-light">
+              <i class="material-icons">arrow_drop_down</i>
+            </button>
+        </th>
         <th>Detail</th>
       </tr>
     </thead>
     <tbody>
       @foreach ($bookings as $booking)
         <tr>
-          <td>{{$loop->iteration}}</td>
+          <td>{{$booking->id}}</td>
           <td>{{$booking->name}}</td>
           <td>{{$booking->event_title}}</td>
-          <td>{{$booking->created_at}}</td>
+          <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('l jS \\of F Y H:i:s')}}</td>
           <td>
             <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary">Detail</a>
           </td>

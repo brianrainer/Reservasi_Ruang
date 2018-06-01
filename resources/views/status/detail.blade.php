@@ -8,7 +8,7 @@
   @include('layouts.errors')
 
   <div class="row">
-    @foreach ($bookings as $booking)
+    @if ($booking)
       @component('status.detail_div')
         @slot('title')
           Nomor Reservasi
@@ -74,6 +74,20 @@
         {{$booking->event_description}}
       @endcomponent
 
+      @component('status.detail_div')
+        @slot('title')
+          Tolak/Terima Semua
+        @endslot
+          <div class="col s12">
+            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
+              Tolak Semua
+            </button>
+            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
+              Terima Semua
+            </button>
+          </div>
+      @endcomponent
+
       @foreach ($booking_details as $detail)
         @component('status.detail_div')
           @slot('title')
@@ -100,21 +114,7 @@
             </div>
         @endcomponent
       @endforeach
-
-      @component('status.detail_div')
-        @slot('title')
-          Tolak/Terima Semua
-        @endslot
-          <div class="col s12">
-            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
-              Tolak Semua
-            </button>
-            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
-              Terima Semua
-            </button>
-          </div>
-      @endcomponent
-    @endforeach
+    @endif
   </div>
 
   @component('status.detail_modal')

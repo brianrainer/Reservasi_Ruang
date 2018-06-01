@@ -15,7 +15,7 @@ class RoomController extends Controller
     public function index()
     {
         //
-        $data['rooms'] = Room::all();
+        $data['rooms'] = Room::where('rooms.room_name','Ruang Kelas')->orderBy('rooms.room_code')->get();
         return view('room.index', $data);
     }
 

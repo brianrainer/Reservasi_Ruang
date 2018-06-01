@@ -40,22 +40,14 @@
           <i class="material-icons">menu</i>
         </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="{{url('calendar')}}">Kalender</a></li>
-          <li><a href="{{url('room')}}">Ruangan</a></li>
-          <li><a href="{{url('reserve')}}">Reservasi</a></li>
-          <li><a href="{{url('profile')}}">Profil</a></li>
-          <li><a href="{{url('terms')}}">Syarat</a></li>
+          @include('layouts.master_nav')
         </ul>
       </div>
     </nav>
   </div>
 
   <ul id="sidenav_id" class="sidenav sidenav_fixed">
-    <li><a href="{{url('calendar')}}">Kalender</a></li>
-    <li><a href="{{url('room')}}">Ruangan</a></li>
-    <li><a href="{{url('reserve')}}">Reservasi</a></li>
-    <li><a href="{{url('profile')}}">Profil</a></li>
-    <li><a href="{{url('terms')}}">Syarat</a></li>
+    @include('layouts.master_nav')
   </ul>
 
   <header></header>

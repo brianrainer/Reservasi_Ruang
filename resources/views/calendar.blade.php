@@ -1,8 +1,6 @@
-@extends('master')
+@extends('layouts.master')
 
-@section('title')
-  Calendar
-@endsection
+@section('title', 'ReservasiTC | Kalender')
 
 @section('content')
   <div class="row" style="padding:30px;">
@@ -10,7 +8,7 @@
   </div>
 @endsection
 
-@section('jsScripts')
+@section('js')
   <script type="text/javascript">
     $(document).ready(function(){
       $('#calendar').fullCalendar({

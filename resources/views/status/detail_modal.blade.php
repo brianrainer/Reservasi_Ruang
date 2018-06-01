@@ -1,6 +1,11 @@
   <div id="{{ $modal_id }}" class="modal">
+    <div class="modal-header">
+      <a class="btn btn-flat right modal-close">&times;</a>
+    </div>
     <div class="modal-content">
-      <h4>{{ $title }}</h4>
+      <h4>
+        {{ $title }}
+      </h4>
       <p>{{ $content }}</p>
       <div class="modal-footer">
         <form method="POST" action="{{ $routing }}">
