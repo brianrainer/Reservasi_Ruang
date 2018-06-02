@@ -19,18 +19,7 @@
       </form>
     </div>
   @else
-    @if (empty($rooms))
-      Data Ruangan Tidak Ditemukan
-    @endif
-    @if (empty($routines))
-      Data Jeda Berkala Kegiatan Tidak Ditemukan
-    @endif
-    @if (empty($agencies))
-      Data Organisasi Tidak Ditemukan
-    @endif
-    @if (empty($categories))
-      Data Kategori Kegiatan Tidak Ditemukan
-    @endif
+    @include('reserve.else-div')
   @endif
 @endsection
 

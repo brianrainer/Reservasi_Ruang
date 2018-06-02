@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RoutineSeeder::class,
             UserSeeder::class,
             BookingSeeder::class,
+            RoomTechnicianSeeder::class,
         ]);
     }
 }

@@ -10,21 +10,6 @@ class RoomSeeder extends Seeder
    * @return void
    */
   public function run(){
-    // $room_name = 'Ruang Kelas IF-';
-    // for ($i=101; $i < 316; $i++) { 
-    //   Room::create([
-    //     'room_code' => 'IF-'.$i,
-    //     'room_name' => $room_name.$i,
-    //   ]);
-    //   if ($i%100 == 15) {
-    //     $i = $i + 100;
-    //     $i = $i - 15;
-    //     if ($i >= 300){
-    //       $room_name = 'Laboratorium ';
-    //     }
-    //   }
-    // }
-
     $mushola = 'Mushola';
     $ruang_kelas = 'Ruang Kelas';
     $ruang_rapat = 'Ruang TV / Rapat';
@@ -39,29 +24,6 @@ class RoomSeeder extends Seeder
     $kemahasiswaan = 'Bagian Kemahasiswaan dan Kepegawaian';
     $ketua_pasca = 'Ruang Ketua Pasca Sarjana';
     $sekret_pasca = 'Ruang Sekretaris Pasca Sarjana';
-
-    $bisa_dipinjam = [
-      'IF-101',
-      'IF-102',
-      'IF-103',
-      'IF-104',
-      'IF-105A',
-      'IF-105B',
-      'IF-106',
-      'IF-108',
-      'IF-111',
-      'IF-112',
-      'AULA',
-      'IF-304',
-      'IF-308'
-    ];
-
-    $hanya_dosen = [
-      'SIDANG',
-      'IF-215B',
-      'IF-217',
-      'IF-221'
-    ];
 
     for ($i=101; $i <=104 ; $i++) { 
       Room::create([

@@ -62,16 +62,16 @@ class User extends Authenticatable
      * Find out if user has specific role
      * $return boolean
      */
-    public function hasRole($check){
-        return in_array($check, array_pluck($this->roles->toArray(), 'role_name')); 
+    public function hasRole($role_name){
+        return in_array($role_name, array_pluck($this->roles->toArray(), 'role_name')); 
     }
 
     /**
      * Get key in array with corresponding value
      * @return int
      */
-    public function getRoleID($array, $term){
-        foreach ($array as $key => $value) {
+    public function getRoleID($roles, $term){
+        foreach ($roles as $key => $value) {
             if ($value == $term) {
                 return $key;
             }
@@ -112,4 +112,22 @@ class User extends Authenticatable
 
         // source:http://alexsears.com/article/adding-roles-to-laravel-users/
     }    
+
+    public function isTechnician(){
+        $rooms = $this->rooms->toArray();
+        return !empty($rooms);
+    }
+
+    public function isSpecificTechnician($room_code){
+        return in_array($room_code, array_pluck($this->rooms->toArray(), 'room_code'));
+    }
+
+    public function getRoomID($rooms, $room_code){
+        foreach ($rooms as $key => $value) {
+            if ($value == $room_code){
+                return $key;
+            }
+        }
+        throw new \Exception ("UnexpectedValueException");
+    }
 }
