@@ -23,7 +23,13 @@
           @endif
         </td>
         <td>
-          <a href="{{url('profile')}}" class="btn btn-primary">Edit</a>
+          {{-- <a href="{{url('profile')}}" class="btn btn-primary">Edit</a> --}}
+          <form method="post" action="{{url('logout')}}">
+            {{csrf_field()}}
+            <button type="submit" class="btn btn-primary waves-effect waves-light">
+              Logout
+            </button>
+          </form>
         </td>
       </tr>
     </tbody>
