@@ -123,49 +123,51 @@
     @endif
   </div>
 
-  @component('status.detail_modal')
-    @slot('modal_id') reject_id @endslot
-    @slot('title') Konfirmasi Penolakan @endslot
-    @slot('content') 
-      Apakah anda yakin ingin menolak / membatalkan detail reservasi ini ?
-    @endslot
-    @slot('routing') {{url('/reserve/status/reject')}} @endslot
-    @slot('button_class') red @endslot
-    @slot('button') Tolak @endslot
-  @endcomponent
+  @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+    @component('status.detail_modal')
+      @slot('modal_id') reject_id @endslot
+      @slot('title') Konfirmasi Penolakan @endslot
+      @slot('content') 
+        Apakah anda yakin ingin menolak / membatalkan detail reservasi ini ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/reject')}} @endslot
+      @slot('button_class') red @endslot
+      @slot('button') Tolak @endslot
+    @endcomponent
 
-  @component('status.detail_modal')
-    @slot('modal_id') accept_id @endslot
-    @slot('title') Konfirmasi Penerimaan @endslot
-    @slot('content') 
-      Apakah anda yakin ingin menerima detail reservasi ini ?
-    @endslot
-    @slot('routing') {{url('/reserve/status/accept')}} @endslot
-    @slot('button_class') green @endslot
-    @slot('button') Terima @endslot
-  @endcomponent
+    @component('status.detail_modal')
+      @slot('modal_id') accept_id @endslot
+      @slot('title') Konfirmasi Penerimaan @endslot
+      @slot('content') 
+        Apakah anda yakin ingin menerima detail reservasi ini ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/accept')}} @endslot
+      @slot('button_class') green @endslot
+      @slot('button') Terima @endslot
+    @endcomponent
 
-  @component('status.detail_modal')
-    @slot('modal_id') reject_all @endslot
-    @slot('title') Konfirmasi Penolakan Seluruh Reservasi @endslot
-    @slot('content') 
-      Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?
-    @endslot
-    @slot('routing') {{url('/reserve/status/reject_all')}} @endslot
-    @slot('button_class') red @endslot
-    @slot('button') Tolak Semua @endslot
-  @endcomponent
+    @component('status.detail_modal')
+      @slot('modal_id') reject_all @endslot
+      @slot('title') Konfirmasi Penolakan Seluruh Reservasi @endslot
+      @slot('content') 
+        Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/reject_all')}} @endslot
+      @slot('button_class') red @endslot
+      @slot('button') Tolak Semua @endslot
+    @endcomponent
 
-  @component('status.detail_modal')
-    @slot('modal_id') accept_all @endslot
-    @slot('title') Konfirmasi Penerimaan Seluruh Reservasi @endslot
-    @slot('content') 
-      Apakah anda yakin ingin menerima seluruh reservasi ini ?
-    @endslot
-    @slot('routing') {{url('/reserve/status/accept_all')}} @endslot
-    @slot('button_class') green @endslot
-    @slot('button') Terima Semua @endslot
-  @endcomponent
+    @component('status.detail_modal')
+      @slot('modal_id') accept_all @endslot
+      @slot('title') Konfirmasi Penerimaan Seluruh Reservasi @endslot
+      @slot('content') 
+        Apakah anda yakin ingin menerima seluruh reservasi ini ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/accept_all')}} @endslot
+      @slot('button_class') green @endslot
+      @slot('button') Terima Semua @endslot
+    @endcomponent
+  @endif
 
 @endsection
 

@@ -47,7 +47,7 @@ Route::prefix('profile')->group(function(){
   Route::get('/', 'ProfileController@index');
 });
 
-Route::get('terms', 'ReservationController@terms');
+Route::get('terms', 'ReservationController@index_terms');
 
 Route::get('agenda', 'ReservationController@index_agenda');
 
