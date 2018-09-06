@@ -13,7 +13,7 @@
                     <a href="{{url('/agenda/'.$room->room_code)}}">Check Status</a>
                   </p>
                   <p>
-                    <a href="{{url('/room/edit/'.$room->room_code)}}">Edit Room</a>
+                    <a href="{{url('/room/detail/'.$room->room_code)}}">Edit Room</a>
                   </p>
                 </div>
                 <div class="card-reveal">

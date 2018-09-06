@@ -109,6 +109,33 @@ class RoomController extends Controller
         //
     }
 
+    public function index_room_detail($room_id){
+        return $this->view_room($this->load_room($room_id));    
+    }
+
+    protected function view_room($data){
+        return view('room.detail', $data);    
+    }
+
+    protected function load_room($room_id){
+        $data['room'] = $this->get_one_room($room_id)[0];
+        return $data;     
+    }
+
+    protected function get_one_room($room_id){
+        return Room::where('rooms.room_code', $room_id)
+            ->join('rooms_technicians', 'rooms_technicians.room_id','=','rooms.id')
+            ->join('users','users.id','=','rooms_technicians.user_id')
+            ->select(
+                'rooms.room_code'
+                ,'rooms.room_name'
+                ,'rooms.room_imagepath'
+                ,'users.user_name as technician'
+                ,'users.user_phone_number as phone'
+                )
+            ->get();
+    }
+
     /**
      * Update the specified resource in storage.
      *

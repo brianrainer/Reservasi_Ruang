@@ -19,6 +19,8 @@ Route::get('/home', function(){return view('home');});
 
 Route::prefix('room')->group(function(){
   Route::get('/', 'RoomController@index');
+  Route::get('detail/{room}', 'RoomController@index_room_detail');
+
 });
 
 Route::prefix('reserve')->group(function(){
