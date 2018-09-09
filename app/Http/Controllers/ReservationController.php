@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Room;
 use App\Agency;
@@ -10,6 +11,7 @@ use App\Category;
 use App\Routine;
 use App\BookingDetail;
 use App\Booking;
+use App\Mail\BookingNotification;
 use DateTime;
 use Session;
 use Redirect;
@@ -492,6 +494,34 @@ class ReservationController extends Controller
         ]);
     }
 
+    /**
+     * Helper Function - Sent Email
+     * @param Integer $booking_id
+     * @return.
+     */
+    protected function send_email($booking_id){
+      $technicians = Booking::where('bookings.id', $booking_id)
+        ->join('booking_details', 'booking_details.booking_id', '=', 'bookings.id')
+        ->join('rooms_technicians', 'rooms_technicians.room_id', '=', 'booking_details.room_id')
+        ->join('users', 'users.id', '=', 'rooms_technicians.user_id')
+        ->select('users.*')
+        ->groupBy('email')
+        ->get();
+      $headers = "From: <no-reply.reservasi@if.its.ac.id>"."\r\n";
+
+      foreach($technicians as $technician){
+        Mail::send(new BookingNotification($technician));
+      }
+    }
+
+    /**
+     * Helper Functions - Create Booking Detail
+     * @param  Integer $room_id
+     * @param  Integer $booking_id
+     * @param  String $start_time
+     * @param  String $end_time
+     * @return App\BookingDetail
+     */
     protected function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
         return BookingDetail::create([
             'booking_id' => $booking_id,
@@ -515,6 +545,7 @@ class ReservationController extends Controller
             $start_time->toDateTimeString(), 
             $end_time->toDateTimeString()
         );
+        $this->send_email($booking->id);
 
         return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -540,6 +571,7 @@ class ReservationController extends Controller
                 $end_time->addSeconds($request->routine)->toDateTimeString()
             );
         }
+        $this->send_email($booking->id);
 
         return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -560,6 +592,7 @@ class ReservationController extends Controller
                 $end_time->toDateTimeString()
             );
         }
+        $this->send_email($booking->id);
 
         return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -589,6 +622,7 @@ class ReservationController extends Controller
                 );
             }
         }
+        $this->send_email($booking->id);
 
         return redirect('reserve/multirepeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
