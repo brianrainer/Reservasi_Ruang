@@ -20,6 +20,8 @@ Route::get('/home', function(){return view('home');});
 Route::prefix('room')->group(function(){
   Route::get('/', 'RoomController@index');
   Route::get('detail/{room}', 'RoomController@index_room_detail');
+  Route::get('edit/{room}', 'RoomController@index_edit');
+  Route::post('edit/{room}', 'RoomController@edit');
 
 });
 

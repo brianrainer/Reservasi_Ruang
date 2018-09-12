@@ -38,9 +38,17 @@
           @endslot
           <img src="{{$room->room_imagepath}}">
       @endif
-    @endif
-  </div>
-  <div>
 
+      @if(Auth::check() && Auth::user()->hasRole('manage_room'))
+        @component('status.detail_div')
+          @slot('title')
+            Edit Detail Ruangan
+          @endslot
+          <div>
+            <a href="{{url('/room/edit/'.$room->room_id)}}" class="btn waves-effect waves-light orange">Edit</a>
+          </div>
+        @endcomponent
+      @endif
+    @endif
   </div>
 @endsection

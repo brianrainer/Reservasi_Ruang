@@ -98,36 +98,70 @@ class RoomController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function edit(Request $request, $room_id)
     {
-        //
+        // $this->validator($request)->validate();
+        // dd($request);
+
+        $room = Room::find($room_id);
+        $room->room_code = $request['room_code'];
+        $room->room_name = $request['room_name'];
+        // $room->fill($request->only('room_code','room_name'));
+        if ($request->hasFile('room_imagefile')){
+            $file = $request->file('room_imagefile');
+            $name = time().'-'.$file->getClientOriginalName();
+            $room->room_imagepath = $name;
+            $file->storeAs('images/',$name);
+        }
+        $room->save();
+
+        return redirect('room');
     }
 
-    public function index_room_detail($room_id){
-        return $this->view_room($this->load_room($room_id));    
+    protected function validator(Request $request){
+        return new Validator(); // TODO
+    }
+
+    public function index_room_detail($room_code){
+        $data['room'] = $this->get_room_by_code($room_code)[0];
+        return $this->view_room($data); 
+    }
+
+    public function index_edit($room_id){
+        $data['room'] = $this->get_room_by_id($room_id)[0];
+        return $this->view_edit($data);
     }
 
     protected function view_room($data){
         return view('room.detail', $data);    
     }
 
-    protected function load_room($room_id){
-        $data['room'] = $this->get_one_room($room_id)[0];
-        return $data;     
+    protected function view_edit($data){
+        return view('room.edit', $data);
     }
 
-    protected function get_one_room($room_id){
-        return Room::where('rooms.room_code', $room_id)
+    protected function get_room_by_id($room_id){
+        return Room::where('rooms.id', $room_id)
             ->join('rooms_technicians', 'rooms_technicians.room_id','=','rooms.id')
             ->join('users','users.id','=','rooms_technicians.user_id')
             ->select(
-                'rooms.room_code'
+                'rooms.id as room_id'
+                ,'rooms.room_code'
+                ,'rooms.room_name'
+                ,'rooms.room_imagepath'
+                ,'users.user_name as technician'
+                ,'users.user_phone_number as phone'
+                )
+            ->get();    
+    }
+
+    protected function get_room_by_code($room_code){
+        return Room::where('rooms.room_code', $room_code)
+            ->join('rooms_technicians', 'rooms_technicians.room_id','=','rooms.id')
+            ->join('users','users.id','=','rooms_technicians.user_id')
+            ->select(
+                'rooms.id as room_id'
+                ,'rooms.room_code'
                 ,'rooms.room_name'
                 ,'rooms.room_imagepath'
                 ,'users.user_name as technician'
