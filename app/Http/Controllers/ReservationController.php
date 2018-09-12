@@ -240,11 +240,12 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_booking_calendar($status_id){
+    protected function get_booking_calendar($status_id, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
             ->where('booking_statuses.id','=', $status_id)
+            ->where('event_start', '>=', $start, 'and', 'event_end', '<=', $end)
             ->select(
                 DB::raw('CONCAT(
                     "/reserve/status/",
@@ -260,16 +261,42 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_booking_calendar_accepted(){
-        return $this->get_booking_calendar($this->accepted_booking_status_id);
+    protected function get_room_booking_calendar($status_id, $room_code, $start, $end){
+        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'booking_details.room_id','=','rooms.id')
+            ->where('room_code', '=', $room_code)
+            ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
+            ->where('booking_statuses.id','=', $status_id)
+            ->where('event_start', '>=', $start, 'and', 'event_end', '<=', $end)
+            ->select(
+                DB::raw('CONCAT(
+                    "/reserve/status/",
+                    bookings.id
+                ) as url'), 
+                DB::raw("CONCAT(
+                    rooms.room_code,' ',
+                    bookings.event_title 
+                ) as title"),
+                'booking_details.event_start as start',
+                'booking_details.event_end as end'
+                )
+            ->get();
     }
 
-    protected function get_booking_calendar_waiting(){
-        return $this->get_booking_calendar($this->waiting_booking_status_id);
+    protected function get_booking_calendar_accepted(Request $request){
+        return $this->get_booking_calendar($this->accepted_booking_status_id, $request->start, $request->end);
     }
 
-    protected function get_booking_calendar_rejected(){
-        return $this->get_booking_calendar($this->rejected_booking_status_id);
+    protected function get_room_booking_calendar_accepted(Request $request, $room_code){
+        return $this->get_room_booking_calendar($this->accepted_booking_status_id, $room_code, $request->start, $request->end);
+    }
+
+    protected function get_booking_calendar_waiting(Request $request){
+        return $this->get_booking_calendar($this->waiting_booking_status_id, $request->start, $request->end);
+    }
+
+    protected function get_booking_calendar_rejected(Request $request){
+        return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
     }
 
     protected function get_one_booking($booking_id){
@@ -360,8 +387,6 @@ class ReservationController extends Controller
         ]);
     }
 
-
-
     public function index_reserve(){
         return $this->view_reserve([]);
     }
@@ -376,7 +401,13 @@ class ReservationController extends Controller
     }
 
     public function index_agenda(){
-        return $this->view_agenda([]);
+        $data['room_code'] = "";
+        return $this->view_agenda($data);
+    }
+
+    public function index_room_agenda($room_code){
+        $data['room_code'] = $room_code;
+        return $this->view_agenda($data);
     }
 
     public function index_status(){

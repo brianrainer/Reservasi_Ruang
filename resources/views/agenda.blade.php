@@ -11,29 +11,44 @@
 @section('js')
   <script type="text/javascript">
     $(document).ready(function(){
-      $('#calendar').fullCalendar({
-        defaultView: 'agendaDay',
-        eventSources : [
+      var roomCode = "{{$room_code}}";
+      var calendarEvent = [
+        {
+          url: '/calendar/accepted',
+          color: 'green',
+          textColor: 'white',
+          borderColor: 'black',
+          cache: true
+        },{
+          url: '/calendar/waiting',
+          color: 'orange',
+          textColor: 'white',
+          borderColor: 'black',
+          cache: true
+        },{
+          url: '/calendar/rejected',
+          color: 'red',
+          textColor: 'white',
+          borderColor: 'black',
+          cache: true
+        },
+      ];
+
+      if (roomCode.length) {
+        console.log('asdasd');
+        calendarEvent = [
           {
-            url: 'calendar/accepted',
+            url: '/calendar/accepted/' + roomCode,
             color: 'green',
             textColor: 'white',
             borderColor: 'black',
-            cache: true
-          },{
-            url: 'calendar/waiting',
-            color: 'orange',
-            textColor: 'white',
-            borderColor: 'black',
-            cache: true
-          },{
-            url: 'calendar/rejected',
-            color: 'red',
-            textColor: 'white',
-            borderColor: 'black',
-            cache: true
-          },
-        ],
+            cache: true 
+          }
+        ]
+      }
+      $('#calendar').fullCalendar({
+        defaultView: 'listDay',
+        eventSources : calendarEvent, 
         nowIndicator: true,
       })
     });
