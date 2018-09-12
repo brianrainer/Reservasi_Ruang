@@ -2,7 +2,7 @@
               <div class="card">
                 <div class="card-image waves-effect waves-block waves-light">
                   @if ($room->room_imagepath)
-                    <img src="{{$room->room_imagepath}}">
+                    <img src="{{asset($room->room_imagepath)}}">
                   @endif
                 </div>
                 <div class="card-content">

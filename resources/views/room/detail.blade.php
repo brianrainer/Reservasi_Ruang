@@ -27,18 +27,22 @@
         @slot('title')
           Teknisi
         @endslot
-        {{$room->technician}} <br>
-        {{$room->phone}}
+        {{$room->technician}}
       @endcomponent
 
-      @if($room->room_imagepath)
+      @if ($room->room_imagepath)
         @component('status.detail_div')
           @slot('title')
             Gambar Ruangan
           @endslot
-          <img src="{{$room->room_imagepath}}">
+          <div class="card col s6">
+            <div class="card-image">
+              <img src="{{asset($room->room_imagepath)}}">
+            </div>
+          </div>
+        @endcomponent
       @endif
-
+      
       @if(Auth::check() && Auth::user()->hasRole('manage_room'))
         @component('status.detail_div')
           @slot('title')

@@ -106,12 +106,11 @@ class RoomController extends Controller
         $room = Room::find($room_id);
         $room->room_code = $request['room_code'];
         $room->room_name = $request['room_name'];
-        // $room->fill($request->only('room_code','room_name'));
-        if ($request->hasFile('room_imagefile')){
-            $file = $request->file('room_imagefile');
-            $name = time().'-'.$file->getClientOriginalName();
-            $room->room_imagepath = $name;
-            $file->storeAs('images/',$name);
+        if ($request->hasFile('room_imagepath') && $request->file('room_imagepath')->isValid()){
+            $image = $request->file('room_imagepath');
+            $image_name = time().'-'.$image->getClientOriginalName();
+            $image->storeAs('public/images',$image_name);
+            $room->room_imagepath = 'storage/images/'.$image_name;
         }
         $room->save();
 

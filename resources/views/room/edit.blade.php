@@ -9,19 +9,19 @@
 
   <div class="row">
     @if($room)
-      <form class="col s12" method="POST" action="{{url('/room/edit/'.$room->room_id)}}">
+      <form class="col s12" method="POST" action="{{url('/room/edit/'.$room->room_id)}}" enctype="multipart/form-data">
         {{csrf_field()}}
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">meeting_room</i>
-            <input type="text" value="{{$room->room_code}}" id="room_code" name="room_code" required>
+            <input type="text" value="{{$room->room_code}}" id="room_code" name="room_code" class="validate" required>
             <label for="room_code">Kode Ruangan</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <i class="material-icons prefix">style</i>
-            <input type="text" value="{{$room->room_name}}" id="room_name" name="room_name" required>
+            <input type="text" value="{{$room->room_name}}" id="room_name" name="room_name" class="validate" required>
             <label for="room_name">Nama Ruangan</label>
           </div>
         </div>
@@ -29,10 +29,10 @@
           <div class="file-field input-field col s12">
             <div class="btn">            
               <span>Gambar</span>
-              <input type="file" name="room_imagefile">
+              <input type="file" name="room_imagepath" id="room_imagepath">
             </div>
             <div class="file-path-wrapper">
-              <input type="text" id="room_imagepath" name="room_imagepath" class="file-path">
+              <input type="text" class="file-path validate" placeholder="Upload File">
             </div>
           </div>
         </div>
