@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use App\Room;
 
 class RoomController extends Controller
@@ -45,6 +46,11 @@ class RoomController extends Controller
       'IF-221'
     ];
 
+    public function __construct(){
+      Config::set('ROOM_IMAGE_PATH.SAVE', 'public/images');
+      Config::set('ROOM_IMAGE_PATH.RETRIEVE', 'storage/images');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -66,14 +72,31 @@ class RoomController extends Controller
         return view('room.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index_create(){
+      return $this->view_create([]);
+    }
+
+    public function view_create($data){
+      return view('room.create', $data);
+    }
+
+    public function create(Request $request)
     {
-        //
+      // $this->validator()
+
+      $room = new Room();
+      $room->room_code = $request['room_code'];
+      $room->room_name = $request['room_name']; 
+
+      if ($request->hasFile('room_imagepath') && $request->file('room_imagepath')->isValid()) {
+        $image = $request->file('room_imagepath');
+        $image_name = time().'-'.$image->getClientOriginalName();
+        $image->storeAs('public/image', $image_name);
+        $room->room_imagepath = $IMAGE_RETRIEVAL_PATH.'/'.$image_name;
+      }
+      $room->save();
+
+      return redirect('room')->with('message', 'Berhasil menambah ruangan');
     }
 
     /**
@@ -106,11 +129,12 @@ class RoomController extends Controller
         $room = Room::find($room_id);
         $room->room_code = $request['room_code'];
         $room->room_name = $request['room_name'];
+
         if ($request->hasFile('room_imagepath') && $request->file('room_imagepath')->isValid()){
             $image = $request->file('room_imagepath');
             $image_name = time().'-'.$image->getClientOriginalName();
-            $image->storeAs('public/images',$image_name);
-            $room->room_imagepath = 'storage/images/'.$image_name;
+            $image->storeAs($IMAGE_SAVE_PATH,$image_name);
+            $room->room_imagepath = $IMAGE_RETRIEVAL_PATH.'/'.$image_name;
         }
         $room->save();
 
@@ -118,7 +142,7 @@ class RoomController extends Controller
     }
 
     protected function validator(Request $request){
-        return new Validator(); // TODO
+        return new Validator();
     }
 
     public function index_room_detail($room_code){

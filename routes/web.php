@@ -22,7 +22,8 @@ Route::prefix('room')->group(function(){
   Route::get('detail/{room}', 'RoomController@index_room_detail');
   Route::get('edit/{room}', 'RoomController@index_edit');
   Route::post('edit/{room}', 'RoomController@edit');
-
+  Route::get('create', 'RoomController@index_create');
+  Route::post('create', 'RoomController@create');
 });
 
 Route::prefix('reserve')->group(function(){
