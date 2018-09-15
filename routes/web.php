@@ -17,6 +17,15 @@ Route::get('/', 'ReservationController@index_welcome');
 
 Route::get('/home', function(){return view('home');});
 
+Route::prefix('staff')->group(function(){
+  Route::get('/', 'StaffController@index');
+  Route::get('create', 'StaffController@create');
+  Route::get('{user_id}', 'StaffController@edit');
+
+  Route::post('create', 'StaffController@store');
+  Route::post('{user_id}', 'StaffController@update');
+});
+
 Route::prefix('room')->group(function(){
   Route::get('/', 'RoomController@index');
   Route::get('detail/{room}', 'RoomController@index_room_detail');
