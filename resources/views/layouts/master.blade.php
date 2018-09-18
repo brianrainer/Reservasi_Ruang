@@ -34,7 +34,7 @@
     <nav class="blue">
       <div class="nav-wrapper">
         <a href="/" class="brand-logo">
-          <img src="https://www.its.ac.id/wp-content/uploads/2017/07/logo.png" style="max-width:100px;">
+          <img src="{{url('/')}}/images/its.png" style="max-width:100px;">
         </a>
         <a href="#" data-target="sidenav_id" class="sidenav-trigger">
           <i class="material-icons">menu</i>
