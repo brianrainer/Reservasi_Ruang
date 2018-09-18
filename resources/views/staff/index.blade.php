@@ -4,7 +4,12 @@
 
 @section('content')
   <h3>Staff</h3>
-  <a href="{{url('/staff/create')}}" class="btn btn-primary">Add</a>
+
+  @include('layouts.status')
+
+  <a href="{{url('/staff/create')}}" class="btn waves-light waves-effect">
+    <i class="material-icons right">add</i>add
+  </a>
   <table class="centered responsive-table">
     <thead>
       <th>Nama</th>
