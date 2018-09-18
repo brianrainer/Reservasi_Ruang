@@ -10,6 +10,7 @@ class RoomTechnicianSeeder extends Seeder
     $rooms = Room::all();
     $users = User::join('users_roles', 'users_roles.user_id','=','users.id')
       ->join('roles','roles.id','=','users_roles.role_id')
+      ->where('roles.role_name','=','manage_room')
       ->select('users.id')
       ->get();
 

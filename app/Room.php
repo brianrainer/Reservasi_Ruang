@@ -46,4 +46,9 @@ class Room extends Model
     public function addTechnician($user_id){
         $this->technicians()->attach($user_id);
     }
+
+    public function hasTechnicians(){
+        $techs = $this->technicians->toArray();
+        return !empty($techs);      
+    }
 }

@@ -27,21 +27,32 @@
         @slot('title')
           Teknisi
         @endslot
-        {{$room->technician}}
+        @foreach ($technicians as $t)
+          {{ $t->name }} {{ $t->phone}} <br>
+        @endforeach
       @endcomponent
 
-      @if ($room->room_imagepath)
-        @component('status.detail_div')
-          @slot('title')
-            Gambar Ruangan
-          @endslot
+      @component('status.detail_div')
+        @slot('title')
+          Cek Status Ruangan
+        @endslot
+        <a href="{{url('/agenda/'.$room->room_code)}}" class="btn waves-effect waves-light green">Agenda</a>
+      @endcomponent
+
+      @component('status.detail_div')
+        @slot('title')
+          Gambar Ruangan
+        @endslot
+        @if ($room->room_imagepath)
           <div class="card col s6">
             <div class="card-image">
               <img src="{{asset($room->room_imagepath)}}">
             </div>
           </div>
-        @endcomponent
-      @endif
+        @else
+          Gambar belum ada
+        @endif
+      @endcomponent
       
       @if(Auth::check() && Auth::user()->hasRole('manage_room'))
         @component('status.detail_div')

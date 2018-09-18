@@ -5,35 +5,24 @@
 @section('content')
   <h1>Ruangan</h1>
   <div>
-    @if ($class_rooms->count() || $teachers_rooms->count() || $other_rooms->count())
-      @if ($class_rooms->count())
-        <h4>Ruang Kelas</h4>
-        <div class="row">
-          @foreach ($class_rooms as $room)
-            @include('room.room-div')
-          @endforeach
-        </div>
-      @endif
-      @if ($teachers_rooms->count())
-        <h4>Ruang Dosen</h4>
-        <div class="row">
-          @foreach ($teachers_rooms as $room)
-            @include('room.room-div')
-          @endforeach
-        </div>
-      @endif
-      @if ($other_rooms->count())
-        <h4>Lain-Lain</h4>
-        <div class="row">
-          @foreach ($other_rooms as $room)
-            @include('room.room-div')
-          @endforeach
-        </div>
-      @endif
+    @include('layouts.status')
+    @include('layouts.errors')
+
+    @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+      <div class="row">
+        <a href="{{url('/room/create')}}" class="btn btn-primary waves-effect waves-light">Tambah Ruangan</a>
+      </div>
+    @endif
+    @if ($rooms->count())
+      <div class="row">
+        @foreach ($rooms as $room)
+          @include('room.room-div')
+        @endforeach
+      </div>
     @else
       <div class="card-panel red">
         Data Ruangan Belum Ada
       </div>
-    @endif
+    @endif 
   </div>
 @endsection
