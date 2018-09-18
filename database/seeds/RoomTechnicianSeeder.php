@@ -8,10 +8,15 @@ class RoomTechnicianSeeder extends Seeder
 {
   public function run (){
     $rooms = Room::all();
-    $user = User::first();
+    $users = User::join('users_roles', 'users_roles.user_id','=','users.id')
+      ->join('roles','roles.id','=','users_roles.role_id')
+      ->select('users.id')
+      ->get();
 
     foreach ($rooms as $room) {
-      
+      foreach ($users as $user) {
+        $room->addTechnician($user->id);      
+      }  
     }
   }
 }

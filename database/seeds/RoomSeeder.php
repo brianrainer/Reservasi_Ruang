@@ -43,22 +43,22 @@ class RoomSeeder extends Seeder
       'room_code' => 'IF-106',
       'room_name' => $ruang_kelas,
     ]);
-    Room::create([
-      'room_code' => 'IF-107',
-      'room_name' => $perpustakaan,
-    ]);
+    // Room::create([
+    //   'room_code' => 'IF-107',
+    //   'room_name' => $perpustakaan,
+    // ]);
     Room::create([
       'room_code' => 'IF-108',
       'room_name' => $ruang_kelas,
     ]);
-    Room::create([
-      'room_code' => 'IF-109',
-      'room_name' => $laboratorium.' S2',
-    ]);
-    Room::create([
-      'room_code' => 'IF-110',
-      'room_name' => $laboratorium.' S3',
-    ]);
+    // Room::create([
+    //   'room_code' => 'IF-109',
+    //   'room_name' => $laboratorium.' S2',
+    // ]);
+    // Room::create([
+    //   'room_code' => 'IF-110',
+    //   'room_name' => $laboratorium.' S3',
+    // ]);
     Room::create([
       'room_code' => 'IF-111',
       'room_name' => $ruang_kelas,
@@ -67,44 +67,44 @@ class RoomSeeder extends Seeder
       'room_code' => 'IF-112',
       'room_name' => $ruang_kelas,
     ]);
-    Room::create([
-      'room_code' => 'IF-113',
-      'room_name' => $pikti,
-    ]);
-    Room::create([
-      'room_code' => 'MUSHOLA',
-      'room_name' => $mushola,
-    ]);
-    Room::create([
-      'room_code' => 'IF-201',
-      'room_name' => $ruang_dosen,
-    ]);
-    Room::create([
-      'room_code' => 'IF-202',
-      'room_name' => $mushola,
-    ]);
-    for ($i=203; $i <=213 ; $i++) { 
-      Room::create([
-        'room_code' => 'IF-'.$i,
-        'room_name' => $ruang_dosen,
-      ]);
-    }
-    Room::create([
-      'room_code' => 'IF-214',
-      'room_name' => $ketua_pasca,
-    ]);
-    Room::create([
-      'room_code' => 'IF-215A',
-      'room_name' => $ruang_dosen,
-    ]);
+    // Room::create([
+    //   'room_code' => 'IF-113',
+    //   'room_name' => $pikti,
+    // ]);
+    // Room::create([
+    //   'room_code' => 'MUSHOLA',
+    //   'room_name' => $mushola,
+    // ]);
+    // Room::create([
+    //   'room_code' => 'IF-201',
+    //   'room_name' => $ruang_dosen,
+    // ]);
+    // Room::create([
+    //   'room_code' => 'IF-202',
+    //   'room_name' => $mushola,
+    // ]);
+    // for ($i=203; $i <=213 ; $i++) { 
+    //   Room::create([
+    //     'room_code' => 'IF-'.$i,
+    //     'room_name' => $ruang_dosen,
+    //   ]);
+    // }
+    // Room::create([
+    //   'room_code' => 'IF-214',
+    //   'room_name' => $ketua_pasca,
+    // ]);
+    // Room::create([
+    //   'room_code' => 'IF-215A',
+    //   'room_name' => $ruang_dosen,
+    // ]);
     Room::create([
       'room_code' => 'IF-215B',
       'room_name' => $ruang_rapat,
     ]);
-    Room::create([
-      'room_code' => 'IF-216',
-      'room_name' => $sekret_pasca,
-    ]);
+    // Room::create([
+    //   'room_code' => 'IF-216',
+    //   'room_name' => $sekret_pasca,
+    // ]);
     Room::create([
       'room_code' => 'IF-217',
       'room_name' => $ruang_rapat.' 2',
@@ -117,24 +117,24 @@ class RoomSeeder extends Seeder
       'room_code' => 'AULA',
       'room_name' => $aula,
     ]);
-    Room::create([
-      'room_code' => 'IF-220',
-      'room_name' => $akademik,
-    ]);
+    // Room::create([
+    //   'room_code' => 'IF-220',
+    //   'room_name' => $akademik,
+    // ]);
     Room::create([
       'room_code' => 'IF-221',
       'room_name' => $ruang_rapat.' 1',
     ]);
-    Room::create([
-      'room_code' => 'IF-222',
-      'room_name' => $kemahasiswaan,
-    ]);
-    for ($i=223; $i <=237 ; $i++) { 
-      Room::create([
-        'room_code' => 'IF-'.$i,
-        'room_name' => $ruang_dosen,
-      ]);
-    }
+    // Room::create([
+    //   'room_code' => 'IF-222',
+    //   'room_name' => $kemahasiswaan,
+    // ]);
+    // for ($i=223; $i <=237 ; $i++) { 
+    //   Room::create([
+    //     'room_code' => 'IF-'.$i,
+    //     'room_name' => $ruang_dosen,
+    //   ]);
+    // }
     Room::create([
       'room_code' => 'IF-301',
       'room_name' => $laboratorium.' Rekayasa Perangkat Lunak',
@@ -151,10 +151,10 @@ class RoomSeeder extends Seeder
       'room_code' => 'IF-304',
       'room_name' => $laboratorium.' Workshop Pemrograman',
     ]);
-    Room::create([
-      'room_code' => 'HMTC',
-      'room_name' => $hmtc,
-    ]);
+    // Room::create([
+    //   'room_code' => 'HMTC',
+    //   'room_name' => $hmtc,
+    // ]);
     Room::create([
       'room_code' => 'IF-305',
       'room_name' => $laboratorium.' Workshop Pengembangan Game',
@@ -168,7 +168,7 @@ class RoomSeeder extends Seeder
       'room_name' => $laboratorium.' Interaksi Grafika dan Seni',
     ]);
     Room::create([
-      'room_code' => 'MIS',
+      'room_code' => 'IF-307B',
       'room_name' => $laboratorium.' Mobile Innovation Studio',
     ]);
     Room::create([

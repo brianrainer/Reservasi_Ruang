@@ -42,4 +42,8 @@ class Room extends Model
     public function bookingDetail(){
         return $this->hasMany('App\BookingDetail');
     }
+
+    public function addTechnician($user_id){
+        $this->technicians()->attach($user_id);
+    }
 }
