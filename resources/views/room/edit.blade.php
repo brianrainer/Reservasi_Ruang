@@ -26,6 +26,15 @@
           </div>
         </div>
         <div class="row">
+          <i class="material-icons prefix">account_circle</i>
+          <select name="tech[]" multiple>
+            <option value="" disabled>Choose Technician</option>
+            @foreach ($technician as $t)
+              <option value='{{$t->user_id}}'>{{$t->user_name}}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="row">
           <div class="file-field input-field col s12">
             <div class="btn">            
               <span>Gambar</span>

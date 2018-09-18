@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Room;
+use App\User;
 
 class RoomController extends Controller
 {
@@ -73,7 +74,9 @@ class RoomController extends Controller
     }
 
     public function index_create(){
-      return $this->view_create([]);
+      $data['technician'] = $this->get_room_technician();
+      // dd($data);
+      return $this->view_create($data);
     }
 
     public function view_create($data){
@@ -133,8 +136,8 @@ class RoomController extends Controller
         if ($request->hasFile('room_imagepath') && $request->file('room_imagepath')->isValid()){
             $image = $request->file('room_imagepath');
             $image_name = time().'-'.$image->getClientOriginalName();
-            $image->storeAs($IMAGE_SAVE_PATH,$image_name);
-            $room->room_imagepath = $IMAGE_RETRIEVAL_PATH.'/'.$image_name;
+            $image->storeAs(Config::get($ROOM_IMAGE_PATH->SAVE), $image_name);
+            $room->room_imagepath = Config::get($ROOM_IMAGE_PATH->RETRIEVE).'/'.$image_name;
         }
         $room->save();
 
@@ -152,6 +155,7 @@ class RoomController extends Controller
 
     public function index_edit($room_id){
         $data['room'] = $this->get_room_by_id($room_id)[0];
+        $data['technician'] = $this->get_room_technician();
         return $this->view_edit($data);
     }
 
@@ -191,6 +195,18 @@ class RoomController extends Controller
                 ,'users.user_phone_number as phone'
                 )
             ->get();
+    }
+
+    protected function get_room_technician(){
+      return User::join('users_roles', 'users.id','=','users_roles.user_id')
+          ->join('roles', 'roles.id','=','users_roles.role_id')
+          ->where('roles.role_name', 'manage_room')
+          ->select(
+              'users.user_name'
+              ,'users.id'
+              ,'users.user_phone_number'
+            )
+          ->get();
     }
 
     /**
