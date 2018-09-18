@@ -10,10 +10,10 @@
   <li>
     <form id="logout-form" method="post" action="{{url('logout')}}">
       {{csrf_field()}}
-      <a onclick="document.getElementById('logout-form').submit()">
-        <i class="material-icons prefix">power_settings_new</i>
-      </a>
     </form>
+    <a onclick="document.getElementById('logout-form').submit()">
+      <i class="material-icons prefix">power_settings_new</i>
+    </a>
   </li>
 @else
   <li><a href="{{url('login')}}">Login</a></li>
