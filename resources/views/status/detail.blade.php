@@ -85,6 +85,9 @@
               <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
                 Tolak Semua
               </button>
+              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_all" onclick="fill_modal('pending_all', '{{ $booking->id }}','')"> 
+                Pending Semua
+              </button>
               <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
                 Terima Semua
               </button>
@@ -113,9 +116,14 @@
               <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_id" onclick="fill_modal('reject_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
                 Tolak
               </button>
+              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_id" onclick="fill_modal('pending_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
+                Pending
+              </button>
               <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_id" onclick="fill_modal('accept_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
                 Terima
               </button>
+              
+              <a href="{{url('/reserve/status/edit/'.$detail->id)}}" class="btn waves-effect waves-light blue">Edit</a>
             </div>
           @endif
         @endcomponent
@@ -147,6 +155,17 @@
     @endcomponent
 
     @component('status.detail_modal')
+      @slot('modal_id') pending_id @endslot
+      @slot('title') Konfirmasi Pending @endslot
+      @slot('content') 
+        Apakah anda yakin ingin mengubah detail reservasi ini menjadi menunggu ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/pending')}} @endslot
+      @slot('button_class') orange @endslot
+      @slot('button') Terima @endslot
+    @endcomponent
+
+    @component('status.detail_modal')
       @slot('modal_id') reject_all @endslot
       @slot('title') Konfirmasi Penolakan Seluruh Reservasi @endslot
       @slot('content') 
@@ -166,6 +185,17 @@
       @slot('routing') {{url('/reserve/status/accept_all')}} @endslot
       @slot('button_class') green @endslot
       @slot('button') Terima Semua @endslot
+    @endcomponent
+
+    @component('status.detail_modal')
+      @slot('modal_id') pending_all @endslot
+      @slot('title') Konfirmasi Pending Seluruh Reservasi @endslot
+      @slot('content') 
+        Apakah anda yakin ingin mengubah seluruh status reservasi ini menjadi menunggu ?
+      @endslot
+      @slot('routing') {{url('/reserve/status/pending_all')}} @endslot
+      @slot('button_class') orange @endslot
+      @slot('button') Pending Semua @endslot
     @endcomponent
   @endif
 

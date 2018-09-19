@@ -66,6 +66,10 @@ class ReservationController extends Controller
         return view('terms', $data);
     }
 
+    private function view_edit_detail($data){
+        return view('status.edit', $data);
+    }
+
     /**
      * Helper Functions for Loading Variables
      * @return array
@@ -84,8 +88,14 @@ class ReservationController extends Controller
     }
 
     protected function load_booking_detail($booking_id){
-        $data['booking'] = $this->get_one_booking($booking_id)[0];
+        $data['booking'] = $this->get_one_booking($booking_id);
         $data['booking_details'] = $this->get_all_detail($booking_id); 
+        return $data;
+    }
+
+    private function load_one_booking_detail($detail_id){
+        $data['detail'] = $this->get_one_detail($detail_id);
+        $data['rooms'] = Room::all();
         return $data;
     }
 
@@ -206,6 +216,10 @@ class ReservationController extends Controller
         return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
     }
 
+    private function pending_detail($detail_id){
+        return $this->set_one_detail($detail_id, $this->waiting_booking_status_id);
+    }
+
     protected function get_all_booking(){
         return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
@@ -314,7 +328,7 @@ class ReservationController extends Controller
                 'agencies.agency_name',
                 'categories.category_name'
                 )
-            ->get();        
+            ->first();        
     }
 
     protected function get_one_detail($detail_id){
@@ -330,7 +344,7 @@ class ReservationController extends Controller
                 'rooms.room_name',
                 'booking_statuses.booking_status_name'
                 )
-            ->get();
+            ->first();
         
     }
 
@@ -348,6 +362,8 @@ class ReservationController extends Controller
                 'rooms.room_name',
                 'booking_statuses.booking_status_name'
                 )
+            ->orderBy('booking_details.event_start')
+            ->orderBy('rooms.room_code')
             ->get();
     }
 
@@ -416,6 +432,10 @@ class ReservationController extends Controller
 
     public function index_detail($booking_id){
         return $this->view_detail($this->load_booking_detail($booking_id));
+    }
+
+    public function index_edit_detail($detail_id){
+        return $this->view_edit_detail($this->load_one_booking_detail($detail_id));
     }
 
     public function index_terms(){
@@ -691,9 +711,19 @@ class ReservationController extends Controller
             ->with('message', $this->session_message(true, false, $request->booking_id, $request->detail_id));
     }
 
+    public function pending_all_reservation(Request $request){
+        $this->validator($request)->validate();
+        $bookings = $this->get_all_detail($request->booking_id);
+        foreach ($bookings as $booking_detail) {
+            $this->pending_detail($booking_detail->id);
+        }
+        return redirect('reserve/status/'.$request->booking_id)
+            ->with('message', 'Berhasil mengubah status seluruh detail reservasi menjadi MENUNGGU');
+    }
+
     public function accept_one_reservation(Request $request){
         $this->validator_detail($request)->validate();
-        $booking_detail = $this->get_one_detail($request->detail_id)[0];
+        $booking_detail = $this->get_one_detail($request->detail_id);
         if ( $this->check_crash(
                 $request->detail_id,
                 $booking_detail->room_id, 
@@ -713,6 +743,12 @@ class ReservationController extends Controller
         $this->reject_detail($request->detail_id);
         return redirect('reserve/status/'.$request->booking_id)
             ->with('message', $this->session_message(false, false, $request->booking_id, $request->detail_id));
+    }
+
+    public function pending_one_reservation(Request $request){
+        $this->validator_detail($request)->validate();
+        $this->pending_detail($request->detail_id);
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail status menjadi MENUNGGU');
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval
