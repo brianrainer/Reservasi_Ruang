@@ -16,7 +16,7 @@
       <div class="card-panel red">
         Data Teknisi belum ada
       </div>
-    @elseif(Auth::check() && Auth::users()->hasRole('manage_room'))
+    @elseif(Auth::check() && Auth::user()->hasRole('manage_room'))
       <form class="col s12" method="POST" action="{{url('/room/edit/'.$room->room_id)}}" enctype="multipart/form-data">
         {{csrf_field()}}
         <div class="row">
