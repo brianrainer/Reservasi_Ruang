@@ -12,6 +12,9 @@
           {{csrf_field()}}
           <input type="hidden" name="booking_id" value="">
           <input type="hidden" name="detail_id" value="">
+          @isset($input)
+            {{ $input }}
+          @endif
           <a class="btn waves-effect waves-light grey modal-close">
             Kembali
           </a>

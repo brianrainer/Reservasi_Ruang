@@ -11,7 +11,6 @@
 @section('js')
   <script type="text/javascript">
     $(document).ready(function(){
-      var roomCode = "{{$room_code}}";
       var calendarEvent = [
         {
           url: '/calendar/accepted',
@@ -34,18 +33,18 @@
         },
       ];
 
-      if (roomCode.length) {
-        console.log('asdasd');
+      @isset ($room_code)
         calendarEvent = [
           {
-            url: '/calendar/accepted/' + roomCode,
+            url: '/calendar/accepted/' + '{{$room_code}}',
             color: 'green',
             textColor: 'white',
             borderColor: 'black',
             cache: true 
           }
         ]
-      }
+      @endif
+      
       $('#calendar').fullCalendar({
         defaultView: 'listDay',
         eventSources : calendarEvent, 

@@ -10,88 +10,65 @@
   <div class="row">
     @if ($booking)
       @component('status.detail_div')
-        @slot('title')
-          Nomor Reservasi
-        @endslot
+        @slot('title', 'Nomor Reservasi')
         {{$booking->id}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Peminjam
-        @endslot
+        @slot('title', 'Peminjam')
         {{$booking->name}}
       @endcomponent
 
       @if (Auth::check() && Auth::user()->hasRole('manage_room'))
         @if (!empty($booking->nrp_nip))
           @component('status.detail_div')
-            @slot('title')
-              NRP / NIP
-            @endslot
+            @slot('title', 'NRP / NIP')
             {{$booking->nrp_nip}}
           @endcomponent
         @endif
 
         @component('status.detail_div')
-          @slot('title')
-            Email
-          @endslot
+          @slot('title', 'Email')
           {{$booking->email}}
         @endcomponent
 
         @component('status.detail_div')
-          @slot('title')
-            Nomor Telepon
-          @endslot
+          @slot('title', 'Nomor Telepon')
           {{$booking->phone_number}}
         @endcomponent
       @endif
 
       @component('status.detail_div')
-        @slot('title')
-          Perwakilan
-        @endslot
+        @slot('title', 'Perwakilan')
         {{$booking->agency_name}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Judul Kegiatan
-        @endslot
+        @slot('title', 'Judul Kegiatan')
         {{$booking->event_title}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Kategori Kegiatan
-        @endslot
+        @slot('title', 'Kategori Kegiatan')
         {{$booking->category_name}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Deskripsi Kegiatan
-        @endslot
+        @slot('title', 'Deskripsi Kegiatan')
         {{$booking->event_description}}
       @endcomponent
 
       @if (Auth::check() && Auth::user()->hasRole('manage_room'))
         @component('status.detail_div')
-          @slot('title')
-            Tolak/Terima Semua
-          @endslot
-            <div class="col s12">
-              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
-                Tolak Semua
-              </button>
-              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_all" onclick="fill_modal('pending_all', '{{ $booking->id }}','')"> 
-                Pending Semua
-              </button>
-              <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
-                Terima Semua
-              </button>
-            </div>
+          @slot('title', 'Ubah Semua')
+          <div class="col s12">
+            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
+              Tolak Semua
+            </button>
+            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
+              Terima Semua
+            </button>
+          </div>
         @endcomponent
       @endif
 
@@ -113,17 +90,13 @@
             </div>
           @if (Auth::check() && Auth::user()->hasRole('manage_room'))
             <div class="col s12">
-              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_id" onclick="fill_modal('reject_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
-                Tolak
-              </button>
-              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_id" onclick="fill_modal('pending_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
-                Pending
-              </button>
               <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_id" onclick="fill_modal('accept_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
                 Terima
               </button>
               
-              <a href="{{url('/reserve/status/edit/'.$detail->id)}}" class="btn waves-effect waves-light blue">Edit</a>
+              <button class="btn waves-effect waves-light blue modal-trigger" data-target="edit_detail" onclick="fill_modal('edit_detail', '{{ $booking->id }}', '{{ $detail->id }}')"> 
+                Edit
+              </button>
             </div>
           @endif
         @endcomponent
@@ -133,69 +106,53 @@
 
   @if (Auth::check() && Auth::user()->hasRole('manage_room'))
     @component('status.detail_modal')
-      @slot('modal_id') reject_id @endslot
-      @slot('title') Konfirmasi Penolakan @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menolak / membatalkan detail reservasi ini ?
+      @slot('modal_id', 'accept_id')
+      @slot('title', 'Konfirmasi Penerimaan')
+      @slot('content', 'Apakah anda yakin ingin menerima detail reservasi ini ?')
+      @slot('routing')
+        {{url('/reserve/status/accept')}}
       @endslot
-      @slot('routing') {{url('/reserve/status/reject')}} @endslot
-      @slot('button_class') red @endslot
-      @slot('button') Tolak @endslot
+      @slot('button_class', 'green')
+      @slot('button', 'Terima')
     @endcomponent
 
     @component('status.detail_modal')
-      @slot('modal_id') accept_id @endslot
-      @slot('title') Konfirmasi Penerimaan @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menerima detail reservasi ini ?
+      @slot('modal_id', 'reject_all')
+      @slot('title', 'Konfirmasi Penolakan Seluruh Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?')
+      @slot('routing') 
+        {{url('/reserve/status/reject_all')}} 
       @endslot
-      @slot('routing') {{url('/reserve/status/accept')}} @endslot
-      @slot('button_class') green @endslot
-      @slot('button') Terima @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Tolak Semua')
     @endcomponent
 
     @component('status.detail_modal')
-      @slot('modal_id') pending_id @endslot
-      @slot('title') Konfirmasi Pending @endslot
-      @slot('content') 
-        Apakah anda yakin ingin mengubah detail reservasi ini menjadi menunggu ?
+      @slot('modal_id', 'accept_all')
+      @slot('title', 'Konfirmasi Penerimaan Seluruh Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menerima seluruh reservasi ini ?')
+      @slot('routing') 
+        {{url('/reserve/status/accept_all')}} 
       @endslot
-      @slot('routing') {{url('/reserve/status/pending')}} @endslot
-      @slot('button_class') orange @endslot
-      @slot('button') Terima @endslot
+      @slot('button_class', 'green')
+      @slot('button', 'Terima Semua')
     @endcomponent
 
     @component('status.detail_modal')
-      @slot('modal_id') reject_all @endslot
-      @slot('title') Konfirmasi Penolakan Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?
+      @slot('modal_id', 'edit_detail') 
+      @slot('title', 'Edit Detail Reservasi')
+      @slot('content', 'Detail Reservasi')
+      @slot('routing')
+        {{url('/reserve/status/edit')}}
       @endslot
-      @slot('routing') {{url('/reserve/status/reject_all')}} @endslot
-      @slot('button_class') red @endslot
-      @slot('button') Tolak Semua @endslot
-    @endcomponent
-
-    @component('status.detail_modal')
-      @slot('modal_id') accept_all @endslot
-      @slot('title') Konfirmasi Penerimaan Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menerima seluruh reservasi ini ?
+      @slot('input')
+      <div>
+        @include('reserve.form-one-room')
+        @include('reserve.form-time')
+      </div>
       @endslot
-      @slot('routing') {{url('/reserve/status/accept_all')}} @endslot
-      @slot('button_class') green @endslot
-      @slot('button') Terima Semua @endslot
-    @endcomponent
-
-    @component('status.detail_modal')
-      @slot('modal_id') pending_all @endslot
-      @slot('title') Konfirmasi Pending Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin mengubah seluruh status reservasi ini menjadi menunggu ?
-      @endslot
-      @slot('routing') {{url('/reserve/status/pending_all')}} @endslot
-      @slot('button_class') orange @endslot
-      @slot('button') Pending Semua @endslot
+      @slot('button_class', 'blue')
+      @slot('button', 'Edit')
     @endcomponent
   @endif
 
@@ -216,4 +173,6 @@
       $('.modal').modal();
     })
   </script>
+
+  @include('reserve.form-js')
 @endsection
