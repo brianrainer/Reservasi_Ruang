@@ -245,7 +245,8 @@ class ReservationController extends Controller
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
             ->where('booking_statuses.id','=', $status_id)
-            ->where('event_start', '>=', $start, 'and', 'event_end', '<=', $end)
+            ->where('event_start', '>=', $start)
+            ->where('event_end', '<=', $end)
             ->select(
                 DB::raw('CONCAT(
                     "/reserve/status/",
@@ -267,7 +268,8 @@ class ReservationController extends Controller
             ->where('room_code', '=', $room_code)
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
             ->where('booking_statuses.id','=', $status_id)
-            ->where('event_start', '>=', $start, 'and', 'event_end', '<=', $end)
+            ->where('event_start', '>=', $start)
+            ->where('event_end', '<=', $end)
             ->select(
                 DB::raw('CONCAT(
                     "/reserve/status/",
@@ -281,6 +283,17 @@ class ReservationController extends Controller
                 'booking_details.event_end as end'
                 )
             ->get();
+    }
+
+    protected function get_room_booking_status($status_id, $room_code, $time){
+        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'booking_details.room_id','=','rooms.id')
+            ->where('room_code', '=', $room_code)
+            ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
+            ->where('booking_statuses.id','=', $status_id)
+            ->where('event_start', '<=', $time)
+            ->where('event_end', '>=', $time)
+            ->first();
     }
 
     protected function get_booking_calendar_accepted(Request $request){
@@ -297,6 +310,12 @@ class ReservationController extends Controller
 
     protected function get_booking_calendar_rejected(Request $request){
         return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
+    }
+
+    protected function get_room_status(Request $request){
+      $current =  $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
+
+      return $current['event_title'];
     }
 
     protected function get_one_booking($booking_id){
