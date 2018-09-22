@@ -74,24 +74,13 @@ Route::prefix('agenda')->group(function(){
 
 Route::prefix('calendar')->group(function(){
   Route::get('/', 'ReservationController@index_calendar');
+  // API for calendar
   Route::prefix('accepted')->group(function(){
     Route::get('/', 'ReservationController@get_booking_calendar_accepted');
     Route::get('{room_code}', 'ReservationController@get_room_booking_calendar_accepted');
   });
   Route::get('waiting', 'ReservationController@get_booking_calendar_waiting');
   Route::get('rejected', 'ReservationController@get_booking_calendar_rejected');
+  Route::get('status', 'ReservationController@get_room_status');
 });
 
-// Route::get('/home', 'HomeController@index')->name('home');
-
-// Route::get('/', 'MainController@availability');
-// Route::get('/availability', 'MainController@availability');
-// Route::get('/availability/{roomid}', function($roomid){
-//   echo 'Availability for Room ID: '.$roomid;
-// });
-// Route::get('/rooms', 'MainController@rooms')->name('rooms');
-// Route::get('/calendar', 'MainController@calendar')->name('calendar');
-// Route::get('/form', 'ReservationController@create')->name('form');
-// Route::post('/form', 'ReservationController@store')->name('formsubmit');
-// Route::get('/booklist', 'BookingController@index')->name('booklist');
-// Route::get('/schedule', 'ScheduleController@index');
