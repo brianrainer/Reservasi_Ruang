@@ -22,90 +22,74 @@ class ReservationController extends Controller
     private $accepted_booking_status_id = 2;
     private $rejected_booking_status_id = 3;
 
-    protected function view_reserve($data){
-        return view('reserve.index', $data);
+    public function index_reserve(){
+        return view('reserve.index');
     }
 
-    protected function view_status($data){
-        return view('status.status', $data);
-    }
-
-    protected function view_detail($data){
-        return view('status.detail', $data);
-    }
-
-    protected function view_once($data){
-        return view('reserve.once', $data);
-    }
-
-    protected function view_repeat($data){
-        return view('reserve.repeat', $data);
-    }
-
-    protected function view_multionce($data){
-        return view('reserve.multionce', $data);
-    }
-
-    protected function view_multirepeat($data){
-        return view('reserve.multirepeat', $data);
-    }
-
-    protected function view_welcome($data){
+    public function index_welcome(){
+        $data['bookings'] = $this->get_all_booking_today();
         return view('welcome', $data);
     }
 
-    protected function view_calendar($data){
-        return view('calendar', $data);
+    public function index_calendar(){
+        return view('calendar');
     }
 
-    protected function view_agenda($data){
+    public function index_agenda(){
+        return view('agenda');
+    }
+
+    public function index_room_agenda($room_code){
+        $data['room_code'] = $room_code;
         return view('agenda', $data);
     }
 
-    protected function view_terms($data){
-        return view('terms', $data);
+    public function index_status(){
+        $data['bookings'] = $this->get_all_booking();
+        return view('status.status', $data);
     }
 
-    private function view_edit_detail($data){
-        return view('status.edit', $data);
+    public function index_detail($booking_id){
+        $data['booking'] = $this->get_one_booking($booking_id);
+        $data['booking_details'] = $this->get_all_detail($booking_id); 
+        $data['rooms'] = Room::all();
+
+        return view('status.detail', $data);
     }
 
-    /**
-     * Helper Functions for Loading Variables
-     * @return array
-     */
-    protected function load_reserve_form(){
+    public function index_terms(){
+        return view('terms');
+    }
+
+    public function index_once(){
+        $data = $this->load_reserve_form();
+        return view('reserve.once', $data);
+    }
+
+    public function index_repeat(){
+        $data = $this->load_reserve_form();
+        return view('reserve.repeat', $data);
+    }
+
+    public function index_multi_once(){
+        $data = $this->load_reserve_form();
+        return view('reserve.multionce', $data);
+    }
+    
+    public function index_multi_repeat(){
+        $data = $this->load_reserve_form();
+        return view('reserve.multirepeat', $data);
+    }
+
+    private function load_reserve_form(){
         $data['rooms'] = Room::all();
         $data['routines'] = Routine::all();
         $data['agencies'] = Agency::all();
         $data['categories'] = Category::all();
         return $data;
     }
-    
-    protected function load_booking(){
-        $data['bookings'] = $this->get_all_booking(); 
-        return $data; 
-    }
 
-    protected function load_booking_detail($booking_id){
-        $data['booking'] = $this->get_one_booking($booking_id);
-        $data['booking_details'] = $this->get_all_detail($booking_id); 
-        return $data;
-    }
-
-    private function load_one_booking_detail($detail_id){
-        $data['detail'] = $this->get_one_detail($detail_id);
-        $data['rooms'] = Room::all();
-        return $data;
-    }
-
-
-    /**
-     * Helper Functions - Main Validator for Reservation Forms
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Support\Facades\Validator
-     */    
-    protected function validator_form(Request $request){
+    private function validator_form(Request $request){
         return Validator::make($request->all(), [
             'full_name' => 'required|string|max:100',
             'nrp_nip' => 'nullable|string|min:10|max:20',
@@ -156,13 +140,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    /**
-     * Helper Functions - Room Validator
-     * @param  \Illuminate\Http\Request $request
-     * @param  Boolean $is_array
-     * @return \Illuminate\Support\Facades\Validator
-     */
-    protected function validator_room(Request $request, $is_array){
+    private function validator_room(Request $request, $is_array){
         if ($is_array) {
             return Validator::make($request->all(), [
                 'room' => 'required|array',
@@ -182,7 +160,7 @@ class ReservationController extends Controller
         }
     }
 
-    protected function validator_booking(Request $request){
+    private function validator_booking(Request $request){
         return Validator::make($request->all(), [
             'booking_id' => 'required|numeric',
         ], [
@@ -191,7 +169,7 @@ class ReservationController extends Controller
         ]);        
     }
 
-    protected function validator_detail(Request $request){
+    private function validator_detail(Request $request){
         return Validator::make($request->all(), [
             'booking_id' => 'required|numeric',
             'detail_id' => 'required|numeric',
@@ -203,16 +181,16 @@ class ReservationController extends Controller
         ]);
     }
 
-    protected function set_one_detail($detail_id, $status_id){
+    private function set_one_detail($detail_id, $status_id){
         $booking_detail = BookingDetail::findOrFail($detail_id);
         $booking_detail->booking_status_id = $status_id;
         return $booking_detail->save();
     }
 
-    protected function accept_detail($detail_id){
+    private function accept_detail($detail_id){
         return $this->set_one_detail($detail_id, $this->accepted_booking_status_id);
     }
-    protected function reject_detail($detail_id){
+    private function reject_detail($detail_id){
         return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
     }
 
@@ -220,7 +198,7 @@ class ReservationController extends Controller
         return $this->set_one_detail($detail_id, $this->waiting_booking_status_id);
     }
 
-    protected function get_all_booking(){
+    private function get_all_booking(){
         return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
             ->select(
@@ -235,7 +213,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_all_booking_today(){
+    private function get_all_booking_today(){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')
@@ -254,7 +232,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_booking_calendar($status_id, $start, $end){
+    private function get_booking_calendar($status_id, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
@@ -275,7 +253,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_room_booking_calendar($status_id, $room_code, $start, $end){
+    private function get_room_booking_calendar($status_id, $room_code, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->where('room_code', '=', $room_code)
@@ -297,23 +275,23 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function get_booking_calendar_accepted(Request $request){
+    private function get_booking_calendar_accepted(Request $request){
         return $this->get_booking_calendar($this->accepted_booking_status_id, $request->start, $request->end);
     }
 
-    protected function get_room_booking_calendar_accepted(Request $request, $room_code){
+    private function get_room_booking_calendar_accepted(Request $request, $room_code){
         return $this->get_room_booking_calendar($this->accepted_booking_status_id, $room_code, $request->start, $request->end);
     }
 
-    protected function get_booking_calendar_waiting(Request $request){
+    private function get_booking_calendar_waiting(Request $request){
         return $this->get_booking_calendar($this->waiting_booking_status_id, $request->start, $request->end);
     }
 
-    protected function get_booking_calendar_rejected(Request $request){
+    private function get_booking_calendar_rejected(Request $request){
         return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
     }
 
-    protected function get_one_booking($booking_id){
+    private function get_one_booking($booking_id){
         return Booking::where('bookings.id', $booking_id)
             ->join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
@@ -331,7 +309,7 @@ class ReservationController extends Controller
             ->first();        
     }
 
-    protected function get_one_detail($detail_id){
+    private function get_one_detail($detail_id){
         return BookingDetail::where('booking_details.id', $detail_id)
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
             ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
@@ -348,7 +326,7 @@ class ReservationController extends Controller
         
     }
 
-    protected function get_all_detail($booking_id){
+    private function get_all_detail($booking_id){
         return Booking::where('bookings.id', $booking_id)
             ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
@@ -360,19 +338,16 @@ class ReservationController extends Controller
                 'rooms.id as room_id',
                 'rooms.room_code',
                 'rooms.room_name',
+                'booking_statuses.id as booking_status_id',
                 'booking_statuses.booking_status_name'
                 )
+            ->orderBy('booking_statuses.id', 'DESC')
             ->orderBy('booking_details.event_start')
             ->orderBy('rooms.room_code')
             ->get();
     }
 
-    /**
-     * Helper Functions - Create Booking
-     * @param  \Illuminate\Http\Request $request
-     * @return \App\Booking
-     */
-    protected function create_booking(Request $request){
+    private function create_booking(Request $request){
         return Booking::create([
             'name' => $request->full_name,
             'nrp_nip' => $request->nrp_nip,
@@ -385,15 +360,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    /**
-     * Helper Functions - Create Booking Detail
-     * @param  Integer $room_id
-     * @param  Integer $booking_id
-     * @param  String $start_time
-     * @param  String $end_time
-     * @return App\BookingDetail
-     */
-    protected function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
+    private function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
         return BookingDetail::create([
             'booking_id' => $booking_id,
             'room_id' => $room_id,
@@ -403,60 +370,6 @@ class ReservationController extends Controller
         ]);
     }
 
-    public function index_reserve(){
-        return $this->view_reserve([]);
-    }
-
-    public function index_welcome(){
-        $data['bookings'] = $this->get_all_booking_today();
-        return $this->view_welcome($data);
-    }
-
-    public function index_calendar(){
-        return $this->view_calendar([]);
-    }
-
-    public function index_agenda(){
-        $data['room_code'] = "";
-        return $this->view_agenda($data);
-    }
-
-    public function index_room_agenda($room_code){
-        $data['room_code'] = $room_code;
-        return $this->view_agenda($data);
-    }
-
-    public function index_status(){
-        return $this->view_status($this->load_booking());
-    }
-
-    public function index_detail($booking_id){
-        return $this->view_detail($this->load_booking_detail($booking_id));
-    }
-
-    public function index_edit_detail($detail_id){
-        return $this->view_edit_detail($this->load_one_booking_detail($detail_id));
-    }
-
-    public function index_terms(){
-        return $this->view_terms([]);
-    }
-
-    public function index_once(){
-        return $this->view_once($this->load_reserve_form());
-    }
-
-    public function index_repeat(){
-        return $this->view_repeat($this->load_reserve_form());
-    }
-
-    public function index_multi_once(){
-        return $this->view_multionce($this->load_reserve_form());
-    }
-    
-    public function index_multi_repeat(){
-        return $this->view_multirepeat($this->load_reserve_form());
-    }
 
     public function once(Request $request){
         $this->validator_room($request, false)->validate();
@@ -550,70 +463,6 @@ class ReservationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()    
-    {
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    /**
      * Helper Functions - Check Booking Crash
      */
     public function check_crash($detail_id, $room_id, $event_start, $event_end){
@@ -651,24 +500,8 @@ class ReservationController extends Controller
             ->get();
     }
 
-    protected function session_message($is_all, $is_success, $booking_id, $detail_id){
-        if ($is_all) {
-            if ($is_success){
-                return 'Berhasil Menerima Seluruh Detail Reservasi #'.$booking_id;
-            } else {
-                return 'Berhasil Menolak Seluruh Detail Reservasi #'.$booking_id;
-            }
-        } else {
-            if ($is_success){
-                return 'Berhasil Menerima Detail #'.$detail_id.' milik Reservasi #'.$booking_id;
-            } else {
-                return 'Berhasil Menolak Detail #'.$detail_id.' milik Reservasi #'.$booking_id;
-            }
-        }
-    }
-
-    protected function error_message($booking_id, $detail_id){
-        return 'Gagal Menerima Detail #'.$detail_id.' Reservasi '.$booking_id.', Bentrok. '."";
+    private function error_message($booking_id, $detail_id){
+        return 'Gagal menerima Detail Reservasi #'.$booking_id.'-'.$detail_id.", Bentrok;  ";
     }
 
     public function accept_all_reservation(Request $request){
@@ -687,7 +520,7 @@ class ReservationController extends Controller
                 )->count() ) {
                 $any_crash = true;
                 $this->reject_detail($booking_detail->id);
-                $errors = $errors.($this->error_message($request->booking_id, $booking_detail->id));
+                $errors = $errors.($this->error_message($request->booking_id, $booking_detail->id))."\n";
             } else {
                 $this->accept_detail($booking_detail->id);
             }
@@ -695,7 +528,7 @@ class ReservationController extends Controller
 
         if (!$any_crash) {
             return redirect('reserve/status/'.$request->booking_id)
-                ->with('message', $this->session_message(true, true, $request->booking_id, $request->detail_id));
+                ->with('message', 'Berhasil mengubah status seluruh detail reservasi #'.$request->booking_id.' menjadi DITERIMA');
         } else {
             return redirect('reserve/status/'.$request->booking_id)->withErrors($errors);
         }
@@ -708,7 +541,7 @@ class ReservationController extends Controller
             $this->reject_detail($booking_detail->id);
         }
         return redirect('reserve/status/'.$request->booking_id)
-            ->with('message', $this->session_message(true, false, $request->booking_id, $request->detail_id));
+            ->with('message', 'Berhasil mengubah status seluruh detail reservasi #'.$request->booking_id.' menjadi DITOLAK');
     }
 
     public function pending_all_reservation(Request $request){
@@ -718,7 +551,7 @@ class ReservationController extends Controller
             $this->pending_detail($booking_detail->id);
         }
         return redirect('reserve/status/'.$request->booking_id)
-            ->with('message', 'Berhasil mengubah status seluruh detail reservasi menjadi MENUNGGU');
+            ->with('message', 'Berhasil mengubah status seluruh detail reservasi #'.$request->booking_id.' menjadi MENUNGGU');
     }
 
     public function accept_one_reservation(Request $request){
@@ -734,7 +567,7 @@ class ReservationController extends Controller
         } else {
             $this->accept_detail($request->detail_id);
             return redirect('reserve/status/'.$request->booking_id)
-                ->with('message', $this->session_message(false, true, $request->booking_id, $request->detail_id));
+                ->with('message', 'Berhasil mengubah status detail reservasi #'.$request->booking_id.'-'.$request->detail_id.' menjadi DITERIMA');
         }
     }
 
@@ -742,13 +575,77 @@ class ReservationController extends Controller
         $this->validator_detail($request)->validate();
         $this->reject_detail($request->detail_id);
         return redirect('reserve/status/'.$request->booking_id)
-            ->with('message', $this->session_message(false, false, $request->booking_id, $request->detail_id));
+            ->with('message', 'Berhasil mengubah status detail reservasi #'.$request->booking_id.'-'.$request->detail_id.' menjadi DITOLAK');
     }
 
     public function pending_one_reservation(Request $request){
         $this->validator_detail($request)->validate();
         $this->pending_detail($request->detail_id);
-        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail status menjadi MENUNGGU');
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah status detail reservasi #'.$request->booking_id.'-'.$request->detail_id.' menjadi MENUNGGU');
+    }
+
+    public function edit_one_reservation(Request $request){
+        //$this->validator_room($request)->validate();
+
+        $detail = BookingDetail::find($request->detail_id);
+        $detail->room_id = $request->room;
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $detail->event_start = $start_time->toDateTimeString();
+        $detail->event_end = $end_time->toDateTimeString();
+        $detail->booking_status_id = $this->waiting_booking_status_id;
+        $detail->save();
+
+        if ($request->status == 2){
+            if ( $this->check_crash(
+                $request->detail_id,
+                $request->room,
+                $detail->event_start,
+                $detail->event_end
+                )->count()) {
+            $detail->booking_status_id = $this->rejected_booking_status_id;
+            $detail->save();
+
+            return redirect('reserve/status/'.$request->booking_id)->withErrors('Gagal memerbarui status menjadi DITERIMA untuk detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
+            } 
+        } 
+        $detail->booking_status_id = $request->status;
+        $detail->save();
+
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil memerbarui status detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
+    }
+
+    public function add_one_reservation(Request $request){
+        // validate
+
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $bookingDetail = $this->create_booking_detail(
+            $request->room, 
+            $request->booking_id, 
+            $start_time->toDateTimeString(), 
+            $end_time->toDateTimeString()
+        );
+
+
+        if ($request->status == 2){
+            if ( $this->check_crash(
+                $bookingDetail->id,
+                $request->room,
+                $bookingDetail->event_start,
+                $bookingDetail->event_end
+                )->count()) {
+            $bookingDetail->booking_status_id = $this->rejected_booking_status_id;
+            $bookingDetail->save();
+
+            return redirect('reserve/status/'.$request->booking_id)->withErrors('Berhasil membuat Detail Reservasi baru, namun gagal memerbarui status menjadi DITERIMA untuk detail reservasi #'.$request->booking_id.'-'.$bookingDetail->id);
+            } 
+        } 
+        $bookingDetail->booking_status_id = $request->status;
+        $bookingDetail->save();
+
+
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil menambah status detail reservasi #'.$request->booking_id.'-'.$bookingDetail->id);
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval

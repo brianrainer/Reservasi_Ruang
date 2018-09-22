@@ -10,95 +10,89 @@
   <div class="row">
     @if ($booking)
       @component('status.detail_div')
-        @slot('title')
-          Nomor Reservasi
-        @endslot
-        {{$booking->id}}
+        @slot('title', 'Nomor Reservasi')
+        #{{$booking->id}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Peminjam
-        @endslot
+        @slot('title', 'Peminjam')
         {{$booking->name}}
       @endcomponent
 
       @if (Auth::check() && Auth::user()->hasRole('manage_room'))
         @if (!empty($booking->nrp_nip))
           @component('status.detail_div')
-            @slot('title')
-              NRP / NIP
-            @endslot
+            @slot('title', 'NRP / NIP')
             {{$booking->nrp_nip}}
           @endcomponent
         @endif
 
         @component('status.detail_div')
-          @slot('title')
-            Email
-          @endslot
+          @slot('title', 'Email')
           {{$booking->email}}
         @endcomponent
 
         @component('status.detail_div')
-          @slot('title')
-            Nomor Telepon
-          @endslot
+          @slot('title', 'Nomor Telepon')
           {{$booking->phone_number}}
         @endcomponent
       @endif
 
       @component('status.detail_div')
-        @slot('title')
-          Perwakilan
-        @endslot
+        @slot('title', 'Perwakilan')
         {{$booking->agency_name}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Judul Kegiatan
-        @endslot
+        @slot('title', 'Judul Kegiatan')
         {{$booking->event_title}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Kategori Kegiatan
-        @endslot
+        @slot('title', 'Kategori Kegiatan')
         {{$booking->category_name}}
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title')
-          Deskripsi Kegiatan
-        @endslot
+        @slot('title', 'Deskripsi Kegiatan')
         {{$booking->event_description}}
+      @endcomponent
+
+      @component('status.detail_div')
+        @slot('title','Status Keseluruhan')
+        {{$booking_details->where('booking_status_id', 2)->count()}} DITERIMA <br>
+        {{$booking_details->where('booking_status_id', 3)->count()}} DITOLAK <br>
+        {{$booking_details->where('booking_status_id', 1)->count()}} MENUNGGU <br>
       @endcomponent
 
       @if (Auth::check() && Auth::user()->hasRole('manage_room'))
         @component('status.detail_div')
-          @slot('title')
-            Tolak/Terima Semua
-          @endslot
-            <div class="col s12">
-              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
-                Tolak Semua
-              </button>
-              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_all" onclick="fill_modal('pending_all', '{{ $booking->id }}','')"> 
-                Pending Semua
-              </button>
-              <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
-                Terima Semua
-              </button>
-            </div>
+          @slot('title', 'Ubah Status Semua')
+          <div class="col s12">
+            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
+              Tolak Semua
+            </button>
+            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
+              Terima Semua
+            </button>
+          </div>
+        @endcomponent
+
+        @component('status.detail_div')
+          @slot('title', 'Aksi Lainnya')
+          <div class="col s12">
+            <button class="btn waves-effect waves-light blue modal-trigger" data-target="add_detail" onclick="fill_modal('add_detail', '{{$booking->id}}', '')">
+              Tambah Detail
+            </button>
+          </div>
         @endcomponent
       @endif
 
       @foreach ($booking_details as $detail)
         @component('status.detail_div')
           @slot('title')
-            Waktu dan Lokasi #{{$loop->iteration}}
+            Detail Reservasi {{$loop->iteration}} 
+            <br>(#{{$booking->id}}-{{$detail->id}})
           @endslot
             <div class="col s12">
               {{$detail->room_code}} ({{$detail->room_name}})
@@ -113,17 +107,19 @@
             </div>
           @if (Auth::check() && Auth::user()->hasRole('manage_room'))
             <div class="col s12">
-              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_id" onclick="fill_modal('reject_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
-                Tolak
+              <button class="btn waves-effect waves-light blue modal-trigger" data-target="edit_detail" onclick="
+                fill_edit_detail(
+                  '{{$booking->id}}',
+                  '{{$detail->id}}', 
+                  '{{$detail->room_id}}', 
+                  '{{\Carbon\Carbon::parse($detail->event_start)->format('Y-m-d')}}',
+                  '{{\Carbon\Carbon::parse($detail->event_start)->format('H:i')}}',
+                  '{{\Carbon\Carbon::parse($detail->event_end)->format('H:i')}}',
+                  '{{$detail->booking_status_id}}'
+                  )
+                "> 
+                Edit
               </button>
-              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_id" onclick="fill_modal('pending_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
-                Pending
-              </button>
-              <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_id" onclick="fill_modal('accept_id', '{{ $booking->id }}', '{{ $detail->id }}')"> 
-                Terima
-              </button>
-              
-              <a href="{{url('/reserve/status/edit/'.$detail->id)}}" class="btn waves-effect waves-light blue">Edit</a>
             </div>
           @endif
         @endcomponent
@@ -133,70 +129,215 @@
 
   @if (Auth::check() && Auth::user()->hasRole('manage_room'))
     @component('status.detail_modal')
-      @slot('modal_id') reject_id @endslot
-      @slot('title') Konfirmasi Penolakan @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menolak / membatalkan detail reservasi ini ?
+      @slot('modal_id', 'accept_id')
+      @slot('title', 'Konfirmasi Penerimaan')
+      @slot('content', 'Apakah anda yakin ingin menerima detail reservasi ini ?')
+      @slot('routing')
+        {{url('/reserve/status/accept')}}
       @endslot
-      @slot('routing') {{url('/reserve/status/reject')}} @endslot
-      @slot('button_class') red @endslot
-      @slot('button') Tolak @endslot
+      @slot('button_class', 'green')
+      @slot('button', 'Terima')
     @endcomponent
 
     @component('status.detail_modal')
-      @slot('modal_id') accept_id @endslot
-      @slot('title') Konfirmasi Penerimaan @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menerima detail reservasi ini ?
+      @slot('modal_id', 'reject_all')
+      @slot('title', 'Konfirmasi Penolakan Seluruh Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?')
+      @slot('routing') 
+        {{url('/reserve/status/reject_all')}} 
       @endslot
-      @slot('routing') {{url('/reserve/status/accept')}} @endslot
-      @slot('button_class') green @endslot
-      @slot('button') Terima @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Tolak Semua')
     @endcomponent
 
     @component('status.detail_modal')
-      @slot('modal_id') pending_id @endslot
-      @slot('title') Konfirmasi Pending @endslot
-      @slot('content') 
-        Apakah anda yakin ingin mengubah detail reservasi ini menjadi menunggu ?
+      @slot('modal_id', 'accept_all')
+      @slot('title', 'Konfirmasi Penerimaan Seluruh Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menerima seluruh reservasi ini ?')
+      @slot('routing') 
+        {{url('/reserve/status/accept_all')}} 
       @endslot
-      @slot('routing') {{url('/reserve/status/pending')}} @endslot
-      @slot('button_class') orange @endslot
-      @slot('button') Terima @endslot
+      @slot('button_class', 'green')
+      @slot('button', 'Terima Semua')
     @endcomponent
 
-    @component('status.detail_modal')
-      @slot('modal_id') reject_all @endslot
-      @slot('title') Konfirmasi Penolakan Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?
-      @endslot
-      @slot('routing') {{url('/reserve/status/reject_all')}} @endslot
-      @slot('button_class') red @endslot
-      @slot('button') Tolak Semua @endslot
-    @endcomponent
+    <div id="edit_detail" class="modal">
+      <div class="modal-header">
+        <a class="btn btn-flat right modal-close">&times;</a>
+      </div>
+      <div class="modal-content">
+        <h4>Edit Detail Reservasi</h4>
+        <form id="form_edit_detail" method="POST" action="{{url('/reserve/status/edit')}}">
+          {{csrf_field()}}
+          <input type="hidden" name="booking_id" value="">
+          <input type="hidden" name="detail_id" value="">
 
-    @component('status.detail_modal')
-      @slot('modal_id') accept_all @endslot
-      @slot('title') Konfirmasi Penerimaan Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin menerima seluruh reservasi ini ?
-      @endslot
-      @slot('routing') {{url('/reserve/status/accept_all')}} @endslot
-      @slot('button_class') green @endslot
-      @slot('button') Terima Semua @endslot
-    @endcomponent
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">room</i>            
+              <select name='room' required>
+                @foreach ($rooms as $room)
+                  <option value='{{$room->id}}'> {{$room->room_code}} ({{$room->room_name}}) </option>
+                @endforeach
+              </select>
+              <label for="room">Ruangan</label>
+              <span class="helper-text">
+                Pilih Ruangan yang akan Anda Gunakan
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan ruangan yang akan Anda gunakan tersedia">help</i>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">date_range</i>
+              <input type="text" class="datepicker" id="start_date" name="start_date" class="validate" required>
+              <label for="start_date">Tanggal</label>
+              <span class="helper-text">
+                Pilih Tanggal Acara Anda (Format: YYYY-MM-DD)
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan hari yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+          </div>
 
-    @component('status.detail_modal')
-      @slot('modal_id') pending_all @endslot
-      @slot('title') Konfirmasi Pending Seluruh Reservasi @endslot
-      @slot('content') 
-        Apakah anda yakin ingin mengubah seluruh status reservasi ini menjadi menunggu ?
-      @endslot
-      @slot('routing') {{url('/reserve/status/pending_all')}} @endslot
-      @slot('button_class') orange @endslot
-      @slot('button') Pending Semua @endslot
-    @endcomponent
+          <div class="row">
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix">access_time</i>
+              <input type="text" class="timepicker" id="start_time" name="start_time" class="validate" required>
+              <label for="start_time">Waktu Mulai</label>
+              <span class="helper-text">
+                Pilih Waktu Mulai Acara
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix"></i>
+              <input type="text" class="timepicker" id="end_time" name="end_time" class="validate" required>
+              <label for="end_time">Waktu Selesai</label>
+              <span class="helper-text">
+                Pilih Waktu Selesai Acara
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">check_circle_outline</i>
+              <select name="status">
+                <option value="1" selected>MENUNGGU</option>
+                <option value="2">TERIMA</option>
+                <option value="3">TOLAK</option>
+              </select>
+
+              <label for="status">Status</label>
+              <span class="helper-text">
+                Ganti status detail
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pilihan status secara default adalah Menunggu">help</i>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <a class="btn waves-effect waves-light grey modal-close">
+          Kembali
+        </a>
+        <button class="btn waves-effect waves-light blue" onclick="submit_form('form_edit_detail')">
+          Edit
+        </button>
+      </div>
+    </div>
+
+
+    <div id="add_detail" class="modal">
+      <div class="modal-header">
+        <a class="btn btn-flat right modal-close">&times;</a>
+      </div>
+      <div class="modal-content">
+        <h4>Tambah Detail Reservasi</h4>
+        <form id="form_add_detail" method="POST" action="{{url('/reserve/status/add')}}">
+          {{csrf_field()}}
+          <input type="hidden" name="booking_id" value="">
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">room</i>            
+              <select name='room' required>
+                @foreach ($rooms as $room)
+                  <option value='{{$room->id}}'> {{$room->room_code}} ({{$room->room_name}}) </option>
+                @endforeach
+              </select>
+              <label for="room">Ruangan</label>
+              <span class="helper-text">
+                Pilih Ruangan yang akan Anda Gunakan
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan ruangan yang akan Anda gunakan tersedia">help</i>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">date_range</i>
+              <input type="text" class="datepicker" id="start_date" name="start_date" class="validate" required>
+              <label for="start_date">Tanggal</label>
+              <span class="helper-text">
+                Pilih Tanggal Acara Anda (Format: YYYY-MM-DD)
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan hari yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix">access_time</i>
+              <input type="text" class="timepicker" id="start_time" name="start_time" class="validate" required>
+              <label for="start_time">Waktu Mulai</label>
+              <span class="helper-text">
+                Pilih Waktu Mulai Acara
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix"></i>
+              <input type="text" class="timepicker" id="end_time" name="end_time" class="validate" required>
+              <label for="end_time">Waktu Selesai</label>
+              <span class="helper-text">
+                Pilih Waktu Selesai Acara
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">check_circle_outline</i>
+              <select name="status">
+                <option value="1" selected>MENUNGGU</option>
+                <option value="2">TERIMA</option>
+                <option value="3">TOLAK</option>
+              </select>
+
+              <label for="status">Status</label>
+              <span class="helper-text">
+                Ganti status detail
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pilihan status secara default adalah Menunggu">help</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col s12">
+              <button class="btn waves-effect waves-light right" type="submit">
+                Tambah <i class="material-icons right">send</i>
+              </button>
+              <button class="btn waves-effect waves-light right grey modal-close" style="margin-right:0.3rem">
+                Kembali
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   @endif
 
 @endsection
@@ -212,8 +353,33 @@
       }
     }
 
+    function submit_form(form_id){
+      document.getElementById(form_id).submit();
+    }
+    
+    function fill_edit_detail(booking_id, detail_id, room_id, date, start, end, status){
+      $('#edit_detail input[name="booking_id"').val(booking_id);
+      $('#edit_detail input[name="detail_id"').val(detail_id);
+      $('#edit_detail input[name="start_date"]').val(date);
+      $('#edit_detail input[name="start_time"]').val(start);
+      $('#edit_detail input[name="end_time"]').val(end);
+      $('#edit_detail select[name="room"]').val(room_id);
+      $('#edit_detail select[name="status"]').val(status);
+      $('select').formSelect();
+    }
+
     $(document).ready(function(){
       $('.modal').modal();
+      $('select').formSelect();
+      $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+      $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+      });
+      $('.timepicker').timepicker({
+        twelveHour: false,
+      });
+      $('.tooltipped').tooltip();
+
     })
   </script>
 @endsection
