@@ -53,6 +53,7 @@ class ReservationController extends Controller
         $data['booking'] = $this->get_one_booking($booking_id);
         $data['booking_details'] = $this->get_all_detail($booking_id); 
         $data['rooms'] = Room::all();
+
         return view('status.detail', $data);
     }
 
@@ -337,8 +338,10 @@ class ReservationController extends Controller
                 'rooms.id as room_id',
                 'rooms.room_code',
                 'rooms.room_name',
+                'booking_statuses.id as booking_status_id',
                 'booking_statuses.booking_status_name'
                 )
+            ->orderBy('booking_statuses.id', 'DESC')
             ->orderBy('booking_details.event_start')
             ->orderBy('rooms.room_code')
             ->get();
@@ -498,7 +501,7 @@ class ReservationController extends Controller
     }
 
     private function error_message($booking_id, $detail_id){
-        return 'Gagal Menerima Detail #'.$detail_id.' Reservasi '.$booking_id.', Bentrok. '."";
+        return 'Gagal menerima Detail Reservasi #'.$booking_id.'-'.$detail_id.", Bentrok;  ";
     }
 
     public function accept_all_reservation(Request $request){
@@ -517,7 +520,7 @@ class ReservationController extends Controller
                 )->count() ) {
                 $any_crash = true;
                 $this->reject_detail($booking_detail->id);
-                $errors = $errors.($this->error_message($request->booking_id, $booking_detail->id));
+                $errors = $errors.($this->error_message($request->booking_id, $booking_detail->id))."\n";
             } else {
                 $this->accept_detail($booking_detail->id);
             }
@@ -583,7 +586,66 @@ class ReservationController extends Controller
 
     public function edit_one_reservation(Request $request){
         //$this->validator_room($request)->validate();
-        dd($request);
+
+        $detail = BookingDetail::find($request->detail_id);
+        $detail->room_id = $request->room;
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $detail->event_start = $start_time->toDateTimeString();
+        $detail->event_end = $end_time->toDateTimeString();
+        $detail->booking_status_id = $this->waiting_booking_status_id;
+        $detail->save();
+
+        if ($request->status == 2){
+            if ( $this->check_crash(
+                $request->detail_id,
+                $request->room,
+                $detail->event_start,
+                $detail->event_end
+                )->count()) {
+            $detail->booking_status_id = $this->rejected_booking_status_id;
+            $detail->save();
+
+            return redirect('reserve/status/'.$request->booking_id)->withErrors('Gagal memerbarui status menjadi DITERIMA untuk detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
+            } 
+        } 
+        $detail->booking_status_id = $request->status;
+        $detail->save();
+
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil memerbarui status detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
+    }
+
+    public function add_one_reservation(Request $request){
+        // validate
+
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+        $bookingDetail = $this->create_booking_detail(
+            $request->room, 
+            $request->booking_id, 
+            $start_time->toDateTimeString(), 
+            $end_time->toDateTimeString()
+        );
+
+
+        if ($request->status == 2){
+            if ( $this->check_crash(
+                $bookingDetail->id,
+                $request->room,
+                $bookingDetail->event_start,
+                $bookingDetail->event_end
+                )->count()) {
+            $bookingDetail->booking_status_id = $this->rejected_booking_status_id;
+            $bookingDetail->save();
+
+            return redirect('reserve/status/'.$request->booking_id)->withErrors('Berhasil membuat Detail Reservasi baru, namun gagal memerbarui status menjadi DITERIMA untuk detail reservasi #'.$request->booking_id.'-'.$bookingDetail->id);
+            } 
+        } 
+        $bookingDetail->booking_status_id = $request->status;
+        $bookingDetail->save();
+
+
+        return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil menambah status detail reservasi #'.$request->booking_id.'-'.$bookingDetail->id);
     }
 
     // to do : helper search, filter by organization, category, agency, status, etc. status approval

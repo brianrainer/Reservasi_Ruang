@@ -56,7 +56,8 @@ Route::prefix('reserve')->group(function(){
     Route::post('accept_all', 'ReservationController@accept_all_reservation');
     Route::post('pending', 'ReservationController@pending_one_reservation');
     Route::post('pending_all', 'ReservationController@pending_all_reservation');
-    Route::post('edit', 'ReservatioController@edit_one_reservation');
+    Route::post('edit', 'ReservationController@edit_one_reservation');
+    Route::post('add', 'ReservationController@add_one_reservation');
   });
 });
 
