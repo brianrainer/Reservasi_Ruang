@@ -20,13 +20,13 @@
     </div>
   </div>
   <div class="row">
-    @if ($room_code)
+    @isset ($room_code)  
       <div class="col s8 m8 l8 offset-s2 offset-m2 offset-l2 box" id="eventbox" style="text-align: center">
         <h5>{{$room_code}}</h5>
         <h3><strong id="now"></strong></h3>
         <h5 id="status"></h5>
       </div>
-    @endif
+    @endisset
 
   </div>
   <div class="row" style="padding:30px;">
@@ -47,7 +47,7 @@
         }
       ];
 
-      @isset ($room_code)
+      @isset ($room_code)    
         calendarEvent = [
           {
             url: '/calendar/accepted/' + '{{$room_code}}',
@@ -57,7 +57,7 @@
             cache: true 
           }
         ]
-      @endif
+      @endisset
       
       $('#calendar').fullCalendar({
         header: { 
@@ -77,6 +77,7 @@
       var day = moment().format('dddd, Do of MMM YYYY');
       var time = moment().format('HH:mm:ss');
       
+      @isset($room_code)
       $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(data){
           if (data){
             $('#now').html(data);
@@ -91,6 +92,23 @@
             document.getElementById('eventbox').style.borderColor = '#757575';
           }
         });
+      @else
+      $.get('/calendar/status?'+ '&time=' + moment().format(), function(data){
+          if (data){
+            $('#now').html(data);
+            $('#status').html('Ruangan sedang dipakai');
+            document.getElementById('eventbox').style.backgroundColor = '#e53935';
+            document.getElementById('eventbox').style.borderColor = '#d32f2f';
+          }
+          else {
+            $('#now').html('-');
+            $('#status').html('Ruangan kosong');
+            document.getElementById('eventbox').style.backgroundColor = '#9e9e9e';
+            document.getElementById('eventbox').style.borderColor = '#757575';
+          }
+        });
+      @endisset
+      
       $('#day').html(day);
       $('#time').html(time);
     }

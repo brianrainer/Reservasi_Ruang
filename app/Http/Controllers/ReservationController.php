@@ -18,9 +18,9 @@ use DB;
 
 class ReservationController extends Controller
 {
-    private $waiting_booking_status_id = 1;
-    private $accepted_booking_status_id = 2;
-    private $rejected_booking_status_id = 3;
+    protected $waiting_booking_status_id = 1;
+    protected $accepted_booking_status_id = 2;
+    protected $rejected_booking_status_id = 3;
 
     public function index_reserve(){
         return view('reserve.index');
@@ -81,7 +81,7 @@ class ReservationController extends Controller
         return view('reserve.multirepeat', $data);
     }
 
-    private function load_reserve_form(){
+    protected function load_reserve_form(){
         $data['rooms'] = Room::all();
         $data['routines'] = Routine::all();
         $data['agencies'] = Agency::all();
@@ -89,7 +89,7 @@ class ReservationController extends Controller
         return $data;
     }
 
-    private function validator_form(Request $request){
+    protected function validator_form(Request $request){
         return Validator::make($request->all(), [
             'full_name' => 'required|string|max:100',
             'nrp_nip' => 'nullable|string|min:10|max:20',
@@ -140,7 +140,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    private function validator_room(Request $request, $is_array){
+    protected function validator_room(Request $request, $is_array){
         if ($is_array) {
             return Validator::make($request->all(), [
                 'room' => 'required|array',
@@ -160,7 +160,7 @@ class ReservationController extends Controller
         }
     }
 
-    private function validator_booking(Request $request){
+    protected function validator_booking(Request $request){
         return Validator::make($request->all(), [
             'booking_id' => 'required|numeric',
         ], [
@@ -169,7 +169,7 @@ class ReservationController extends Controller
         ]);        
     }
 
-    private function validator_detail(Request $request){
+    protected function validator_detail(Request $request){
         return Validator::make($request->all(), [
             'booking_id' => 'required|numeric',
             'detail_id' => 'required|numeric',
@@ -181,24 +181,24 @@ class ReservationController extends Controller
         ]);
     }
 
-    private function set_one_detail($detail_id, $status_id){
+    protected function set_one_detail($detail_id, $status_id){
         $booking_detail = BookingDetail::findOrFail($detail_id);
         $booking_detail->booking_status_id = $status_id;
         return $booking_detail->save();
     }
 
-    private function accept_detail($detail_id){
+    protected function accept_detail($detail_id){
         return $this->set_one_detail($detail_id, $this->accepted_booking_status_id);
     }
-    private function reject_detail($detail_id){
+    protected function reject_detail($detail_id){
         return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
     }
 
-    private function pending_detail($detail_id){
+    protected function pending_detail($detail_id){
         return $this->set_one_detail($detail_id, $this->waiting_booking_status_id);
     }
 
-    private function get_all_booking(){
+    protected function get_all_booking(){
         return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
             ->select(
@@ -213,7 +213,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function get_all_booking_today(){
+    protected function get_all_booking_today(){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')
@@ -232,7 +232,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function get_booking_calendar($status_id, $start, $end){
+    protected function get_booking_calendar($status_id, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->join('booking_statuses', 'booking_details.booking_status_id','=','booking_statuses.id')           
@@ -254,7 +254,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function get_room_booking_calendar($status_id, $room_code, $start, $end){
+    protected function get_room_booking_calendar($status_id, $room_code, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->where('room_code', '=', $room_code)
@@ -277,7 +277,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function get_room_booking_status($status_id, $room_code, $time){
+    protected function get_room_booking_status($status_id, $room_code, $time){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'booking_details.room_id','=','rooms.id')
             ->where('room_code', '=', $room_code)
@@ -288,29 +288,29 @@ class ReservationController extends Controller
             ->first();
     }
 
-    private function get_booking_calendar_accepted(Request $request){
+    protected function get_booking_calendar_accepted(Request $request){
         return $this->get_booking_calendar($this->accepted_booking_status_id, $request->start, $request->end);
     }
 
-    private function get_room_booking_calendar_accepted(Request $request, $room_code){
+    protected function get_room_booking_calendar_accepted(Request $request, $room_code){
         return $this->get_room_booking_calendar($this->accepted_booking_status_id, $room_code, $request->start, $request->end);
     }
 
-    private function get_booking_calendar_waiting(Request $request){
+    protected function get_booking_calendar_waiting(Request $request){
         return $this->get_booking_calendar($this->waiting_booking_status_id, $request->start, $request->end);
     }
 
-    private function get_booking_calendar_rejected(Request $request){
+    protected function get_booking_calendar_rejected(Request $request){
         return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
     }
 
-    private function get_room_status(Request $request){
+    protected function get_room_status(Request $request){
       $current =  $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
 
       return $current['event_title'];
     }
 
-    private function get_one_booking($booking_id){
+    protected function get_one_booking($booking_id){
         return Booking::where('bookings.id', $booking_id)
             ->join('agencies', 'agencies.id','=','bookings.agency_id')
             ->join('categories', 'categories.id','=','bookings.category_id')
@@ -328,7 +328,7 @@ class ReservationController extends Controller
             ->first();        
     }
 
-    private function get_one_detail($detail_id){
+    protected function get_one_detail($detail_id){
         return BookingDetail::where('booking_details.id', $detail_id)
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
             ->join('booking_statuses', 'booking_statuses.id','=','booking_details.booking_status_id')
@@ -345,7 +345,7 @@ class ReservationController extends Controller
         
     }
 
-    private function get_all_detail($booking_id){
+    protected function get_all_detail($booking_id){
         return Booking::where('bookings.id', $booking_id)
             ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
             ->join('rooms', 'rooms.id','=','booking_details.room_id')
@@ -366,7 +366,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function create_booking(Request $request){
+    protected function create_booking(Request $request){
         return Booking::create([
             'name' => $request->full_name,
             'nrp_nip' => $request->nrp_nip,
@@ -379,7 +379,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    private function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
+    protected function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
         return BookingDetail::create([
             'booking_id' => $booking_id,
             'room_id' => $room_id,
@@ -519,7 +519,7 @@ class ReservationController extends Controller
             ->get();
     }
 
-    private function error_message($booking_id, $detail_id){
+    protected function error_message($booking_id, $detail_id){
         return 'Gagal menerima Detail Reservasi #'.$booking_id.'-'.$detail_id.", Bentrok;  ";
     }
 
