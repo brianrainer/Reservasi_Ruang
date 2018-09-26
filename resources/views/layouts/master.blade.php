@@ -31,10 +31,10 @@
 </head>
 <body>
   <div class="navbar-fixed">
-    <nav class="blue">
+    <nav class="blue darken-4">
       <div class="nav-wrapper">
         <a href="/" class="brand-logo">
-          <img src="{{url('/')}}/images/its.png" style="max-width:100px;">
+          <img src="{{url('/')}}/images/its.png" style="max-width:100px;"></img>
         </a>
         <a href="#" data-target="sidenav_id" class="sidenav-trigger">
           <i class="material-icons">menu</i>
@@ -53,12 +53,10 @@
   <header></header>
 
   <main>
-    <div class="container">
-      @yield('content')
-    </div>
+    @yield('content')
   </main>
 
-  <footer class="page-footer teal">
+  <footer class="page-footer blue darken-4">
     <div class="footer-copyright">
       <div class="container">
         <div class="row">

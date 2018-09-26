@@ -3,8 +3,10 @@
 @section('title', 'ReservasiTC | Kalender')
 
 @section('content')
-  <div class="row" style="padding:30px;">
-    <div id="calendar"></div>
+  <div class="container" style="width:80%">
+    <div class="row" style="padding:30px;">
+      <div id="calendar"></div>
+    </div>
   </div>
 @endsection
 
@@ -19,19 +21,7 @@
             textColor: 'white',
             borderColor: 'black',
             cache: true
-          },{
-            url: 'calendar/waiting',
-            color: 'orange',
-            textColor: 'white',
-            borderColor: 'black',
-            cache: true
-          },{
-            url: 'calendar/rejected',
-            color: 'red',
-            textColor: 'white',
-            borderColor: 'black',
-            cache: true
-          },
+          }
         ],
         timeFormat: 'H:mm'
       })

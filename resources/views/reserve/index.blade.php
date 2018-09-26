@@ -3,6 +3,7 @@
 @section('title','ReservasiTC | Form Reservasi')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Reservasi</h1>
   <div class="row">
     <div class="col s12 m6">
@@ -50,5 +51,6 @@
         </div>
       </a>
     </div>
+  </div>
   </div>
 @endsection

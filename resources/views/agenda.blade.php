@@ -2,35 +2,37 @@
 
 @section('title', 'ReservasiTC | Agenda')
 
-@section('content')
+@section('css')
   <style>
-  div.box {
-    margin: auto;
-    border-style: solid;
-    border-radius: 15px;
-    border-width: 5px;
-  }
+    .box {
+      margin: auto;
+      border-style: solid;
+      border-radius: 5px;
+      border-width: 5px;
+    }
   </style>
-  <div class="row">
-    <div class="col">
+@endsection
+
+@section('content')
+  <div class="container" style="width:80%">
+  <div class="row" style="padding:20px">
+    <div class="col s4 m4 l4">
       <h2>
         <strong id="time"></strong>
         <h5 id="day"></h5>
       </h2>
     </div>
-  </div>
-  <div class="row">
     @isset ($room_code)  
-      <div class="col s8 m8 l8 offset-s2 offset-m2 offset-l2 box" id="eventbox" style="text-align: center">
+      <div class="col s8 m8 l8 box" id="eventbox" style="text-align: center">
         <h5>{{$room_code}}</h5>
         <h3><strong id="now"></strong></h3>
         <h5 id="status"></h5>
       </div>
     @endisset
-
   </div>
-  <div class="row" style="padding:30px;">
+  <div class="row" style="padding:20px;">
     <div id="calendar"></div>
+  </div>
   </div>
 @endsection
 

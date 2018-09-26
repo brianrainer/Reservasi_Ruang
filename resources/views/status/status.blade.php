@@ -38,7 +38,7 @@
             <td>{{$booking->event_title}}</td>
             <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('l jS \\of F Y H:i:s')}}</td>
             <td>
-              <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary">Detail</a>
+              <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary blue darken-4">Detail</a>
             </td>
           </tr>
         @endforeach
