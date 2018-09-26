@@ -3,6 +3,7 @@
 @section('title', 'ReservasiTC | Status')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Status Reservasi</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -50,4 +51,5 @@
       Belum Ada Reservasi
     </div>
   @endif
+  </div>
 @endsection

@@ -3,6 +3,7 @@
 @section('title','ReservasiTC | Detail')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Detail Reservasi</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -382,4 +383,5 @@
 
     })
   </script>
+  </div>
 @endsection

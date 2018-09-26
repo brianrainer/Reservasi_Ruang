@@ -3,7 +3,6 @@
 <li><a style="color:#ffc107" href="{{url('room')}}"><strong>Ruangan</strong></a></li>
 <li><a style="color:#ffc107" href="{{url('reserve')}}"><strong>Reservasi</strong></a></li>
 <li><a style="color:#ffc107" href="{{url('reserve/status')}}"><strong>Status</strong></a></li>
-<li><a style="color:#ffc107" href="{{url('terms')}}"><strong>Syarat</strong></a></li>
 @if (Auth::check())
   <li><a style="color:#ffc107" href="{{url('staff')}}"><strong>Staff</strong></a></li>
   <li>

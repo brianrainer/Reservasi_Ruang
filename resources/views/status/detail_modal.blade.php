@@ -1,4 +1,4 @@
-  <div id="{{ $modal_id }}" class="modal">
+  <div id="{{ $modal_id }}" class="modal container">
     <div class="modal-header">
       <a class="btn btn-flat right modal-close">&times;</a>
     </div>

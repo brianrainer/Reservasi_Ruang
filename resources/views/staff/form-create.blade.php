@@ -3,6 +3,7 @@
 @section('title', 'Create Staff')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h3>Create Staff</h3>
 
   @include('layouts.errors')
@@ -55,5 +56,6 @@
         </div>
       </div>
    </form>
+  </div>
   </div>
 @endsection
