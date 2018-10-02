@@ -4,21 +4,17 @@
 
 @section('css')
   <style>
-    .free-room-box {
+    .box {
       margin: auto;
       border-style: solid;
       border-radius: 5px;
       border-width: 5px;
-      border-color: #0d47a1;
-      background: linear-gradient(to bottom, #0d47a1 30%, white 70%);
     }
-    .used-room-box {
-      margin: auto;
-      border-style: solid;
-      border-radius: 5px;
-      border-width: 5px;
-      border-color: #0d47a1;
-      background: linear-gradient(to bottom, #b71c1c 30%, white 70%);
+    .free-room {
+      border-color: #ffb300;
+    }
+    .used-room {
+      border-color: #b71c1c; 
     }
   </style>
 @endsection
@@ -26,19 +22,25 @@
 @section('content')
   <div class="container" style="width:80%">
     <div class="row" style="padding:20px">
-      <div class="col s4 m4 l4">
-        <h2>
-          <strong id="time"></strong>
-          <h5 id="day"></h5>
-        </h2>
-      </div>
-      @isset ($room_code)  
-        <div class="col s8 m8 l8" id="eventbox" style="text-align: center">
-          <h5 class="amber-text"><strong>{{$room_code}}</strong></h5>
-          <h3><strong id="now"></strong></h3>
-          <h5 id="status"></h5>
+    @isset ($room_code)  
+      <div class="col s12 m12 l12 box" id="eventbox" style="text-align: center">
+        <div class="row" id="eventtitle">
+          <div class="col s12 m12 l12">
+            <h4 class="center-align"><strong>{{$room_code}}</strong></h4>
+          </div>
         </div>
-      @endisset
+        <div class="row">
+          <div class="col s3 m3 l3">
+            <h5><strong id="time"></strong></h4>
+            <h5 id="day"></h4>
+          </div>
+          <div class="col s9 m9 l9">
+            <h3><strong id="now"></strong></h3>
+            <h5 id="status"></h5>
+          </div>
+        </div>
+      </div>
+    @endisset
     </div>
     <div class="row" style="padding:20px;">
       <div id="calendar"></div>
@@ -89,17 +91,29 @@
       var day = moment().format('dddd, Do of MMM YYYY');
       var time = moment().format('HH:mm:ss');
       
+      $('#day').html(day);
+      $('#time').html(time);
+    }
+
+    setInterval(update, 1000);
+
+    function update_board(){
       @isset($room_code)
         $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(current_event){
           if (current_event){
-            $('#now').html(current_event);
-            $('#status').html('Ruangan sedang dipakai');
-            $('#eventbox').removeClass('free-room-box').addClass('used-room-box');
+            var start = moment(current_event.event_start).format('hh:mm:ss');
+            var end = moment(current_event.event_end).format('hh:mm:ss');
+
+            $('#now').html(current_event.event_title);
+            $('#status').html(start + ' - ' + end);
+            $('#eventtitle').css('background', '#b71c1c');
+            $('#eventbox').removeClass('free-room').addClass('used-room');
           }
           else {
             $('#now').html('-');
             $('#status').html('Ruangan kosong');
-            $('#eventbox').removeClass('used-room-class').addClass('free-room-box');
+            $('#eventtitle').css('background', '#ffb300');
+            $('#eventbox').removeClass('used-room').addClass('free-room');
           }
         });
       @else
@@ -118,11 +132,9 @@
           }
         });
       @endisset
-      
-      $('#day').html(day);
-      $('#time').html(time);
     }
 
-    setInterval(update, 1000);
+    update_board();
+    setInterval(update_board, 60000);
   </script>
 @endsection
