@@ -27,6 +27,7 @@
                 <i class="material-icons">arrow_drop_down</i>
               </button>
           </th>
+          <th>Status</th>
           <th>Detail</th>
         </tr>
       </thead>
@@ -37,6 +38,7 @@
             <td>{{$booking->name}}</td>
             <td>{{$booking->event_title}}</td>
             <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('l jS \\of F Y H:i:s')}}</td>
+            <td>{{$booking->status}}</td>
             <td>
               <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary">Detail</a>
             </td>

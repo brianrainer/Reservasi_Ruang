@@ -19,18 +19,12 @@ class CreateBookingDetailsTable extends Migration
             $table->integer('room_id')->unsigned();
             $table->timestamp('event_start')->nullable();
             $table->timestamp('event_end')->nullable();
-            $table->integer('booking_status_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('booking_id')
                 ->references('id')
                 ->on('bookings')
-                ->onUpdate('cascade');
-
-            $table->foreign('booking_status_id')
-                ->references('id')
-                ->on('booking_statuses')
                 ->onUpdate('cascade');
 
             $table->foreign('room_id')

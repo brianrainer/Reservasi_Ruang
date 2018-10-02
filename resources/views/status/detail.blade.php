@@ -19,7 +19,7 @@
         {{$booking->name}}
       @endcomponent
 
-      @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+      @if (Auth::check())
         @if (!empty($booking->nrp_nip))
           @component('status.detail_div')
             @slot('title', 'NRP / NIP')
@@ -59,70 +59,63 @@
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title', 'Status Keseluruhan')
-        @if ($booking->overall_status_id == 2)
-          <div class="card horizontal green white-text">
-            <div class="card-content">
-              <strong>
-                {{$booking->overall_status}}
-              </strong>
-            </div>
+        @slot('title', 'Status')
+        <div class="row">
+          <div class="col s12 m6">
+            @if ($booking->overall_status_id == $accepted_id)
+              <div class="card horizontal blue darken-4 white-text">
+            @elseif ($booking->overall_status_id == $rejected_id)
+              <div class="card horizontal red white-text">
+            @else 
+              <div class="card horizontal orange white-text">
+            @endif
+                <div class="card-content">
+                  <strong>
+                    {{$booking->overall_status}}
+                  </strong>
+                </div>
+              </div>
           </div>
-        @elseif ($booking->overall_status_id == 3)
-          <div class="card horizontal red white-text">
-            <div class="card-content">
-              <strong>
-                {{$booking->overall_status}}
-              </strong>
-            </div>
-          </div>
-        @else 
-          <div class="card horizontal orange">
-            <div class="card-content">
-              <strong>
-                {{$booking->overall_status}}
-              </strong>
-            </div>
-          </div>
-        @endif
-      @endcomponent 
-
-      @component('status.detail_div')
-        @slot('title','Breakdown Status')
-        <strong>
-          {{$booking_details->where('booking_status_id', 2)->count()}} DITERIMA <br>
-        </strong>
-        <strong>
-          {{$booking_details->where('booking_status_id', 3)->count()}} DITOLAK <br>
-        </strong>
-        <strong>
-          {{$booking_details->where('booking_status_id', 1)->count()}} MENUNGGU <br>
-        </strong>
+        </div>
       @endcomponent
 
-      @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+      @if (Auth::check())
         @component('status.detail_div')
-          @slot('title', 'Ubah Status Semua')
-          <div class="col s12">
-            <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
-              Tolak Semua
-            </button>
-            <button class="btn waves-effect waves-light green modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
-              Terima Semua
-            </button>
+          @slot('title', 'Ubah Status')
+          <div class="row">
+            <div class="col s12">
+              <button class="btn waves-effect waves-light red modal-trigger" data-target="reject_all" onclick="fill_modal('reject_all', '{{ $booking->id }}','')"> 
+                Tolak
+              </button>
+              <button class="btn waves-effect waves-light orange modal-trigger" data-target="pending_all" onclick="fill_modal('pending_all', '{{ $booking->id }}','')"> 
+                Tunggu
+              </button>
+              <button class="btn waves-effect waves-light blue darken-4 modal-trigger" data-target="accept_all" onclick="fill_modal('accept_all', '{{ $booking->id }}','')"> 
+                Terima
+              </button>
+            </div>
           </div>
         @endcomponent
 
         @component('status.detail_div')
-          @slot('title', 'Aksi Lainnya')
-          <div class="col s12">
-            <button class="btn waves-effect waves-light blue modal-trigger" data-target="add_detail" onclick="fill_modal('add_detail', '{{$booking->id}}', '')">
-              Tambah Detail
-            </button>
+          @slot('title', 'Ubah Detail Ruangan')
+          <div class="row">
+            <div class="col s12">
+              <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_all" onclick="fill_modal('delete_all', '{{$booking->id}}', '')">
+                {{-- <i class="material-icons left">warning</i> --}}
+                Hapus Semua
+              </button>
+              <button class="btn waves-effect waves-light blue darken-4 modal-trigger" data-target="add_detail" onclick="fill_modal('add_detail', '{{$booking->id}}', '')">
+                Tambah
+              </button>
+            </div>
           </div>
         @endcomponent
       @endif
 
+
+      @if (count($booking_details))
+      <h4>Detail Ruangan</h4>
       <table class="responsive-table highlight centered">
         <thead>
           <tr>
@@ -130,7 +123,6 @@
             <th>Ruangan</th>
             <th>Tanggal</th>
             <th>Waktu</th>
-            <th>Status</th>
             @if (Auth::check())
               <th>Aksi</th>
             @endif
@@ -147,12 +139,11 @@
               <td>
                 {{ \Carbon\Carbon::parse($detail->event_start)->format('H:i') }} s/d {{ \Carbon\Carbon::parse($detail->event_end)->format('H:i') }}
               </td>
-              <td>{{$detail->booking_status_name}}</td>
               @if (Auth::check())
                 <td>
                   <div class="row">
                     <div class="col s12">
-                      <button class="btn waves-effect waves-light blue modal-trigger right" data-target="edit_detail" onclick="
+                      <button class="btn waves-effect waves-light blue darken-4 modal-trigger right" data-target="edit_detail" onclick="
                         fill_edit_detail(
                           '{{$booking->id}}',
                           '{{$detail->id}}', 
@@ -176,41 +167,47 @@
           @endforeach
         </tbody>
       </table>
+      @else
+        Belum ada detail reservasi
+      @endif
+      
     @endif
   </div>
 
-  @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+  {{$booking_details->render()}}
+
+  @if (Auth::check())
     @component('status.detail_modal')
-      @slot('modal_id', 'accept_id')
-      @slot('title', 'Konfirmasi Penerimaan')
-      @slot('content', 'Apakah anda yakin ingin menerima detail reservasi ini ?')
+      @slot('modal_id', 'pending_all')
+      @slot('title', 'Konfirmasi Perubahan Status')
+      @slot('content', 'Apakah anda yakin ingin mengubah status reservasi ini menjadi MENUNGGU ?')
       @slot('routing')
-        {{url('/reserve/status/accept')}}
+        {{url('/reserve/status/pending_all')}}
       @endslot
-      @slot('button_class', 'green')
-      @slot('button', 'Terima')
+      @slot('button_class', 'orange')
+      @slot('button', 'Tunggu')
     @endcomponent
 
     @component('status.detail_modal')
       @slot('modal_id', 'reject_all')
-      @slot('title', 'Konfirmasi Penolakan Seluruh Reservasi')
-      @slot('content', 'Apakah anda yakin ingin menolak / membatalkan seluruh reservasi ini ?')
+      @slot('title', 'Konfirmasi Perubahan Status')
+      @slot('content', 'Apakah anda yakin ingin mengubah status reservasi ini menjadi DITOLAK?')
       @slot('routing') 
         {{url('/reserve/status/reject_all')}} 
       @endslot
       @slot('button_class', 'red')
-      @slot('button', 'Tolak Semua')
+      @slot('button', 'Tolak')
     @endcomponent
 
     @component('status.detail_modal')
       @slot('modal_id', 'accept_all')
-      @slot('title', 'Konfirmasi Penerimaan Seluruh Reservasi')
-      @slot('content', 'Apakah anda yakin ingin menerima seluruh reservasi ini ?')
+      @slot('title', 'Konfirmasi Perubahan Status')
+      @slot('content', 'Apakah anda yakin ingin mengubah status reservasi ini menjadi DITERIMA?')
       @slot('routing') 
         {{url('/reserve/status/accept_all')}} 
       @endslot
       @slot('button_class', 'green')
-      @slot('button', 'Terima Semua')
+      @slot('button', 'Terima')
     @endcomponent
 
     @component('status.detail_modal')
@@ -224,6 +221,17 @@
       @slot('button', 'Hapus Detail')
     @endcomponent
 
+    @component('status.detail_modal')
+      @slot('modal_id', 'delete_all')
+      @slot('title', 'Konfirmasi Penghapusan Detail Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menghapus SELURUH detail reservasi ini ?')
+      @slot('routing')
+        {{url('/reserve/status/delete_all')}}
+      @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Hapus Semua')
+    @endcomponent
+
     <div id="edit_detail" class="modal">
       <div class="modal-header">
         <a class="btn btn-flat right modal-close">&times;</a>
@@ -234,7 +242,6 @@
           {{csrf_field()}}
           <input type="hidden" name="booking_id" value="">
           <input type="hidden" name="detail_id" value="">
-
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">room</i>            
@@ -260,7 +267,6 @@
               </span>
             </div>
           </div>
-
           <div class="row">
             <div class="input-field col s12 m6">
               <i class="material-icons prefix">access_time</i>
@@ -279,31 +285,13 @@
               </span>
             </div>
           </div>
-
-          <div class="row">
-            <div class="input-field col s12">
-              <i class="material-icons prefix">check_circle_outline</i>
-              <select name="status">
-                <option value="1" selected>MENUNGGU</option>
-                <option value="2">TERIMA</option>
-                <option value="3">TOLAK</option>
-              </select>
-
-              <label for="status">Status</label>
-              <span class="helper-text">
-                Ganti status detail
-                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pilihan status secara default adalah Menunggu">help</i>
-              </span>
-            </div>
-          </div>
         </form>
       </div>
-
       <div class="modal-footer">
         <a class="btn waves-effect waves-light grey modal-close">
           Kembali
         </a>
-        <button class="btn waves-effect waves-light blue" onclick="submit_form('form_edit_detail')">
+        <button class="btn waves-effect waves-light blue darken-4" onclick="submit_form('form_edit_detail')">
           Edit
         </button>
       </div>
@@ -319,11 +307,11 @@
         <form id="form_add_detail" method="POST" action="{{url('/reserve/status/add')}}">
           {{csrf_field()}}
           <input type="hidden" name="booking_id" value="">
-
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">room</i>            
-              <select name='room' required>
+              <select name='room[]' multiple required>
+                <option value="" disabled>Choose Room</option>
                 @foreach ($rooms as $room)
                   <option value='{{$room->id}}'> {{$room->room_code}} ({{$room->room_name}}) </option>
                 @endforeach
@@ -346,7 +334,6 @@
               </span>
             </div>
           </div>
-
           <div class="row">
             <div class="input-field col s12 m6">
               <i class="material-icons prefix">access_time</i>
@@ -367,30 +354,36 @@
               </span>
             </div>
           </div>
-
           <div class="row">
-            <div class="input-field col s12">
-              <i class="material-icons prefix">check_circle_outline</i>
-              <select name="status">
-                <option value="1" selected>MENUNGGU</option>
-                <option value="2">TERIMA</option>
-                <option value="3">TOLAK</option>
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix"></i>
+              <select id="routine" name="routine" required>
+                @foreach ($routines as $routine)
+                  <option value="{{$routine->repeat_in_sec}}">{{$routine->routine_name}}</option>
+                @endforeach
               </select>
-
-              <label for="status">Status</label>
+              <label for="routine">Rutinitas</label>
               <span class="helper-text">
-                Ganti status detail
-                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pilihan status secara default adalah Menunggu">help</i>
+                Pilihlah jeda rutinitas kegiatan Anda
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan rutinitas yang anda pilih benar">help</i>
+              </span>
+            </div>
+            <div class="input-field col s12 m6">
+              <i class="material-icons prefix"></i> 
+              <input type="number" id="howmanytimes" name="howmanytimes" min="1" max="20" value="{{old('howmanytimes')}}" required>
+              <label for="howmanytimes">Berapa kali</label>
+              <span class="helper-text">
+                Masukkan banyak perulangan peminjaman
+                <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Minimum perulangan adalah sekali (1x) dan maksimum perulangan adalah dua puluh kali (20x)">help</i>
               </span>
             </div>
           </div>
-
           <div class="row">
             <div class="col s12">
-              <button class="btn waves-effect waves-light right" type="submit">
+              <button class="btn waves-effect waves-light blue darken-4 right" type="submit">
                 Tambah <i class="material-icons right">send</i>
               </button>
-              <button class="btn waves-effect waves-light right grey modal-close" style="margin-right:0.3rem">
+              <button class="btn waves-effect waves-light grey modal-close right" style="margin-right:0.3rem;">
                 Kembali
               </button>
             </div>
@@ -399,8 +392,6 @@
       </div>
     </div>
   @endif
-
-  {{$booking_details->links()}}
 @endsection
 
 @section('js')
@@ -425,7 +416,6 @@
       $('#edit_detail input[name="start_time"]').val(start);
       $('#edit_detail input[name="end_time"]').val(end);
       $('#edit_detail select[name="room"]').val(room_id);
-      $('#edit_detail select[name="status"]').val(status);
       $('select').formSelect();
     }
 
@@ -434,9 +424,11 @@
       $('select').formSelect();
       $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
       $('.datepicker').datepicker({
+        container: 'body',
         format: 'yyyy-mm-dd',
       });
       $('.timepicker').timepicker({
+        container: 'body',
         twelveHour: false,
       });
       $('.tooltipped').tooltip();

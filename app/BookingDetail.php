@@ -13,7 +13,7 @@ class BookingDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'event_start', 'event_end', 'room_id', 'booking_id', 'booking_status_id',
+        'event_start', 'event_end', 'room_id', 'booking_id',
     ];
 
     /**
@@ -24,13 +24,6 @@ class BookingDetail extends Model
     protected $hidden = [
         
     ];
-
-    /**
-     * Get the booking status
-     */
-    public function bookingStatus(){
-        return $this->belongsTo('App\BookingStatus', 'booking_status_id');
-    }
 
     /**
      * Get the booking

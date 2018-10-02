@@ -11,34 +11,40 @@ class AgencySeeder extends Seeder
    */
   public function run(){
     Agency::create([
-      'agency_name' => 'Mahasiswa (Perseorangan)',
+      'agency_name' => 'Mahasiswa/Individu',
+    ]);
+    // Agency::create([
+    //   'agency_name' => 'BSO',
+    // ]);
+    Agency::create([
+      'agency_name' => 'Himpunan',
     ]);
     Agency::create([
-      'agency_name' => 'BSO',
+      'agency_name' => 'BEM',
+    ]);
+    // Agency::create([
+    //   'agency_name' => 'UKM / Club',
+    // ]);
+    Agency::create([
+      'agency_name' => 'Departemen',
     ]);
     Agency::create([
-      'agency_name' => 'HMTC',
+      'agency_name' => 'Fakultas',
     ]);
     Agency::create([
-      'agency_name' => 'UKM / Club',
+      'agency_name' => 'ITS',
     ]);
+    // Agency::create([
+    //   'agency_name' => 'Dosen/Karyawan',
+    // ]);
+    // Agency::create([
+    //   'agency_name' => 'Alumni',
+    // ]);
+    // Agency::create([
+    //   'agency_name' => 'Perusahaan',
+    // ]);
     Agency::create([
-      'agency_name' => 'BEM FTIK',
-    ]);
-    Agency::create([
-      'agency_name' => 'BEM ITS',
-    ]);
-    Agency::create([
-      'agency_name' => 'Dosen / Karyawan',
-    ]);
-    Agency::create([
-      'agency_name' => 'Alumni',
-    ]);
-    Agency::create([
-      'agency_name' => 'Perusahaan / Start-Up',
-    ]);
-    Agency::create([
-      'agency_name' => 'Non-Profit Organization',
+      'agency_name' => 'Lainnya',
     ]);
   }
 }

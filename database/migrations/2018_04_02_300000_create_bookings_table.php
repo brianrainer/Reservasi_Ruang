@@ -39,6 +39,11 @@ class CreateBookingsTable extends Migration
                 ->references('id')
                 ->on('agencies')
                 ->onUpdate('cascade');
+                
+            $table->foreign('booking_status_id')
+                ->references('id')
+                ->on('booking_statuses')
+                ->onUpdate('cascade');
         });
     }
 

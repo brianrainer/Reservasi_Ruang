@@ -38,12 +38,13 @@ Route::prefix('room')->group(function(){
 });
 
 Route::prefix('reserve')->group(function(){
+
   Route::get('/', 'ReservationController@index_reserve');
   Route::get('once', 'ReservationController@index_once');
   Route::get('repeat', 'ReservationController@index_repeat');
   Route::get('multionce', 'ReservationController@index_multi_once');
   Route::get('multirepeat', 'ReservationController@index_multi_repeat');
-
+  
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
 
@@ -61,8 +62,10 @@ Route::prefix('reserve')->group(function(){
       Route::post('pending_all', 'ReservationController@pending_all_reservation');
       Route::post('edit', 'ReservationController@edit_one_reservation');
       Route::post('add', 'ReservationController@add_one_reservation');
-      Route::post('delete', 'ReservationController@delete_one_reservation');
+      Route::post('delete', 'ReservationController@delete_one_detail');
+      Route::post('delete_all', 'ReservationController@delete_all_detail');
     });
+
   });
 });
 

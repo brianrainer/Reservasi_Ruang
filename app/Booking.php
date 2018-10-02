@@ -13,7 +13,7 @@ class Booking extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'nrp_nip', 'email', 'phone_number', 'agency_id', 'event_title', 'event_description', 'category_id',
+        'name', 'nrp_nip', 'email', 'phone_number', 'agency_id', 'event_title', 'event_description', 'category_id', 'booking_status_id',
     ];
 
     /**
@@ -45,4 +45,11 @@ class Booking extends Model
     public function bookingDetail(){
         return $this->hasMany('App\BookingDetail');
     }    
+
+    /**
+     * Get the booking status
+     */
+    public function bookingStatus(){
+        return $this->belongsTo('App\BookingStatus', 'booking_status_id');
+    }
 }
