@@ -19,14 +19,5 @@ class BookingStatusSeeder extends Seeder
     BookingStatus::create([
       'booking_status_name' => 'DITOLAK',
     ]);
-    BookingStatus::create([
-      'booking_status_name' => 'DIBATALKAN PEMOHON',
-    ]);
-    BookingStatus::create([
-      'booking_status_name' => 'DIBATALKAN TEKNISI',
-    ]);
-    BookingStatus::create([
-      'booking_status_name' => 'DIALIHKAN',
-    ]);
   }
 }

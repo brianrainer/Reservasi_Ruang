@@ -6,6 +6,9 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateBookingsTable extends Migration
 {
+
+    protected $waiting_booking_status_id = 1;
+
     /**
      * Run the migrations.
      *
@@ -23,6 +26,7 @@ class CreateBookingsTable extends Migration
             $table->string('event_title');
             $table->string('event_description', 255);
             $table->integer('category_id')->unsigned();
+            $table->integer('booking_status_id')->unsigned()->default($this->waiting_booking_status_id);
             $table->timestamps();
             $table->softDeletes();
 

@@ -59,10 +59,45 @@
       @endcomponent
 
       @component('status.detail_div')
-        @slot('title','Status Keseluruhan')
-        {{$booking_details->where('booking_status_id', 2)->count()}} DITERIMA <br>
-        {{$booking_details->where('booking_status_id', 3)->count()}} DITOLAK <br>
-        {{$booking_details->where('booking_status_id', 1)->count()}} MENUNGGU <br>
+        @slot('title', 'Status Keseluruhan')
+        @if ($booking->overall_status_id == 2)
+          <div class="card horizontal green white-text">
+            <div class="card-content">
+              <strong>
+                {{$booking->overall_status}}
+              </strong>
+            </div>
+          </div>
+        @elseif ($booking->overall_status_id == 3)
+          <div class="card horizontal red white-text">
+            <div class="card-content">
+              <strong>
+                {{$booking->overall_status}}
+              </strong>
+            </div>
+          </div>
+        @else 
+          <div class="card horizontal orange">
+            <div class="card-content">
+              <strong>
+                {{$booking->overall_status}}
+              </strong>
+            </div>
+          </div>
+        @endif
+      @endcomponent 
+
+      @component('status.detail_div')
+        @slot('title','Breakdown Status')
+        <strong>
+          {{$booking_details->where('booking_status_id', 2)->count()}} DITERIMA <br>
+        </strong>
+        <strong>
+          {{$booking_details->where('booking_status_id', 3)->count()}} DITOLAK <br>
+        </strong>
+        <strong>
+          {{$booking_details->where('booking_status_id', 1)->count()}} MENUNGGU <br>
+        </strong>
       @endcomponent
 
       @if (Auth::check() && Auth::user()->hasRole('manage_room'))
@@ -88,42 +123,59 @@
         @endcomponent
       @endif
 
-      @foreach ($booking_details as $detail)
-        @component('status.detail_div')
-          @slot('title')
-            Detail Reservasi {{$loop->iteration}} 
-            <br>(#{{$booking->id}}-{{$detail->id}})
-          @endslot
-            <div class="col s12">
-              {{$detail->room_code}} ({{$detail->room_name}})
-            </div>
-            <div class="col s12">
-              {{ \Carbon\Carbon::parse($detail->event_start)->format('l, jS \\of F Y H:i') }} to {{ \Carbon\Carbon::parse($detail->event_end)->format('H:i') }}</div>
-            <div class="col s12">
-              <strong>    
-                Status: 
-              </strong>
-              {{$detail->booking_status_name}}
-            </div>
-          @if (Auth::check() && Auth::user()->hasRole('manage_room'))
-            <div class="col s12">
-              <button class="btn waves-effect waves-light blue modal-trigger" data-target="edit_detail" onclick="
-                fill_edit_detail(
-                  '{{$booking->id}}',
-                  '{{$detail->id}}', 
-                  '{{$detail->room_id}}', 
-                  '{{\Carbon\Carbon::parse($detail->event_start)->format('Y-m-d')}}',
-                  '{{\Carbon\Carbon::parse($detail->event_start)->format('H:i')}}',
-                  '{{\Carbon\Carbon::parse($detail->event_end)->format('H:i')}}',
-                  '{{$detail->booking_status_id}}'
-                  )
-                "> 
-                Edit
-              </button>
-            </div>
-          @endif
-        @endcomponent
-      @endforeach
+      <table class="responsive-table highlight centered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ruangan</th>
+            <th>Tanggal</th>
+            <th>Waktu</th>
+            <th>Status</th>
+            @if (Auth::check())
+              <th>Aksi</th>
+            @endif
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($booking_details as $detail)
+            <tr>
+              <td>#{{$booking->id}}-{{$detail->id}}</td>
+              <td>{{$detail->room_code}} ({{$detail->room_name}})</td>
+              <td>
+                {{ \Carbon\Carbon::parse($detail->event_start)->format('l, jS \\of F Y') }}
+              </td>
+              <td>
+                {{ \Carbon\Carbon::parse($detail->event_start)->format('H:i') }} s/d {{ \Carbon\Carbon::parse($detail->event_end)->format('H:i') }}
+              </td>
+              <td>{{$detail->booking_status_name}}</td>
+              @if (Auth::check())
+                <td>
+                  <div class="row">
+                    <div class="col s12">
+                      <button class="btn waves-effect waves-light blue modal-trigger right" data-target="edit_detail" onclick="
+                        fill_edit_detail(
+                          '{{$booking->id}}',
+                          '{{$detail->id}}', 
+                          '{{$detail->room_id}}', 
+                          '{{\Carbon\Carbon::parse($detail->event_start)->format('Y-m-d')}}',
+                          '{{\Carbon\Carbon::parse($detail->event_start)->format('H:i')}}',
+                          '{{\Carbon\Carbon::parse($detail->event_end)->format('H:i')}}',
+                          '{{$detail->booking_status_id}}'
+                          )
+                        "> 
+                        Edit
+                      </button>
+                      <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_detail" onclick="fill_modal('delete_detail', '{{$booking->id}}', '{{$detail->id}}')">
+                        Hapus
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              @endif
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
     @endif
   </div>
 
@@ -161,6 +213,17 @@
       @slot('button', 'Terima Semua')
     @endcomponent
 
+    @component('status.detail_modal')
+      @slot('modal_id', 'delete_detail')
+      @slot('title', 'Konfirmasi Penghapusan Detail Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menghapus detail reservasi ini ?')
+      @slot('routing')
+        {{url('/reserve/status/delete')}}
+      @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Hapus Detail')
+    @endcomponent
+
     <div id="edit_detail" class="modal">
       <div class="modal-header">
         <a class="btn btn-flat right modal-close">&times;</a>
@@ -191,7 +254,6 @@
             <div class="input-field col s12">
               <i class="material-icons prefix">date_range</i>
               <input type="text" class="datepicker" id="start_date" name="start_date" class="validate" required>
-              <label for="start_date">Tanggal</label>
               <span class="helper-text">
                 Pilih Tanggal Acara Anda (Format: YYYY-MM-DD)
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan hari yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -203,7 +265,6 @@
             <div class="input-field col s12 m6">
               <i class="material-icons prefix">access_time</i>
               <input type="text" class="timepicker" id="start_time" name="start_time" class="validate" required>
-              <label for="start_time">Waktu Mulai</label>
               <span class="helper-text">
                 Pilih Waktu Mulai Acara
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -212,7 +273,6 @@
             <div class="input-field col s12 m6">
               <i class="material-icons prefix"></i>
               <input type="text" class="timepicker" id="end_time" name="end_time" class="validate" required>
-              <label for="end_time">Waktu Selesai</label>
               <span class="helper-text">
                 Pilih Waktu Selesai Acara
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -340,6 +400,7 @@
     </div>
   @endif
 
+  {{$booking_details->links()}}
 @endsection
 
 @section('js')

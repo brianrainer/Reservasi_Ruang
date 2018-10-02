@@ -17,7 +17,7 @@ Route::get('/', 'ReservationController@index_welcome');
 
 Route::get('/home', function(){return view('home');});
 
-Route::prefix('staff')->group(function(){
+Route::prefix('staff')->middleware('auth')->group(function(){
   Route::get('/', 'StaffController@index');
   Route::get('create', 'StaffController@create');
   Route::get('{user_id}', 'StaffController@edit');
@@ -29,10 +29,12 @@ Route::prefix('staff')->group(function(){
 Route::prefix('room')->group(function(){
   Route::get('/', 'RoomController@index');
   Route::get('detail/{room}', 'RoomController@index_room_detail');
-  Route::get('edit/{room}', 'RoomController@index_edit');
-  Route::post('edit/{room}', 'RoomController@edit');
-  Route::get('create', 'RoomController@index_create');
-  Route::post('create', 'RoomController@create');
+  Route::middleware('auth')->group(function(){
+    Route::get('edit/{room}', 'RoomController@index_edit');
+    Route::post('edit/{room}', 'RoomController@edit');
+    Route::get('create', 'RoomController@index_create');
+    Route::post('create', 'RoomController@create');
+  });
 });
 
 Route::prefix('reserve')->group(function(){
@@ -42,22 +44,25 @@ Route::prefix('reserve')->group(function(){
   Route::get('multionce', 'ReservationController@index_multi_once');
   Route::get('multirepeat', 'ReservationController@index_multi_repeat');
 
-  Route::post('once', 'ReservationController@once');
-  Route::post('repeat', 'ReservationController@repeat');
-  Route::post('multionce', 'ReservationController@multionce');
-  Route::post('multirepeat', 'ReservationController@multirepeat');
+  Route::get('status', 'ReservationController@index_status');
+  Route::get('status/{booking}', 'ReservationController@index_detail');
 
-  Route::prefix('status')->group(function(){
-    Route::get('/', 'ReservationController@index_status');
-    Route::get('{booking}', 'ReservationController@index_detail');
-    Route::post('reject', 'ReservationController@reject_one_reservation');
-    Route::post('reject_all', 'ReservationController@reject_all_reservation');
-    Route::post('accept', 'ReservationController@accept_one_reservation');
-    Route::post('accept_all', 'ReservationController@accept_all_reservation');
-    Route::post('pending', 'ReservationController@pending_one_reservation');
-    Route::post('pending_all', 'ReservationController@pending_all_reservation');
-    Route::post('edit', 'ReservationController@edit_one_reservation');
-    Route::post('add', 'ReservationController@add_one_reservation');
+  Route::middleware('auth')->group(function(){
+    Route::post('once', 'ReservationController@once');
+    Route::post('repeat', 'ReservationController@repeat');
+    Route::post('multionce', 'ReservationController@multionce');
+    Route::post('multirepeat', 'ReservationController@multirepeat');
+    Route::prefix('status')->group(function(){
+      Route::post('reject', 'ReservationController@reject_one_reservation');
+      Route::post('reject_all', 'ReservationController@reject_all_reservation');
+      Route::post('accept', 'ReservationController@accept_one_reservation');
+      Route::post('accept_all', 'ReservationController@accept_all_reservation');
+      Route::post('pending', 'ReservationController@pending_one_reservation');
+      Route::post('pending_all', 'ReservationController@pending_all_reservation');
+      Route::post('edit', 'ReservationController@edit_one_reservation');
+      Route::post('add', 'ReservationController@add_one_reservation');
+      Route::post('delete', 'ReservationController@delete_one_reservation');
+    });
   });
 });
 
