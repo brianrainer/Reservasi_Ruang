@@ -3,6 +3,7 @@
 @section('title', 'Detail Ruangan')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Detail Ruangan</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -65,5 +66,6 @@
         @endcomponent
       @endif
     @endif
+  </div>
   </div>
 @endsection

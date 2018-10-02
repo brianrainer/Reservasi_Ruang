@@ -53,7 +53,7 @@
 
         <div class="row">
           <div class="col s12">
-            <button class="btn waves-effect waves-light right" type="submit" name="action">
+            <button class="btn waves-effect waves-light right blue darken-4" type="submit" name="action">
               Submit <i class="material-icons right">send</i>
             </button>
           </div>

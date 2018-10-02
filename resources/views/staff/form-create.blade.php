@@ -3,6 +3,7 @@
 @section('title', 'Create Staff')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h3>Create Staff</h3>
 
   @include('layouts.errors')
@@ -49,11 +50,12 @@
 
       <div class="row">
         <div class="col s12">
-          <button class="btn waves-effect waves-light left" type="submit" name="action">
+          <button class="btn waves-effect waves-light left blue darken-4" type="submit" name="action">
            Create <i class="material-icons right">save</i>
           </button>
         </div>
       </div>
    </form>
+  </div>
   </div>
 @endsection

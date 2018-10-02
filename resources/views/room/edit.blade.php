@@ -3,6 +3,7 @@
 @section('title', 'Edit Detail Ruangan')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Edit Detail Ruangan</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -81,6 +82,7 @@
         </div>        
       </form>
     @endif
+  </div>
   </div>
 @endsection
 

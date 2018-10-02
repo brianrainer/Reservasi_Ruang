@@ -3,6 +3,7 @@
 @section('title', 'ReservasiTC | Tambah Ruangan')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Tambah Ruangan</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -77,6 +78,7 @@
         </div>        
       </form>
     @endif
+  </div>
   </div>
 @endsection
 

@@ -3,6 +3,7 @@
 @section('title', 'ReservasiTC | Status')
 
 @section('content')
+  <div class="container" style="width:80%">
   <h1>Status Reservasi</h1>
   @include('layouts.status')
   @include('layouts.errors')
@@ -40,7 +41,7 @@
             <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('l jS \\of F Y H:i:s')}}</td>
             <td>{{$booking->status}}</td>
             <td>
-              <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary">Detail</a>
+              <a href="{{url('reserve/status/'.$booking->id)}}" class="btn btn-primary blue darken-4">Detail</a>
             </td>
           </tr>
         @endforeach
@@ -52,4 +53,5 @@
       Belum Ada Reservasi
     </div>
   @endif
+  </div>
 @endsection

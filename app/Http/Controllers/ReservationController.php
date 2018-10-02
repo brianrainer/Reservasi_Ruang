@@ -324,9 +324,7 @@ class ReservationController extends Controller
     }
 
     protected function get_room_status(Request $request){
-      $current =  $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
-
-      return $current['event_title'];
+      return  $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
     }
 
     protected function get_one_booking($booking_id){
