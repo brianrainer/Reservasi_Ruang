@@ -33,7 +33,7 @@
   <div class="navbar-fixed">
     <nav class="blue darken-4">
       <div class="nav-wrapper">
-        <a href="/" class="brand-logo">
+        <a href="/" class="brand-logo valign-wrapper">
           <img src="{{url('/')}}/images/its.png" style="max-width:100px;"></img>
         </a>
         <a href="#" data-target="sidenav_id" class="sidenav-trigger">

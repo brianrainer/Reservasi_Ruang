@@ -8,7 +8,7 @@
 
     @include('layouts.status')
 
-    <a href="{{url('/staff/create')}}" class="btn waves-light waves-effect">
+    <a href="{{url('/staff/create')}}" class="btn waves-light waves-effect blue darken-4">
       <i class="material-icons right">add</i>add
     </a>
     <table class="centered responsive-table">
@@ -31,7 +31,7 @@
             @endif
           </td>
           <td>
-            <a href="{{url('staff/'.$user->id)}}" class="btn btn-primary">Edit</a> 
+            <a href="{{url('staff/'.$user->id)}}" class="btn btn-primary blue darken-4">Edit</a> 
           </td>
         </tr>
         @endforeach

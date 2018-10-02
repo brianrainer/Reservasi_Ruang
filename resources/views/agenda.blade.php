@@ -4,35 +4,45 @@
 
 @section('css')
   <style>
-    .box {
+    .free-room-box {
       margin: auto;
       border-style: solid;
       border-radius: 5px;
       border-width: 5px;
+      border-color: #0d47a1;
+      background: linear-gradient(to bottom, #0d47a1 30%, white 70%);
+    }
+    .used-room-box {
+      margin: auto;
+      border-style: solid;
+      border-radius: 5px;
+      border-width: 5px;
+      border-color: #0d47a1;
+      background: linear-gradient(to bottom, #b71c1c 30%, white 70%);
     }
   </style>
 @endsection
 
 @section('content')
   <div class="container" style="width:80%">
-  <div class="row" style="padding:20px">
-    <div class="col s4 m4 l4">
-      <h2>
-        <strong id="time"></strong>
-        <h5 id="day"></h5>
-      </h2>
-    </div>
-    @isset ($room_code)  
-      <div class="col s8 m8 l8 box" id="eventbox" style="text-align: center">
-        <h5>{{$room_code}}</h5>
-        <h3><strong id="now"></strong></h3>
-        <h5 id="status"></h5>
+    <div class="row" style="padding:20px">
+      <div class="col s4 m4 l4">
+        <h2>
+          <strong id="time"></strong>
+          <h5 id="day"></h5>
+        </h2>
       </div>
-    @endisset
-  </div>
-  <div class="row" style="padding:20px;">
-    <div id="calendar"></div>
-  </div>
+      @isset ($room_code)  
+        <div class="col s8 m8 l8" id="eventbox" style="text-align: center">
+          <h5 class="amber-text"><strong>{{$room_code}}</strong></h5>
+          <h3><strong id="now"></strong></h3>
+          <h5 id="status"></h5>
+        </div>
+      @endisset
+    </div>
+    <div class="row" style="padding:20px;">
+      <div id="calendar"></div>
+    </div>
   </div>
 @endsection
 
@@ -80,22 +90,20 @@
       var time = moment().format('HH:mm:ss');
       
       @isset($room_code)
-      $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(data){
-          if (data){
-            $('#now').html(data);
+        $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(current_event){
+          if (current_event){
+            $('#now').html(current_event);
             $('#status').html('Ruangan sedang dipakai');
-            document.getElementById('eventbox').style.backgroundColor = '#e53935';
-            document.getElementById('eventbox').style.borderColor = '#d32f2f';
+            $('#eventbox').removeClass('free-room-box').addClass('used-room-box');
           }
           else {
             $('#now').html('-');
             $('#status').html('Ruangan kosong');
-            document.getElementById('eventbox').style.backgroundColor = '#9e9e9e';
-            document.getElementById('eventbox').style.borderColor = '#757575';
+            $('#eventbox').removeClass('used-room-class').addClass('free-room-box');
           }
         });
       @else
-      $.get('/calendar/status?'+ '&time=' + moment().format(), function(data){
+        $.get('/calendar/status?'+ '&time=' + moment().format(), function(data){
           if (data){
             $('#now').html(data);
             $('#status').html('Ruangan sedang dipakai');

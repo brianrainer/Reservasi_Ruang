@@ -49,7 +49,7 @@
       </div>
       <div class="row">
         <div class="col s12">
-          <button class="btn waves-effect waves-light left" type="submit" name="action">
+          <button class="btn waves-effect waves-light left blue darken-4" type="submit" name="action">
            Save <i class="material-icons right">save</i>
           </button>
         </div>

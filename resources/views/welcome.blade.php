@@ -12,7 +12,10 @@
 @endsection
 
 @section('content')
-  <div class="parallax-container">
+  <div class="parallax-container valign-wrapper">
+    <div class="container center amber no-pad-bot" style="opacity:0.5">
+      <h1 class="header center">Peminjaman Ruang Departemen Informatika</h1>
+    </div>
     <div class="parallax">
       <img class="parallex-img" src="{{url('/images/informatika_front.jpg')}}">
     </div>
