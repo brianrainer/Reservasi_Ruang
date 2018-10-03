@@ -15,6 +15,7 @@ use Session;
 use Redirect;
 use Carbon\Carbon;
 use DB;
+use PDF;
 
 class ReservationController extends Controller
 {
@@ -196,6 +197,29 @@ class ReservationController extends Controller
             'detail_id.required' => 'Nomor Detail Reservasi Diperlukan',
             'detail_id.numeric' => 'Nomor Detail Reservasi Tidak Valid',
         ]);
+    }
+
+    protected function download_pdf($booking_id){
+      $booking = Booking::find($booking_id);
+      $booking_details = $this->get_all_detail($booking_id);
+      $pdf_data = $booking_details->reduce(function($carry, $item){
+        $start = Carbon::parse($item->event_start);
+        $end = Carbon::parse($item->event_end);
+
+        $obj['room'] = $item->room_code;
+        $obj['date'] = $start->formatLocalized('%A, %d %B %Y');
+        $obj['time'] = $start->format('H:i').' - '.$end->format('H:i');
+
+        return $carry->push((object) $obj);
+      }, collect());
+
+      $data['booking_details'] = $pdf_data;
+      $data['title'] = $booking->event_title;
+      $pdf = PDF::loadView('pdf', $data);
+
+      return view('pdf', $data);
+
+      return $pdf->download('surat_permohonan_reservasi_#'.$booking_id);
     }
 
     protected function set_one_detail($detail_id, $status_id){

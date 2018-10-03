@@ -91,3 +91,5 @@ Route::prefix('calendar')->group(function(){
   Route::get('status', 'ReservationController@get_room_status');
 });
 
+// Download pdf
+Route::get('download/{booking_id}', 'ReservationController@download_pdf');
