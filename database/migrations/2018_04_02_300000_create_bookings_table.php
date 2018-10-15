@@ -27,6 +27,7 @@ class CreateBookingsTable extends Migration
             $table->string('event_description', 255);
             $table->integer('category_id')->unsigned();
             $table->integer('booking_status_id')->unsigned()->default($this->waiting_booking_status_id);
+            $table->string('poster_imagepath')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
