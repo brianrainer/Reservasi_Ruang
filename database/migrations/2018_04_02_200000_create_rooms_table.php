@@ -18,6 +18,7 @@ class CreateRoomsTable extends Migration
             $table->string('room_code')->unique();
             $table->string('room_name');
             $table->string('room_imagepath')->nullable();
+            $table->softDeletes();
         });
     }
 

@@ -679,30 +679,16 @@ class ReservationController extends Controller
         $this->validator_room($request, false)->validate();
         $this->validator_time($request)->validate();
 
+        $booking = Booking::findOrFail($request->booking_id);
+        $booking->booking_status_id = $this->waiting_booking_status_id;
+        $booking->save(); 
+
         $detail = BookingDetail::find($request->detail_id);
         $detail->room_id = $request->room;
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
         $detail->event_start = $start_time->toDateTimeString();
         $detail->event_end = $end_time->toDateTimeString();
-        $detail->booking_status_id = $this->waiting_booking_status_id;
-        $detail->save();
-
-        if ($request->status == $this->accepted_booking_status_id){
-            if ( $this->check_crash(
-                $request->booking_id,
-                $request->detail_id,
-                $request->room,
-                $detail->event_start,
-                $detail->event_end
-                )->count()) {
-            $detail->booking_status_id = $this->rejected_booking_status_id;
-            $detail->save();
-
-            return redirect('reserve/status/'.$request->booking_id)->withErrors('Gagal memerbarui status menjadi DITERIMA untuk detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
-            } 
-        } 
-        $detail->booking_status_id = $request->status;
         $detail->save();
 
         return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil memerbarui status detail reservasi #'.$request->booking_id.'-'.$request->detail_id);
