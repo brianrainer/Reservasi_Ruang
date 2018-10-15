@@ -34,6 +34,7 @@ Route::prefix('room')->group(function(){
     Route::post('edit/{room}', 'RoomController@edit');
     Route::get('create', 'RoomController@index_create');
     Route::post('create', 'RoomController@create');
+    Route::post('delete', 'RoomController@delete');
   });
 });
 

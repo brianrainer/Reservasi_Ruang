@@ -12,41 +12,25 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $data['rooms'] = Room::orderBy('rooms.room_code')->get();
-        return $this->view_index($data);
+        $data['rooms'] = Room::orderBy('rooms.room_code')->paginate(10);
+        return view('room.index', $data);
     }
 
     public function index_create(){
       $data['technicians'] = $this->get_all_room_technician();
-      return $this->view_create($data);
+      return view('room.create', $data);
     }
 
     public function index_room_detail($room_code){
         $data['room'] = $this->get_room_by_code($room_code);
         $data['technicians'] = $this->get_room_technician($room_code);
-        return $this->view_room($data); 
+        return view('room.detail', $data);
     }
 
     public function index_edit($room_id){
         $data['room'] = $this->get_room_by_id($room_id);
         $data['technicians'] = $this->get_all_room_technician();
-        return $this->view_edit($data);
-    }
-
-    private function view_index($data){
-      return view('room.index', $data);
-    }
-
-    private function view_room($data){
-        return view('room.detail', $data);    
-    }
-
-    private function view_edit($data){
         return view('room.edit', $data);
-    }
-
-    private function view_create($data){
-      return view('room.create', $data);
     }
 
     protected function validator(Request $request){
@@ -119,6 +103,15 @@ class RoomController extends Controller
         }
       }
       return redirect('room/detail/'.$room->room_code)->with('message', 'Berhasil mengubah detail ruangan');
+    }
+
+    public function delete(Request $request)
+    {
+      $room = Room::find($request->room_id);
+      $room->bookingDetail()->delete();
+      $room->delete();
+
+      return redirect('room')->with('message', 'Berhasil menghapus ruangan');
     }
     
     protected function get_room_by_id($room_id){
