@@ -20,7 +20,6 @@ class CreateBookingDetailsTable extends Migration
             $table->timestamp('event_start')->nullable();
             $table->timestamp('event_end')->nullable();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('booking_id')
                 ->references('id')
