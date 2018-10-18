@@ -214,10 +214,13 @@ class ReservationController extends Controller
       }, collect());
 
       $data['booking_details'] = $pdf_data;
-      $data['title'] = $booking->event_title;
-      $pdf = PDF::loadView('pdf', $data);
+      $data['booking'] = $booking;
+      $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
+      $data['head_of_informatic'] = "Darlis Herumurti S.Kom.,M.Kom";
+      $pdf = PDF::loadView('pdf.main', $data);
+      //return view('pdf.main', $data);
 
-      return view('pdf', $data);
+      return $pdf->stream('pdf'); 
 
       return $pdf->download('surat_permohonan_reservasi_#'.$booking_id);
     }
