@@ -545,7 +545,6 @@ class ReservationController extends Controller
             $start_time->toDateTimeString(), 
             $end_time->toDateTimeString()
         );
-        $this->send_email($booking->id);
 
         return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -571,7 +570,6 @@ class ReservationController extends Controller
                 $end_time->addSeconds($request->routine)->toDateTimeString()
             );
         }
-        $this->send_email($booking->id);
 
         return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -591,8 +589,6 @@ class ReservationController extends Controller
                 $start_time->toDateTimeString(),
                 $end_time->toDateTimeString()
             );
-        }
-        $this->send_email($booking->id);
 
         return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
     }
@@ -622,7 +618,6 @@ class ReservationController extends Controller
                 );
             }
         }
-        $this->send_email($booking->id);
 
         return redirect('reserve/multirepeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
