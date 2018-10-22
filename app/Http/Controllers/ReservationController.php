@@ -589,6 +589,7 @@ class ReservationController extends Controller
                 $start_time->toDateTimeString(),
                 $end_time->toDateTimeString()
             );
+        }
 
         return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
     }
