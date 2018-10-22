@@ -47,8 +47,14 @@ class ReservationController extends Controller
         return view('agenda', $data);
     }
 
-    public function index_status(){
-        $data['bookings'] = $this->get_all_booking();
+    public function index_status(Request $request){
+        if($request->kegiatan || $request->status || $request->peminjam) {
+          $data['bookings'] = $this->get_booking_by_params($request->peminjam, $request->kegiatan, $request->status);
+        }
+        else {
+          $data['bookings'] = $this->get_all_booking();
+        }
+
         return view('status.status', $data);
     }
 
@@ -255,130 +261,167 @@ class ReservationController extends Controller
     }
 
     protected function set_one_detail($detail_id, $status_id){
-        $booking = Booking::findOrFail($detail_id);
-        $booking->booking_status_id = $status_id;
-        return $booking->save();
+      $booking = Booking::findOrFail($detail_id);
+      $booking->booking_status_id = $status_id;
+      return $booking->save();
     }
 
     protected function accept_detail($detail_id){
-        return $this->set_one_detail($detail_id, $this->accepted_booking_status_id);
+      return $this->set_one_detail($detail_id, $this->accepted_booking_status_id);
     }
     protected function reject_detail($detail_id){
-        return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
+      return $this->set_one_detail($detail_id, $this->rejected_booking_status_id);
     }
 
     protected function pending_detail($detail_id){
-        return $this->set_one_detail($detail_id, $this->waiting_booking_status_id);
+      return $this->set_one_detail($detail_id, $this->waiting_booking_status_id);
     }
 
     protected function get_all_booking(){
-        return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
-            ->join('categories', 'categories.id','=','bookings.category_id')
-            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')
-            ->select(
-                'bookings.id',
-                'bookings.name',
-                'bookings.event_title',
-                'bookings.created_at',
-                'booking_statuses.booking_status_name as status',
-                'agencies.agency_name',
-                'categories.category_name'
-                )
-            ->orderBy('bookings.created_at', 'DESC')
-            ->get();
+      return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
+        ->join('categories', 'categories.id','=','bookings.category_id')
+        ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')
+        ->select(
+          'bookings.id',
+          'bookings.name',
+          'bookings.event_title',
+          'bookings.created_at',
+          'booking_statuses.booking_status_name as status',
+          'agencies.agency_name',
+          'categories.category_name'
+          )
+        ->orderBy('bookings.created_at', 'DESC')
+        ->paginate(10);
     }
 
     protected function get_all_booking_today(){
-        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'booking_details.room_id','=','rooms.id')
-            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')
-            ->where('booking_details.event_start', '>=', Carbon::today())
-            ->where('booking_details.event_end', '<=', Carbon::tomorrow())           
-            ->where('booking_statuses.id','=', $this->accepted_booking_status_id)
-            ->select(
-                'bookings.id', 
-                'bookings.event_title', 
-                'rooms.room_code',
-                'rooms.room_name',
-                'booking_statuses.booking_status_name',
-                'booking_details.event_start',
-                'booking_details.event_end'
-                )
-            ->get();
+      return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'booking_details.room_id','=','rooms.id')
+        ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')
+        ->where('booking_details.event_start', '>=', Carbon::today())
+        ->where('booking_details.event_end', '<=', Carbon::tomorrow())           
+        ->where('booking_statuses.id','=', $this->accepted_booking_status_id)
+        ->select(
+          'bookings.id', 
+          'bookings.event_title', 
+          'rooms.room_code',
+          'rooms.room_name',
+          'booking_statuses.booking_status_name',
+          'booking_details.event_start',
+          'booking_details.event_end'
+          )
+        ->paginate(10);
     }
     
-    
+    protected function get_booking_by_params($peminjam, $kegiatan, $status) {
+      if(!$status) {
+        return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
+          ->join('categories', 'categories.id','=','bookings.category_id')
+          ->join('booking_statuses', 'bookings.booking_status_id', '=', 'booking_statuses.id')
+          ->whereRaw('lower(bookings.event_title) like ?', '%'.strtolower($kegiatan).'%')
+          ->whereRaw('lower(bookings.name) like ?', '%'.strtolower($peminjam).'%')
+          ->select(
+            'bookings.id',
+            'bookings.name',
+            'bookings.event_title',
+            'bookings.created_at',
+            'booking_statuses.booking_status_name as status',
+            'agencies.agency_name',
+            'categories.category_name'
+            )
+          ->orderBy('bookings.created_at', 'DESC')
+          ->paginate(10);
+      }
+      
+      return Booking::join('agencies', 'agencies.id','=','bookings.agency_id')
+        ->join('categories', 'categories.id','=','bookings.category_id')
+        ->join('booking_statuses', 'bookings.booking_status_id', '=', 'booking_statuses.id')
+        ->where('booking_statuses.id', '=', $status)
+        ->whereRaw('lower(bookings.event_title) like ?', '%'.strtolower($kegiatan).'%')
+        ->whereRaw('lower(bookings.name) like ?', '%'.strtolower($peminjam).'%')
+        ->select(
+          'bookings.id',
+          'bookings.name',
+          'bookings.event_title',
+          'bookings.created_at',
+          'booking_statuses.booking_status_name as status',
+          'agencies.agency_name',
+          'categories.category_name'
+          )
+        ->orderBy('bookings.created_at', 'DESC')
+        ->paginate(10);
+    }
 
     protected function get_booking_calendar($status_id, $start, $end){
-        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'booking_details.room_id','=','rooms.id')
-            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
-            ->where('booking_statuses.id','=', $status_id)
-            ->where('event_start', '>=', $start)
-            ->where('event_end', '<=', $end)
-            ->select(
-                DB::raw('CONCAT(
-                    "/reserve/status/",
-                    bookings.id
-                ) as url'), 
-                DB::raw("CONCAT(
-                    rooms.room_code,' ',
-                    bookings.event_title 
-                ) as title"),
-                'booking_details.event_start as start',
-                'booking_details.event_end as end'
-                )
-            ->get();
+      return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'booking_details.room_id','=','rooms.id')
+        ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
+        ->where('booking_statuses.id','=', $status_id)
+        ->where('event_start', '>=', $start)
+        ->where('event_end', '<=', $end)
+        ->select(
+          DB::raw('CONCAT(
+            "/reserve/status/",
+            bookings.id
+          ) as url'), 
+          DB::raw("CONCAT(
+            rooms.room_code,' ',
+            bookings.event_title 
+          ) as title"),
+          'booking_details.event_start as start',
+          'booking_details.event_end as end'
+          )
+        ->get();
     }
 
     protected function get_room_booking_calendar($status_id, $room_code, $start, $end){
-        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'booking_details.room_id','=','rooms.id')
-            ->where('room_code', '=', $room_code)
-            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
-            ->where('booking_statuses.id','=', $status_id)
-            ->where('event_start', '>=', $start)
-            ->where('event_end', '<=', $end)
-            ->select(
-                DB::raw('CONCAT(
-                    "/reserve/status/",
-                    bookings.id
-                ) as url'), 
-                DB::raw("CONCAT(
-                    rooms.room_code,' ',
-                    bookings.event_title 
-                ) as title"),
-                'booking_details.event_start as start',
-                'booking_details.event_end as end'
-                )
-            ->get();
+      return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'booking_details.room_id','=','rooms.id')
+        ->where('room_code', '=', $room_code)
+        ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
+        ->where('booking_statuses.id','=', $status_id)
+        ->where('event_start', '>=', $start)
+        ->where('event_end', '<=', $end)
+        ->select(
+          DB::raw('CONCAT(
+            "/reserve/status/",
+            bookings.id
+          ) as url'), 
+          DB::raw("CONCAT(
+            rooms.room_code,' ',
+            bookings.event_title 
+          ) as title"),
+          'booking_details.event_start as start',
+          'booking_details.event_end as end'
+          )
+        ->get();
     }
 
     protected function get_room_booking_status($status_id, $room_code, $time){
-        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'booking_details.room_id','=','rooms.id')
-            ->where('room_code', '=', $room_code)
-            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
-            ->where('booking_statuses.id','=', $status_id)
-            ->where('event_start', '<=', $time)
-            ->where('event_end', '>=', $time)
-            ->first();
+      return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'booking_details.room_id','=','rooms.id')
+        ->where('room_code', '=', $room_code)
+        ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')           
+        ->where('booking_statuses.id','=', $status_id)
+        ->where('event_start', '<=', $time)
+        ->where('event_end', '>=', $time)
+        ->first();
     }
 
     protected function get_booking_calendar_accepted(Request $request){
-        return $this->get_booking_calendar($this->accepted_booking_status_id, $request->start, $request->end);
+      return $this->get_booking_calendar($this->accepted_booking_status_id, $request->start, $request->end);
     }
 
     protected function get_room_booking_calendar_accepted(Request $request, $room_code){
-        return $this->get_room_booking_calendar($this->accepted_booking_status_id, $room_code, $request->start, $request->end);
+      return $this->get_room_booking_calendar($this->accepted_booking_status_id, $room_code, $request->start, $request->end);
     }
 
     protected function get_booking_calendar_waiting(Request $request){
-        return $this->get_booking_calendar($this->waiting_booking_status_id, $request->start, $request->end);
+      return $this->get_booking_calendar($this->waiting_booking_status_id, $request->start, $request->end);
     }
 
     protected function get_booking_calendar_rejected(Request $request){
-        return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
+      return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
     }
 
     protected function get_room_status(Request $request){
@@ -386,88 +429,87 @@ class ReservationController extends Controller
     }
 
     protected function get_one_booking($booking_id){
-        return Booking::where('bookings.id', $booking_id)
-            ->join('agencies', 'agencies.id','=','bookings.agency_id')
-            ->join('categories', 'categories.id','=','bookings.category_id')
-            ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
-            ->select(
-                'bookings.id',
-                'bookings.name',
-                'bookings.nrp_nip',
-                'bookings.email',
-                'bookings.phone_number',
-                'bookings.event_title',
-                'bookings.event_description',
+      return Booking::where('bookings.id', $booking_id)
+        ->join('agencies', 'agencies.id','=','bookings.agency_id')
+        ->join('categories', 'categories.id','=','bookings.category_id')
+        ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
+        ->select(
+          'bookings.id',
+          'bookings.name',
+          'bookings.nrp_nip',
+          'bookings.email',
+          'bookings.phone_number',
+          'bookings.event_title',
+          'bookings.event_description',
 
-                'bookings.pic_title_1', 
-                'bookings.pic_name_1', 
-                'bookings.pic_title_2', 
-                'bookings.pic_name_2', 
-                'bookings.poster_imagepath',
+          'bookings.pic_title_1', 
+          'bookings.pic_name_1', 
+          'bookings.pic_title_2', 
+          'bookings.pic_name_2', 
+          'bookings.poster_imagepath',
 
-                'booking_statuses.id as overall_status_id',
-                'booking_statuses.booking_status_name as overall_status',
-                'agencies.agency_name',
-                'categories.category_name'
-                )
-            ->first();        
+          'booking_statuses.id as overall_status_id',
+          'booking_statuses.booking_status_name as overall_status',
+          'agencies.agency_name',
+          'categories.category_name'
+          )
+        ->first();        
     }
 
     protected function get_one_detail($detail_id){
-        return BookingDetail::where('booking_details.id', $detail_id)
-            ->join('rooms', 'rooms.id','=','booking_details.room_id')
-            ->select(
-                'booking_details.id',
-                'booking_details.event_start',
-                'booking_details.event_end',
-                'rooms.id as room_id',
-                'rooms.room_code',
-                'rooms.room_name'
-                )
-            ->first();
-        
+      return BookingDetail::where('booking_details.id', $detail_id)
+        ->join('rooms', 'rooms.id','=','booking_details.room_id')
+        ->select(
+          'booking_details.id',
+          'booking_details.event_start',
+          'booking_details.event_end',
+          'rooms.id as room_id',
+          'rooms.room_code',
+          'rooms.room_name'
+          )
+        ->first();
     }
 
     protected function get_all_detail($booking_id){
-        return Booking::where('bookings.id', $booking_id)
-            ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'rooms.id','=','booking_details.room_id')
-            ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
-            ->select(
-                'booking_details.id',
-                'booking_details.event_start',
-                'booking_details.event_end',
-                'rooms.id as room_id',
-                'rooms.room_code',
-                'rooms.room_name',
-                'booking_statuses.id as booking_status_id',
-                'booking_statuses.booking_status_name'
-                )
-            ->orderBy('booking_statuses.id', 'DESC')
-            ->orderBy('booking_details.event_start')
-            ->orderBy('rooms.room_code')
-            ->get();
+      return Booking::where('bookings.id', $booking_id)
+        ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'rooms.id','=','booking_details.room_id')
+        ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
+        ->select(
+          'booking_details.id',
+          'booking_details.event_start',
+          'booking_details.event_end',
+          'rooms.id as room_id',
+          'rooms.room_code',
+          'rooms.room_name',
+          'booking_statuses.id as booking_status_id',
+          'booking_statuses.booking_status_name'
+          )
+        ->orderBy('booking_statuses.id', 'DESC')
+        ->orderBy('booking_details.event_start')
+        ->orderBy('rooms.room_code')
+        ->get();
     }
 
     protected function get_all_detail_paginate($booking_id){
-        return Booking::where('bookings.id', $booking_id)
-            ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
-            ->join('rooms', 'rooms.id','=','booking_details.room_id')
-            ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
-            ->select(
-                'booking_details.id',
-                'booking_details.event_start',
-                'booking_details.event_end',
-                'rooms.id as room_id',
-                'rooms.room_code',
-                'rooms.room_name',
-                'booking_statuses.id as booking_status_id',
-                'booking_statuses.booking_status_name'
-                )
-            ->orderBy('booking_statuses.id', 'DESC')
-            ->orderBy('booking_details.event_start')
-            ->orderBy('rooms.room_code')
-            ->paginate(10);
+      return Booking::where('bookings.id', $booking_id)
+        ->join('booking_details', 'booking_details.booking_id','=','bookings.id')
+        ->join('rooms', 'rooms.id','=','booking_details.room_id')
+        ->join('booking_statuses', 'booking_statuses.id','=','bookings.booking_status_id')
+        ->select(
+          'booking_details.id',
+          'booking_details.event_start',
+          'booking_details.event_end',
+          'rooms.id as room_id',
+          'rooms.room_code',
+          'rooms.room_name',
+          'booking_statuses.id as booking_status_id',
+          'booking_statuses.booking_status_name'
+          )
+        ->orderBy('booking_statuses.id', 'DESC')
+        ->orderBy('booking_details.event_start')
+        ->orderBy('rooms.room_code')
+        ->paginate(10);
     }
 
     protected function get_all_detail_by_time($start, $end){
