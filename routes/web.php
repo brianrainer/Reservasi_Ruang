@@ -40,19 +40,20 @@ Route::prefix('room')->group(function(){
 
 Route::prefix('reserve')->group(function(){
 
-  Route::get('/', 'ReservationController@index_reserve');
-  Route::get('once', 'ReservationController@index_once');
-  Route::get('repeat', 'ReservationController@index_repeat');
-  Route::get('multionce', 'ReservationController@index_multi_once');
-  Route::get('multirepeat', 'ReservationController@index_multi_repeat');
+  Route::get('/', 'ReservationController@index_multi_repeat');
+  // Route::get('/', 'ReservationController@index_reserve');
+  // Route::get('once', 'ReservationController@index_once');
+  // Route::get('repeat', 'ReservationController@index_repeat');
+  // Route::get('multionce', 'ReservationController@index_multi_once');
+  // Route::get('multirepeat', 'ReservationController@index_multi_repeat');
   
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
 
   Route::middleware('auth')->group(function(){
-    Route::post('once', 'ReservationController@once');
-    Route::post('repeat', 'ReservationController@repeat');
-    Route::post('multionce', 'ReservationController@multionce');
+    // Route::post('once', 'ReservationController@once');
+    // Route::post('repeat', 'ReservationController@repeat');
+    // Route::post('multionce', 'ReservationController@multionce');
     Route::post('multirepeat', 'ReservationController@multirepeat');
     Route::prefix('status')->group(function(){
       Route::post('reject', 'ReservationController@reject_one_reservation');

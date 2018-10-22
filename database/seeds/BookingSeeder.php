@@ -23,6 +23,8 @@ class BookingSeeder extends Seeder
         'event_description' => 'Kelas Pengganti untuk Pertemuan ke-10 Kelas PAA F oleh Pak XX',
         'category_id' => '1',
         'booking_status_id' => '1',
+        'pic_name_1' => 'Firman Aqil',
+        'pic_title_1' => 'Ketua Himpunan Mahasiswa HMTC',
       ]);
 
       for ($i=1; $i < 2; $i++) { 
@@ -46,6 +48,8 @@ class BookingSeeder extends Seeder
         'event_description' => 'LKMM TD FTIK XV dengan tema "Bangkit!"  adalah pelatihan yang diperlukan bla bla bla',
         'category_id' => '1',
         'booking_status_id' => '1',
+        'pic_name_1' => 'Firman Aqil',
+        'pic_title_1' => 'Ketua Himpunan Mahasiswa HMTC',
       ]);
 
       for ($i=1; $i < 6; $i++) { 

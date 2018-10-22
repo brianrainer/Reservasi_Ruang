@@ -28,6 +28,13 @@ class CreateBookingsTable extends Migration
             $table->integer('category_id')->unsigned();
             $table->integer('booking_status_id')->unsigned()->default($this->waiting_booking_status_id);
             $table->string('poster_imagepath')->nullable();
+
+            $table->string('pic_name_1');
+            $table->string('pic_title_1');
+
+            $table->string('pic_name_2')->nullable();
+            $table->string('pic_title_2')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
 

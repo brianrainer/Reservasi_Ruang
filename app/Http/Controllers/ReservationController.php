@@ -22,9 +22,9 @@ class ReservationController extends Controller
     protected $accepted_booking_status_id = 2;
     protected $rejected_booking_status_id = 3;
 
-    public function index_reserve(){
-        return view('reserve.index');
-    }
+    // public function index_reserve(){
+    //     return view('reserve.index');
+    // }
 
     public function index_welcome(){
         $data['bookings'] = $this->get_all_booking_today();
@@ -63,24 +63,24 @@ class ReservationController extends Controller
         return view('status.detail', $data);
     }
 
-    public function index_terms(){
-        return view('terms');
-    }
+    // public function index_terms(){
+    //     return view('terms');
+    // }
 
-    public function index_once(){
-        $data = $this->load_reserve_form();
-        return view('reserve.once', $data);
-    }
+    // public function index_once(){
+    //     $data = $this->load_reserve_form();
+    //     return view('reserve.once', $data);
+    // }
 
-    public function index_repeat(){
-        $data = $this->load_reserve_form();
-        return view('reserve.repeat', $data);
-    }
+    // public function index_repeat(){
+    //     $data = $this->load_reserve_form();
+    //     return view('reserve.repeat', $data);
+    // }
 
-    public function index_multi_once(){
-        $data = $this->load_reserve_form();
-        return view('reserve.multionce', $data);
-    }
+    // public function index_multi_once(){
+    //     $data = $this->load_reserve_form();
+    //     return view('reserve.multionce', $data);
+    // }
     
     public function index_multi_repeat(){
         $data = $this->load_reserve_form();
@@ -102,7 +102,7 @@ class ReservationController extends Controller
             'phone_number' => 'required',
             'email' => 'required|email|max:100',
             'agency' => 'required|numeric',
-            // 'start_date' => 'required|date|after:today',
+            'start_date' => 'required|date|after:today',
             'start_date' => 'required|date',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
@@ -340,6 +340,13 @@ class ReservationController extends Controller
                 'bookings.phone_number',
                 'bookings.event_title',
                 'bookings.event_description',
+
+                'bookings.pic_title_1', 
+                'bookings.pic_name_1', 
+                'bookings.pic_title_2', 
+                'bookings.pic_name_2', 
+                'bookings.poster_imagepath',
+
                 'booking_statuses.id as overall_status_id',
                 'booking_statuses.booking_status_name as overall_status',
                 'agencies.agency_name',
@@ -415,7 +422,9 @@ class ReservationController extends Controller
             'event_title' => $request->title,
             'event_description' => $request->event_description,
             'category_id' => $request->category,
-            'booking_status_id' => $this->waiting_booking_status_id,            
+            'booking_status_id' => $this->waiting_booking_status_id,
+            'pic_title_1' => $request->pic_title_1,            
+            'pic_name_1' => $request->pic_name_1,            
         ]);
     }
 
@@ -429,73 +438,89 @@ class ReservationController extends Controller
     }
 
 
-    public function once(Request $request){
-        $this->validator_room($request, false)->validate();
-        $this->validator_form($request)->validate();
+    // public function once(Request $request){
+    //     $this->validator_room($request, false)->validate();
+    //     $this->validator_form($request)->validate();
 
-        $booking = $this->create_booking($request);
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-        $bookingDetail = $this->create_booking_detail(
-            $request->room, 
-            $booking->id, 
-            $start_time->toDateTimeString(), 
-            $end_time->toDateTimeString()
-        );
+    //     $booking = $this->create_booking($request);
+    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
+    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
+    //     $bookingDetail = $this->create_booking_detail(
+    //         $request->room, 
+    //         $booking->id, 
+    //         $start_time->toDateTimeString(), 
+    //         $end_time->toDateTimeString()
+    //     );
 
-        return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
-    }
+    //     return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+    // }
 
-    public function repeat(Request $request){
-        $this->validator_room($request, false)->validate();
-        $this->validator_form($request)->validate();
+    // public function repeat(Request $request){
+    //     $this->validator_room($request, false)->validate();
+    //     $this->validator_form($request)->validate();
 
-        $booking = $this->create_booking($request);
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-        $this->create_booking_detail(
-            $request->room, 
-            $booking->id, 
-            $start_time->toDateTimeString(), 
-            $end_time->toDateTimeString()
-        );
-        for ($i=1; $i < $request->howmanytimes; $i++) { 
-            $this->create_booking_detail(
-                $request->room, 
-                $booking->id, 
-                $start_time->addSeconds($request->routine)->toDateTimeString(), 
-                $end_time->addSeconds($request->routine)->toDateTimeString()
-            );
-        }
+    //     $booking = $this->create_booking($request);
+    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
+    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
+    //     $this->create_booking_detail(
+    //         $request->room, 
+    //         $booking->id, 
+    //         $start_time->toDateTimeString(), 
+    //         $end_time->toDateTimeString()
+    //     );
+    //     for ($i=1; $i < $request->howmanytimes; $i++) { 
+    //         $this->create_booking_detail(
+    //             $request->room, 
+    //             $booking->id, 
+    //             $start_time->addSeconds($request->routine)->toDateTimeString(), 
+    //             $end_time->addSeconds($request->routine)->toDateTimeString()
+    //         );
+    //     }
 
-        return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
-    }
+    //     return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+    // }
 
 
-    public function multionce(Request $request){
-        $this->validator_room($request, true)->validate();
-        $this->validator_form($request)->validate();
+    // public function multionce(Request $request){
+    //     $this->validator_room($request, true)->validate();
+    //     $this->validator_form($request)->validate();
 
-        $booking = $this->create_booking($request);
-        $start_time = new Carbon($request->start_date." ".$request->start_time);
-        $end_time = new Carbon($request->start_date." ".$request->end_time);
-        foreach ($request->room as $key => $value) {
-            $this->create_booking_detail(
-                $value,
-                $booking->id,
-                $start_time->toDateTimeString(),
-                $end_time->toDateTimeString()
-            );
-        }
+    //     $booking = $this->create_booking($request);
+    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
+    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
+    //     foreach ($request->room as $key => $value) {
+    //         $this->create_booking_detail(
+    //             $value,
+    //             $booking->id,
+    //             $start_time->toDateTimeString(),
+    //             $end_time->toDateTimeString()
+    //         );
+    //     }
 
-        return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
-    }
+    //     return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
+    // }
 
     public function multirepeat(Request $request){
         $this->validator_room($request, true)->validate();
         $this->validator_form($request)->validate();
 
+        // dd($request);
+
         $booking = $this->create_booking($request);
+        if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
+            $booking->pic_title_2 = $request->pic_title_2;
+            $booking->pic_name_2 = $request->pic_name_2;
+            $booking->save();
+        }
+
+        if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
+            $image = $request->file('poster_imagepath');
+            $image_name = time().'-'.$image->getClientOriginalName();
+            $image->storeAs('public/posters', $image_name);
+            $booking->poster_imagepath = 'storage/posters/'.$image_name;
+            $booking->save();
+        }
+
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
         foreach ($request->room as $key => $value) {
@@ -506,18 +531,20 @@ class ReservationController extends Controller
                 $end_time->toDateTimeString()
             );
         }
-        for ($i=1; $i < $request->howmanytimes ; $i++) { 
+        for ($i=1; $i < $request->howmanytimes ; $i++) {
+            $start_time = $start_time->addSeconds($request->routine);
+            $end_time = $end_time->addSeconds($request->routine);
             foreach ($request->room as $key => $value) {
                 $this->create_booking_detail(
                     $value,
                     $booking->id,
-                    $start_time->addSeconds($request->routine)->toDateTimeString(),
-                    $end_time->addSeconds($request->routine)->toDateTimeString()
+                    $start_time->toDateTimeString(),
+                    $end_time->toDateTimeString()
                 );
             }
         }
 
-        return redirect('reserve/multirepeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+        return redirect('reserve')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
     }
 
     /**
@@ -713,13 +740,14 @@ class ReservationController extends Controller
                 $end_time->toDateTimeString()
             );
         }
-        for ($i=1; $i < $request->howmanytimes ; $i++) { 
+        for ($i=1; $i < $request->howmanytimes ; $i++) {$start_time = $start_time->addSeconds($request->routine);
+            $end_time = $end_time->addSeconds($request->routine);
             foreach ($request->room as $key => $value) {
                 $this->create_booking_detail(
                     $value,
                     $booking->id,
-                    $start_time->addSeconds($request->routine)->toDateTimeString(),
-                    $end_time->addSeconds($request->routine)->toDateTimeString()
+                    $start_time->toDateTimeString(),
+                    $end_time->toDateTimeString()
                 );
             }
         }

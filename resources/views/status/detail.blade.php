@@ -60,6 +60,31 @@
       @endcomponent
 
       @component('status.detail_div')
+        @slot('title', 'Penanggung Jawab')
+        <ol>
+          @if ($booking->pic_title_2 && $booking->pic_name_2)
+            <li>{{$booking->pic_title_2}}: {{$booking->pic_name_2}}</li>
+          @endif
+          <li>{{$booking->pic_title_1}}: {{$booking->pic_name_1}}</li>
+        </ol>
+      @endcomponent
+
+      @component('status.detail_div')
+        @slot('title')
+          Poster Kegiatan
+        @endslot
+        @if ($booking->poster_imagepath)
+          <div class="card col s6">
+            <div class="card-image">
+              <img src="{{asset($booking->poster_imagepath)}}">
+            </div>
+          </div>
+        @else
+          Poster tidak tersedia
+        @endif
+      @endcomponent
+
+      @component('status.detail_div')
         @slot('title', 'Status')
         <div class="row">
           <div class="col s12 m6">

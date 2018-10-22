@@ -1,4 +1,4 @@
-      <div class="row">
+      <div class="row valign-wrapper">
         <div class="col s12 m3">
           <div class="left">
             <strong>    
