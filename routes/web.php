@@ -49,12 +49,12 @@ Route::prefix('reserve')->group(function(){
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
 
-  Route::middleware('auth')->group(function(){
+  Route::prefix('/')->group(function(){
     Route::post('once', 'ReservationController@once');
     Route::post('repeat', 'ReservationController@repeat');
     Route::post('multionce', 'ReservationController@multionce');
     Route::post('multirepeat', 'ReservationController@multirepeat');
-    Route::prefix('status')->group(function(){
+    Route::middleware('auth')->prefix('status')->group(function(){
       Route::post('reject', 'ReservationController@reject_one_reservation');
       Route::post('reject_all', 'ReservationController@reject_all_reservation');
       Route::post('accept', 'ReservationController@accept_one_reservation');
@@ -92,4 +92,4 @@ Route::prefix('calendar')->group(function(){
 });
 
 // Download pdf
-Route::get('download/{booking_id}', 'ReservationController@download_pdf');
+Route::get('{booking_id}/surat_ijin', 'ReservationController@download_pdf');
