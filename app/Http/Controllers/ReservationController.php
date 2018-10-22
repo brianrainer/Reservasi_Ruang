@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Room;
 use App\Agency;
@@ -10,11 +11,13 @@ use App\Category;
 use App\Routine;
 use App\BookingDetail;
 use App\Booking;
+use App\Mail\BookingNotification;
 use DateTime;
 use Session;
 use Redirect;
 use Carbon\Carbon;
 use DB;
+use PDF;
 
 class ReservationController extends Controller
 {
@@ -198,6 +201,59 @@ class ReservationController extends Controller
         ]);
     }
 
+    protected function download_pdf($booking_id){
+      $booking = Booking::find($booking_id);
+      $booking_details = $this->get_all_detail($booking_id);
+      $pdf_data = $booking_details->reduce(function($carry, $item){
+        $start = Carbon::parse($item->event_start);
+        $end = Carbon::parse($item->event_end);
+
+        $obj['room'] = $item->room_code;
+        $obj['date'] = $start->formatLocalized('%A, %d %B %Y');
+        $obj['time'] = $start->format('H:i').' - '.$end->format('H:i');
+        $obj['raw_date'] = $start->toDateString();
+
+        return $carry->push((object) $obj);
+      }, collect());
+
+      $attachment_data = $pdf_data->unique('raw_date')->reduce(function($carry, $item) {
+        $start = Carbon::parse($item->raw_date);
+        $end = $start->copy()->addDays(1);
+
+        $other_event = $this->get_all_detail_by_time($start, $end)->reduce(function($carry, $item) {
+          $start = Carbon::parse($item->event_start);
+          $end = Carbon::parse($item->event_end);
+          
+          $obj['title'] = $item->event_title;
+          $obj['room'] = $item->room_code;
+          $obj['description'] = $item->event_description;
+          $obj['time'] = $start->format('H:i').' - '.$end->format('H:i');
+
+          return $carry->push((object) $obj);
+        }, collect());
+
+        if(!$other_event->isEmpty()){
+          return $carry->put($start->formatLocalized("%A, %d %B %Y"), $other_event);
+        }
+
+        return $carry;
+      }, collect());
+
+      $data['booking_details'] = $pdf_data;
+      $data['attachments'] = $attachment_data;
+      $data['booking'] = $booking;
+      $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
+      $data['head_of_informatic'] = "Darlis Herumurti S.Kom.,M.Kom";
+      $data['pic_1_title'] = "Ketua Organisasi";
+      $data['pic_1_name'] = "Rully Soelaiman, S. Kom, M.Kom";
+      $data['pic_2_title'] = "Ketua Panitia";
+      $data['pic_2_name'] = "Rully Soelaiman, S. Kom, M.Kom";
+
+      $pdf = PDF::loadView('pdf.main', $data);
+
+      return $pdf->stream('surat_ijin.pdf'); 
+    }
+
     protected function set_one_detail($detail_id, $status_id){
         $booking = Booking::findOrFail($detail_id);
         $booking->booking_status_id = $status_id;
@@ -250,6 +306,8 @@ class ReservationController extends Controller
                 )
             ->get();
     }
+    
+    
 
     protected function get_booking_calendar($status_id, $start, $end){
         return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
@@ -412,6 +470,23 @@ class ReservationController extends Controller
             ->paginate(10);
     }
 
+    protected function get_all_detail_by_time($start, $end){
+        return Booking::join('booking_details', 'booking_details.booking_id','=','bookings.id')
+            ->join('rooms', 'booking_details.room_id','=','rooms.id')
+            ->join('booking_statuses', 'bookings.booking_status_id','=','booking_statuses.id')
+            ->where('booking_details.event_start', '>=', $start)
+            ->where('booking_details.event_end', '<=', $end)           
+            ->where('booking_statuses.id','=', $this->accepted_booking_status_id)
+            ->select(
+                'bookings.id', 
+                'bookings.event_title', 
+                'bookings.event_description',
+                'rooms.room_code',
+                'booking_details.event_start',
+                'booking_details.event_end'
+                )
+            ->get();
+    }
     protected function create_booking(Request $request){
         return Booking::create([
             'name' => $request->full_name,
@@ -428,6 +503,34 @@ class ReservationController extends Controller
         ]);
     }
 
+    /**
+     * Helper Function - Sent Email
+     * @param Integer $booking_id
+     * @return.
+     */
+    protected function send_email($booking_id){
+      $technicians = Booking::where('bookings.id', $booking_id)
+        ->join('booking_details', 'booking_details.booking_id', '=', 'bookings.id')
+        ->join('rooms_technicians', 'rooms_technicians.room_id', '=', 'booking_details.room_id')
+        ->join('users', 'users.id', '=', 'rooms_technicians.user_id')
+        ->select('users.*')
+        ->groupBy('email')
+        ->get();
+      $headers = "From: <no-reply.reservasi@if.its.ac.id>"."\r\n";
+
+      foreach($technicians as $technician){
+        Mail::send(new BookingNotification($technician));
+      }
+    }
+
+    /**
+     * Helper Functions - Create Booking Detail
+     * @param  Integer $room_id
+     * @param  Integer $booking_id
+     * @param  String $start_time
+     * @param  String $end_time
+     * @return App\BookingDetail
+     */
     protected function create_booking_detail($room_id, $booking_id, $start_time, $end_time){
         return BookingDetail::create([
             'booking_id' => $booking_id,

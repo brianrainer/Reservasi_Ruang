@@ -68,7 +68,7 @@
             color: 'green',
             textColor: 'white',
             borderColor: 'black',
-            cache: true 
+            cache: true,
           }
         ]
       @endisset

@@ -51,9 +51,6 @@ Route::prefix('reserve')->group(function(){
   Route::get('status/{booking}', 'ReservationController@index_detail');
 
   Route::middleware('auth')->group(function(){
-    // Route::post('once', 'ReservationController@once');
-    // Route::post('repeat', 'ReservationController@repeat');
-    // Route::post('multionce', 'ReservationController@multionce');
     Route::post('multirepeat', 'ReservationController@multirepeat');
     Route::prefix('status')->group(function(){
       Route::post('reject', 'ReservationController@reject_one_reservation');
@@ -92,3 +89,5 @@ Route::prefix('calendar')->group(function(){
   Route::get('status', 'ReservationController@get_room_status');
 });
 
+// Download pdf
+Route::get('{booking_id}/surat_ijin', 'ReservationController@download_pdf');
