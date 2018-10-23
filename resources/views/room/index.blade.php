@@ -42,7 +42,7 @@
                   <td>
                     <div class="row">
                       <div class="col s12">
-                        <a class="btn waves-light waves-effect blue darken-4 right" style="margin-left:0.3rem;">Edit</a>
+                        <a class="btn waves-light waves-effect blue darken-4 right" style="margin-left:0.3rem;" href="{{url('/room/edit/'.$room->id)}}">Edit</a>
                         <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_room" onclick="fill_modal('delete_room', '{{$room->id}}')">Hapus</button>
                       </div>
                     </div>

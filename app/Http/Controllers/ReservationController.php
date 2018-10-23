@@ -616,14 +616,6 @@ class ReservationController extends Controller
             $booking->save();
         }
 
-        if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
-            $image = $request->file('poster_imagepath');
-            $image_name = time().'-'.$image->getClientOriginalName();
-            $image->storeAs('public/posters', $image_name);
-            $booking->poster_imagepath = 'storage/posters/'.$image_name;
-            $booking->save();
-        }
-
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
         foreach ($request->room as $key => $value) {
@@ -645,6 +637,16 @@ class ReservationController extends Controller
                     $end_time->toDateTimeString()
                 );
             }
+        }
+
+
+
+        if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
+            $image = $request->file('poster_imagepath');
+            $image_name = $booking->id.'-'.($end_time->timestamp).'.'.$image->getClientOriginalExtension();
+            $image->storeAs('public/posters', $image_name);
+            $booking->poster_imagepath = 'storage/posters/'.$image_name;
+            $booking->save();
         }
 
         return redirect('reserve')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
