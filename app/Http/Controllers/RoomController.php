@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Room;
@@ -33,34 +34,45 @@ class RoomController extends Controller
         return view('room.edit', $data);
     }
 
-    protected function validator(Request $request){
+    protected function validator_create(Request $request){
         return Validator::make($request->all(), [
-          'room_code' => 'required|string|unique:rooms,id|max:10',
+          'room_code' => 'required|string|unique:rooms|max:10',
           'room_name' => 'required|string|max:100',
           'room_imagepath' => 'nullable|file|max:5000',
-          'tech' => 'nullable|array',
+          'tech' => 'required|array',
         ], [
           'room_code.required' => 'Kode Ruangan Diperlukan',
           'room_name.required' => 'Deskripsi Ruangan Diperlukan',
           'room_code.max' => 'Kode Ruangan Terlalu Panjang, Maksimal 10 Karakter',
           'room_code.unique' => 'Kode Ruangan Harus Unik',
           'room_name.max' => 'Deskripsi Ruangan Terlalu Panjang, Maksimal 100 Karakter',
-          'room_imagepath' => 'Ukuran Gambar terlalu besar, Maksimal 5MB'
+          'room_imagepath' => 'Ukuran Gambar terlalu besar, Maksimal 5MB',
+          'tech.required' => 'Teknisi per ruangan Dibutuhkan'
         ]);
     }
 
-    protected function validator_technicians(Request $request){
-      return Validator::make($request->all(),[
-        'tech' => 'required|array'
+    protected function validator_edit(Request $request, $room_id){
+      return Validator::make($request->all(), [
+        'room_code' => [
+          'required', 'string', 'max:10',
+          Rule::unique('rooms')->ignore($room_id),
+        ],
+        'room_name' => 'required|string|max:100',
+        'room_imagepath' => 'nullable|file|max:5000',
+        'tech' => 'sometimes|array',
       ], [
-        'tech.required' => 'Teknisi per ruangan Dibutuhkan'
+        'room_code.required' => 'Kode Ruangan Diperlukan',
+        'room_name.required' => 'Deskripsi Ruangan Diperlukan',
+        'room_code.max' => 'Kode Ruangan Terlalu Panjang, Maksimal 10 Karakter',
+        'room_code.unique' => 'Kode Ruangan Harus Unik',
+        'room_name.max' => 'Deskripsi Ruangan Terlalu Panjang, Maksimal 100 Karakter',
+        'room_imagepath' => 'Ukuran Gambar terlalu besar, Maksimal 5MB'
       ]);
     }
 
     public function create(Request $request)
     {
-      $this->validator($request)->validate();
-      $this->validator_technicians($request)->validate();
+      $this->validator_create($request)->validate();
 
       $room = new Room();
       $room->room_code = $request['room_code'];
@@ -83,7 +95,7 @@ class RoomController extends Controller
 
     public function edit(Request $request, $room_id)
     {
-      $this->validator($request)->validate();
+      $this->validator_edit($request, $room_id)->validate();
 
       $room = Room::find($room_id);
       $room->room_code = $request['room_code'];
