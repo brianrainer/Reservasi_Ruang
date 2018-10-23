@@ -35,7 +35,7 @@ class RoomController extends Controller
 
     protected function validator(Request $request){
         return Validator::make($request->all(), [
-          'room_code' => 'required|string|unique:rooms|max:10',
+          'room_code' => 'required|string|unique:rooms,id|max:10',
           'room_name' => 'required|string|max:100',
           'room_imagepath' => 'nullable|file|max:5000',
           'tech' => 'nullable|array',
@@ -108,7 +108,9 @@ class RoomController extends Controller
     public function delete(Request $request)
     {
       $room = Room::find($request->room_id);
-      $room->bookingDetail()->delete();
+      if (!is_null($room->bookingDetail())) {
+        $room->bookingDetail()->delete();
+      }
       $room->delete();
 
       return redirect('room')->with('message', 'Berhasil menghapus ruangan');
