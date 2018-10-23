@@ -11,7 +11,7 @@
       border-width: 5px;
     }
     .free-room {
-      border-color: #ffb300;
+      border-color: #1565c0;
     }
     .used-room {
       border-color: #b71c1c; 
@@ -50,43 +50,28 @@
 
 @section('js')
   <script type="text/javascript">
-    $(document).ready(function(){
-      var calendarEvent = [
+    var calendarEvent = [
+      {
+        url: '/calendar/accepted',
+        color: 'green',
+        textColor: 'white',
+        borderColor: 'black',
+        cache: true
+      }
+    ];
+
+    @isset ($room_code)    
+      calendarEvent = [
         {
-          url: '/calendar/accepted',
+          url: '/calendar/accepted/' + '{{$room_code}}',
           color: 'green',
           textColor: 'white',
           borderColor: 'black',
-          cache: true
+          cache: true,
         }
-      ];
+      ]
+    @endisset
 
-      @isset ($room_code)    
-        calendarEvent = [
-          {
-            url: '/calendar/accepted/' + '{{$room_code}}',
-            color: 'green',
-            textColor: 'white',
-            borderColor: 'black',
-            cache: true,
-          }
-        ]
-      @endisset
-      
-      $('#calendar').fullCalendar({
-        header: { 
-          left: 'today prev,next',
-          right: 'agendaDay, agendaWeek'
-        },
-        defaultView: 'agendaDay',
-        height: 'auto',
-        minTime: '06:00:00',
-        eventSources : calendarEvent, 
-        nowIndicator: true,
-      })
-    });
-  </script>
-  <script type="text/javascript">
     function update(){
       var day = moment().format('dddd, Do of MMM YYYY');
       var time = moment().format('HH:mm:ss');
@@ -94,8 +79,6 @@
       $('#day').html(day);
       $('#time').html(time);
     }
-
-    setInterval(update, 1000);
 
     function update_board(){
       @isset($room_code)
@@ -110,9 +93,9 @@
             $('#eventbox').removeClass('free-room').addClass('used-room');
           }
           else {
-            $('#now').html('-');
-            $('#status').html('Ruangan kosong');
-            $('#eventtitle').css('background', '#ffb300');
+            $('#now').html('Ruangan kosong');
+            $('#status').html('');
+            $('#eventtitle').css('background', '#1565c0');
             $('#eventbox').removeClass('used-room').addClass('free-room');
           }
         });
@@ -133,8 +116,34 @@
         });
       @endisset
     }
+    
+    function setToCalendar() {
+      $('#calendar').fullCalendar({
+        header: { 
+          left: 'today prev,next',
+          right: 'agendaDay, agendaWeek'
+        },
+        defaultView: 'agendaDay',
+        height: 'auto',
+        minTime: '06:00:00',
+        eventSources : calendarEvent, 
+        nowIndicator: true,
+      })
+    }
 
-    update_board();
-    setInterval(update_board, 60000);
+    function setToPoster() {
+      $('#calendar').html("");
+    }
+
+    $(document).ready(function(){
+      update_board();
+      setToCalendar();
+      setInterval(update, 1000);
+      setInterval(update_board, 60000);
+      //setInterval(setToCalendar, 3600000);
+      //setInterval(setToPoster, 3300000);
+      setInterval(setToCalendar, 40000);
+      setIntercal(setToPoster, 5000);
+    });
   </script>
 @endsection

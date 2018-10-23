@@ -49,22 +49,22 @@ Route::prefix('reserve')->group(function(){
   
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
+  Route::get('status/{booking_id}/surat_ijin', 'ReservationController@download_pdf');
+  Route::get('status/{booking_id}/surat_ijin2', 'ReservationController@download_pdf2');
 
-  Route::middleware('auth')->group(function(){
-    Route::post('multirepeat', 'ReservationController@multirepeat');
-    Route::prefix('status')->group(function(){
-      Route::post('reject', 'ReservationController@reject_one_reservation');
-      Route::post('reject_all', 'ReservationController@reject_all_reservation');
-      Route::post('accept', 'ReservationController@accept_one_reservation');
-      Route::post('accept_all', 'ReservationController@accept_all_reservation');
-      Route::post('pending', 'ReservationController@pending_one_reservation');
-      Route::post('pending_all', 'ReservationController@pending_all_reservation');
-      Route::post('edit', 'ReservationController@edit_one_reservation');
-      Route::post('add', 'ReservationController@add_one_reservation');
-      Route::post('delete', 'ReservationController@delete_one_detail');
-      Route::post('delete_all', 'ReservationController@delete_all_detail');
-    });
+  Route::post('multirepeat', 'ReservationController@multirepeat');
 
+  Route::middleware('auth')->prefix('status')->group(function(){
+    Route::post('reject', 'ReservationController@reject_one_reservation');
+    Route::post('reject_all', 'ReservationController@reject_all_reservation');
+    Route::post('accept', 'ReservationController@accept_one_reservation');
+    Route::post('accept_all', 'ReservationController@accept_all_reservation');
+    Route::post('pending', 'ReservationController@pending_one_reservation');
+    Route::post('pending_all', 'ReservationController@pending_all_reservation');
+    Route::post('edit', 'ReservationController@edit_one_reservation');
+    Route::post('add', 'ReservationController@add_one_reservation');
+    Route::post('delete', 'ReservationController@delete_one_detail');
+    Route::post('delete_all', 'ReservationController@delete_all_detail');
   });
 });
 
@@ -89,5 +89,3 @@ Route::prefix('calendar')->group(function(){
   Route::get('status', 'ReservationController@get_room_status');
 });
 
-// Download pdf
-Route::get('{booking_id}/surat_ijin', 'ReservationController@download_pdf');

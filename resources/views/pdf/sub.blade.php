@@ -23,17 +23,13 @@
     </p>
     <p>Kepada Yth.<br>Bapak {{$head_of_informatic}}<br>Kepala Departemen Informatika ITS<br>di tempat.</p>
     <p>Dengan hormat,</p>
-    <p>&nbsp;&nbsp;&nbsp;&nbsp;Surat ijin ini kami buat dengan maksud untuk meminjam ruang Departemen Informatika untuk acara <strong>{{$booking->event_title}}</strong> yang akan dilaksanakan pada:</p>
-    <p>&nbsp;&nbsp;&nbsp;&nbsp;Keterangan: {{$booking->event_description}}</p>
-    <ol>
-    @foreach($booking_details as $booking_detail)
-      <li class="avoid-break">
-        Hari/Tanggal:&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->date}}<br>
-        Waktu:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->time}}<br>
-        Tempat:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->room}}<br><br>
-      </li>
-    @endforeach
-    </ol>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Surat ijin ini kami buat dengan maksud untuk meminjam ruang Departemen Informatika untuk acara <strong>{{$booking->title}}</strong> yang akan dilaksanakan pada:</p>
+    <p>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hari/Tanggal:&nbsp;&nbsp;&nbsp;&nbsp;{{$booking->date}}<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Waktu:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking->time}}<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tempat:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking->rooms}}<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deskripsi:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking->description}}<br>
+    </p>
     <p class="avoid-break">&nbsp;&nbsp;&nbsp;&nbsp;Bersama surat ini juga saya lampirkan daftar kegiatan yang berlangsung di waktu yang sama. Atas perhatian Bapak/Ibu, saya ucapkan terima kasih.</p>
     <br><br><br>
     
@@ -70,8 +66,21 @@
         </div>
       </div>
     @endif
+    <div style="page-break-before: always">
+      <h3><b>Detail Peminjaman</b></h3>
+      <ol>
+        @foreach($booking_details as $booking_detail)
+          <li class="avoid-break">
+            Hari/Tanggal:&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->date}}<br>
+            Waktu:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->time}}<br>
+            Tempat:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$booking_detail->room}}<br><br>
+          </li>
+        @endforeach
+      </ol>
+    </div>
     @if($attachments)
       <div style="page-break-before: always">
+        <h3><b>Kegiatan Lain di Saat yang Sama</b></h3>
         @foreach($attachments as $key => $attachment)
           <p><b>{{$key}}</b></p>
           <ol>

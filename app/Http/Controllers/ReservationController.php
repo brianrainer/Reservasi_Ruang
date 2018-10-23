@@ -249,13 +249,71 @@ class ReservationController extends Controller
       $data['attachments'] = $attachment_data;
       $data['booking'] = $booking;
       $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
-      $data['head_of_informatic'] = "Darlis Herumurti S.Kom.,M.Kom";
-      $data['pic_1_title'] = "Ketua Organisasi";
-      $data['pic_1_name'] = "Rully Soelaiman, S. Kom, M.Kom";
-      $data['pic_2_title'] = "Ketua Panitia";
-      $data['pic_2_name'] = "Rully Soelaiman, S. Kom, M.Kom";
+      $data['head_of_informatic'] = env('KEPALA_DEPARTEMEN', "Darlis Herumurti S.Kom.,M.Kom");
 
       $pdf = PDF::loadView('pdf.main', $data);
+
+      return $pdf->stream('surat_ijin.pdf'); 
+    }
+    
+    protected function download_pdf2($booking_id){
+      $booking = Booking::find($booking_id);
+      $booking_details = $this->get_all_detail($booking_id);
+      $pdf_data = $booking_details->reduce(function($carry, $item){
+        $start = Carbon::parse($item->event_start);
+        $end = Carbon::parse($item->event_end);
+
+        $obj['room'] = $item->room_code;
+        $obj['date'] = $start->formatLocalized('%A, %d %B %Y');
+        $obj['time'] = $start->format('H:i').' - '.$end->format('H:i');
+        $obj['raw_date'] = $start->toDateString();
+
+        return $carry->push((object) $obj);
+      }, collect());
+
+      $attachment_data = $pdf_data->unique('raw_date')->reduce(function($carry, $item) {
+        $start = Carbon::parse($item->raw_date);
+        $end = $start->copy()->addDays(1);
+
+        $other_event = $this->get_all_detail_by_time($start, $end)->reduce(function($carry, $item) {
+          $start = Carbon::parse($item->event_start);
+          $end = Carbon::parse($item->event_end);
+          
+          $obj['title'] = $item->event_title;
+          $obj['room'] = $item->room_code;
+          $obj['description'] = $item->event_description;
+          $obj['time'] = $start->format('H:i').' - '.$end->format('H:i');
+
+          return $carry->push((object) $obj);
+        }, collect());
+
+        if(!$other_event->isEmpty()){
+          return $carry->put($start->formatLocalized("%A, %d %B %Y"), $other_event);
+        }
+
+        return $carry;
+      }, collect());
+
+      $start = Carbon::parse($booking_details->sortBy('event_start')->first()->event_start);
+      $end = Carbon::parse($booking_details->sortByDesc('event_end')->first()->event_end);
+
+      $event['date'] = $start->formatLocalized('%A, %d %B %Y').' s/d '.$end->formatLocalized('%A, %d %B %Y');
+      $event['time'] = $start->format('H:i').' - '.$end->format('H:i');
+      $event['rooms'] = $booking_details->unique('room_code')->implode('room_code', ', ');
+      $event['title'] = $booking->event_title;
+      $event['description'] = $booking->event_description;
+      $event['pic_title_1'] = $booking->pic_title_1;
+      $event['pic_name_1'] = $booking->pic_name_1;
+      $event['pic_title_2'] = $booking->pic_title_2;
+      $event['pic_name_2'] = $booking->pic_name_2;
+
+      $data['booking_details'] = $pdf_data;
+      $data['attachments'] = $attachment_data;
+      $data['booking'] = (object) $event;
+      $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
+      $data['head_of_informatic'] = env('KEPALA_DEPARTEMEN', "Darlis Herumurti S.Kom.,M.Kom");
+
+      $pdf = PDF::loadView('pdf.sub', $data);
 
       return $pdf->stream('surat_ijin.pdf'); 
     }
@@ -582,79 +640,23 @@ class ReservationController extends Controller
         ]);
     }
 
-
-    // public function once(Request $request){
-    //     $this->validator_room($request, false)->validate();
-    //     $this->validator_form($request)->validate();
-
-    //     $booking = $this->create_booking($request);
-    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
-    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
-    //     $bookingDetail = $this->create_booking_detail(
-    //         $request->room, 
-    //         $booking->id, 
-    //         $start_time->toDateTimeString(), 
-    //         $end_time->toDateTimeString()
-    //     );
-
-    //     return redirect('reserve/once')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
-    // }
-
-    // public function repeat(Request $request){
-    //     $this->validator_room($request, false)->validate();
-    //     $this->validator_form($request)->validate();
-
-    //     $booking = $this->create_booking($request);
-    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
-    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
-    //     $this->create_booking_detail(
-    //         $request->room, 
-    //         $booking->id, 
-    //         $start_time->toDateTimeString(), 
-    //         $end_time->toDateTimeString()
-    //     );
-    //     for ($i=1; $i < $request->howmanytimes; $i++) { 
-    //         $this->create_booking_detail(
-    //             $request->room, 
-    //             $booking->id, 
-    //             $start_time->addSeconds($request->routine)->toDateTimeString(), 
-    //             $end_time->addSeconds($request->routine)->toDateTimeString()
-    //         );
-    //     }
-
-    //     return redirect('reserve/repeat')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
-    // }
-
-
-    // public function multionce(Request $request){
-    //     $this->validator_room($request, true)->validate();
-    //     $this->validator_form($request)->validate();
-
-    //     $booking = $this->create_booking($request);
-    //     $start_time = new Carbon($request->start_date." ".$request->start_time);
-    //     $end_time = new Carbon($request->start_date." ".$request->end_time);
-    //     foreach ($request->room as $key => $value) {
-    //         $this->create_booking_detail(
-    //             $value,
-    //             $booking->id,
-    //             $start_time->toDateTimeString(),
-    //             $end_time->toDateTimeString()
-    //         );
-    //     }
-
-    //     return redirect('reserve/multionce')->with('message','Berhasil Mengajukan Reservasi #'.$booking->id);
-    // }
-
     public function multirepeat(Request $request){
         $this->validator_room($request, true)->validate();
         $this->validator_form($request)->validate();
-
-        // dd($request);
 
         $booking = $this->create_booking($request);
         if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
             $booking->pic_title_2 = $request->pic_title_2;
             $booking->pic_name_2 = $request->pic_name_2;
+            $booking->save();
+        }
+
+        if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
+            $image = $request->file('poster_imagepath');
+            $image_name = time().'-'.$image->getClientOriginalName();
+      dd($booking);
+            $image->storeAs('public/posters', $image_name);
+            $booking->poster_imagepath = 'storage/posters/'.$image_name;
             $booking->save();
         }
 
