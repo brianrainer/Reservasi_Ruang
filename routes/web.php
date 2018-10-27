@@ -24,6 +24,7 @@ Route::prefix('staff')->middleware('auth')->group(function(){
 
   Route::post('create', 'StaffController@store');
   Route::post('{user_id}', 'StaffController@update');
+  Route::delete('delete', 'SraffController@destroy');
 });
 
 Route::prefix('room')->group(function(){
@@ -41,16 +42,11 @@ Route::prefix('room')->group(function(){
 Route::prefix('reserve')->group(function(){
 
   Route::get('/', 'ReservationController@index_multi_repeat');
-  // Route::get('/', 'ReservationController@index_reserve');
-  // Route::get('once', 'ReservationController@index_once');
-  // Route::get('repeat', 'ReservationController@index_repeat');
-  // Route::get('multionce', 'ReservationController@index_multi_once');
-  // Route::get('multirepeat', 'ReservationController@index_multi_repeat');
-  
+ 
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
   Route::get('status/{booking_id}/surat_ijin', 'ReservationController@download_pdf');
-  Route::get('status/{booking_id}/surat_ijin2', 'ReservationController@download_pdf2');
+  Route::get('status/{booking_id}/surat_ijin_v2', 'ReservationController@download_pdf_v2');
 
   Route::post('multirepeat', 'ReservationController@multirepeat');
 
@@ -66,10 +62,6 @@ Route::prefix('reserve')->group(function(){
     Route::post('delete', 'ReservationController@delete_one_detail');
     Route::post('delete_all', 'ReservationController@delete_all_detail');
   });
-});
-
-Route::prefix('profile')->group(function(){
-  Route::get('/', 'ProfileController@index');
 });
 
 Route::prefix('agenda')->group(function(){
@@ -89,3 +81,4 @@ Route::prefix('calendar')->group(function(){
   Route::get('status', 'ReservationController@get_room_status');
 });
 
+Route::get('posters', 'ReservationController@get_eligible_posters');

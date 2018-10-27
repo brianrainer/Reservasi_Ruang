@@ -18,16 +18,13 @@ use Redirect;
 use Carbon\Carbon;
 use DB;
 use PDF;
+use File;
 
 class ReservationController extends Controller
 {
     protected $waiting_booking_status_id = 1;
     protected $accepted_booking_status_id = 2;
     protected $rejected_booking_status_id = 3;
-
-    // public function index_reserve(){
-    //     return view('reserve.index');
-    // }
 
     public function index_welcome(){
         $data['bookings'] = $this->get_all_booking_today();
@@ -44,6 +41,7 @@ class ReservationController extends Controller
 
     public function index_room_agenda($room_code){
         $data['room_code'] = $room_code;
+
         return view('agenda', $data);
     }
 
@@ -72,25 +70,6 @@ class ReservationController extends Controller
         return view('status.detail', $data);
     }
 
-    // public function index_terms(){
-    //     return view('terms');
-    // }
-
-    // public function index_once(){
-    //     $data = $this->load_reserve_form();
-    //     return view('reserve.once', $data);
-    // }
-
-    // public function index_repeat(){
-    //     $data = $this->load_reserve_form();
-    //     return view('reserve.repeat', $data);
-    // }
-
-    // public function index_multi_once(){
-    //     $data = $this->load_reserve_form();
-    //     return view('reserve.multionce', $data);
-    // }
-    
     public function index_multi_repeat(){
         $data = $this->load_reserve_form();
         return view('reserve.multirepeat', $data);
@@ -256,7 +235,7 @@ class ReservationController extends Controller
       return $pdf->stream('surat_ijin.pdf'); 
     }
     
-    protected function download_pdf2($booking_id){
+    protected function download_pdf_v2($booking_id){
       $booking = Booking::find($booking_id);
       $booking_details = $this->get_all_detail($booking_id);
       $pdf_data = $booking_details->reduce(function($carry, $item){
@@ -318,9 +297,40 @@ class ReservationController extends Controller
       return $pdf->stream('surat_ijin.pdf'); 
     }
 
+    protected function get_eligible_posters(Request $request) {
+      if (!$request->date) {
+        return "Please provide date";
+      }
+
+      $now = Carbon::parse($request->date)->addDays(1)->startOfDay()->timestamp;
+      $until = Carbon::createFromTimestamp($now)->addDays(7)->timestamp;
+
+      $raw_posters = collect(File::allFiles('storage/posters/'))->map(function($item) {
+        $obj['filename'] = $item->getFilename();
+        $obj['pathname'] = asset($item->getPathname());
+
+        return (object)$obj;
+      });
+
+      $posters = $raw_posters->reduce(function($carry, $file) use ($now, $until) {
+        $file_data = explode('-', $file->filename);
+        $booking = $this->get_one_booking($file_data[0]);
+        $time = (int)$file_data[1];
+
+        if ($time >= $now && $time <= $until && $booking->overall_status_id == $this->accepted_booking_status_id) {
+          return $carry->push($file->pathname);
+        }
+
+        return $carry;
+      }, collect());
+
+      return $posters;
+    }
+
     protected function set_one_detail($detail_id, $status_id){
       $booking = Booking::findOrFail($detail_id);
       $booking->booking_status_id = $status_id;
+
       return $booking->save();
     }
 
@@ -650,16 +660,7 @@ class ReservationController extends Controller
             $booking->pic_name_2 = $request->pic_name_2;
             $booking->save();
         }
-
-        if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
-            $image = $request->file('poster_imagepath');
-            $image_name = time().'-'.$image->getClientOriginalName();
-      dd($booking);
-            $image->storeAs('public/posters', $image_name);
-            $booking->poster_imagepath = 'storage/posters/'.$image_name;
-            $booking->save();
-        }
-
+      
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
         foreach ($request->room as $key => $value) {
@@ -683,11 +684,9 @@ class ReservationController extends Controller
             }
         }
 
-
-
         if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
             $image = $request->file('poster_imagepath');
-            $image_name = $booking->id.'-'.($end_time->timestamp).'.'.$image->getClientOriginalExtension();
+            $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
             $image->storeAs('public/posters', $image_name);
             $booking->poster_imagepath = 'storage/posters/'.$image_name;
             $booking->save();

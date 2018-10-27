@@ -86,10 +86,17 @@ class StaffController extends Controller
     public function store(Request $request){
       $this->create_validator($request)->validate();
 
-      $data = $request;
-      $data->password = bcrypt($request->password);
-      User::create($data->toArray());
+      $data = $request->toArray();
+      array_set($data, 'password', bcrypt($request->password));
+      User::create($data);
 
       return redirect('/staff')->with('message', 'Berhasil menambahkan staff');
+    }
+    
+    public function destroy(Request $request) {
+      $user = User::find($request->id);
+      $user->destroy();
+
+      return redirect('/staff')->with('message', 'Berhasil menghapus staff');
     }
 }
