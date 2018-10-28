@@ -66,7 +66,7 @@
       </tbody>
       <tfoot></tfoot>
     </table>
-    {{$bookings->render()}}
+    {{$bookings->appends(app('request')->except('page'))->links()}}
   @else 
     <div class="card-panel red">
       Belum Ada Reservasi
