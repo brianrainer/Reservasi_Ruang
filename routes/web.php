@@ -24,7 +24,7 @@ Route::prefix('staff')->middleware('auth')->group(function(){
 
   Route::post('create', 'StaffController@store');
   Route::post('{user_id}', 'StaffController@update');
-  Route::delete('delete', 'SraffController@destroy');
+  Route::delete('{user_id}', 'StaffController@destroy');
 });
 
 Route::prefix('room')->group(function(){

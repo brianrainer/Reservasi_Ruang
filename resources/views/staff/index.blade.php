@@ -31,12 +31,44 @@
             @endif
           </td>
           <td>
+            <a class="waves-effect waves-light btn modal-trigger red" href="#{{$user->id}}">Hapus</a>
             <a href="{{url('staff/'.$user->id)}}" class="btn btn-primary blue darken-4">Edit</a> 
+            <div id="{{$user->id}}" class="modal left-align">
+              <div class="modal-header">
+                <a class="btn btn-flat right modal-close">&times;</a>
+              </div>
+              <div class="modal-content">
+                <h4>
+                  Delete Staff
+                </h4>
+                <p>Apakah anda yakin akan menghapus <strong>{{$user->user_name}}</strong> dari staff?</p>
+              </div>
+              <div class="modal-footer">
+                <form method="POST" action="{{url('/staff/'.$user->id)}}">
+                  {{csrf_field()}}
+                  <input type="hidden" name="_method" value="DELETE">
+                  <a class="btn waves-effect waves-light grey modal-close">
+                    Kembali
+                  </a>
+                  <button class="btn waves-effect waves-light red" type="submit">
+                    Hapus
+                  </button>
+                </form>
+              </div>
+            </div> 
           </td>
         </tr>
         @endforeach
       </tbody>
     </table>
-    {{$users->links()}}
+    {{$users->render()}}
   </div>  
+@endsection
+
+@section('js')
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.modal').modal();
+    });
+  </script>
 @endsection

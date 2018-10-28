@@ -66,13 +66,13 @@
       </tbody>
       <tfoot></tfoot>
     </table>
+    {{$bookings->render()}}
   @else 
     <div class="card-panel red">
       Belum Ada Reservasi
     </div>
   @endif
   </div>
-  {{$bookings->links()}}
 @endsection
 
 @section('js')

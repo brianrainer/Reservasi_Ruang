@@ -155,8 +155,9 @@
     }
 
     function showCalendar() {
-      $('#poster').fadeOut('slow');
-      $('#calendar').fadeIn('slow'); 
+      $('#poster').fadeOut('slow', function() {
+        $('#calendar').fadeIn('slow'); 
+      });
     }
 
     function getRandomInt(len) {
@@ -165,8 +166,9 @@
 
     function showPoster() {
       $('#poster-image').attr('src', posters[getRandomInt(posters.length)]);
-      $('#calendar').fadeOut('slow');
-      $('#poster').fadeIn('slow');
+      $('#calendar').fadeOut('slow', function() {
+        $('#poster').fadeIn('slow');
+      });
 
       setTimeout(showCalendar, 60000);
     }

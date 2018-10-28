@@ -455,10 +455,7 @@ class ReservationController extends Controller
             "/reserve/status/",
             bookings.id
           ) as url'), 
-          DB::raw("CONCAT(
-            rooms.room_code,' ',
-            bookings.event_title 
-          ) as title"),
+          'bookings.event_title as title',
           'booking_details.event_start as start',
           'booking_details.event_end as end'
           )
