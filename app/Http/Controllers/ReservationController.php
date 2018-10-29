@@ -320,12 +320,25 @@ class ReservationController extends Controller
         return (object)$obj;
       });
 
-      $posters = $raw_posters->reduce(function($carry, $file) use ($now, $until) {
+      $posters = $raw_posters->reduce(function($carry, $file) use ($now, $until, $request) {
         $file_data = explode('-', $file->filename);
-        $booking = $this->get_one_booking($file_data[0]);
+        $booking = Booking::find($file_data[0]);
         $time = (int)$file_data[1];
 
-        if ($time >= $now && $time <= $until && $booking->overall_status_id == $this->accepted_booking_status_id) {
+        if ($time >= $now && $time <= $until && $booking->booking_status_id == $this->accepted_booking_status_id) {
+          if ($request->room) {
+            $in_room = BookingDetail::where('booking_id', $booking->id)
+              ->join('rooms', 'booking_details.room_id', '=', 'rooms.id')
+              ->where('rooms.room_code', '=', $request->room)
+              ->get();
+
+            if ($in_room->count()) {
+              return $carry->push($file->pathname);
+            }
+
+            return $carry;
+          }
+
           return $carry->push($file->pathname);
         }
 

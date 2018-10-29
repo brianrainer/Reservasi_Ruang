@@ -83,8 +83,6 @@
 
     var posters;
 
-    
-
     function updateTime(){
       var day = moment().format('dddd, DD-MM-YYYY');
       var time = moment().format('HH:mm');
@@ -174,7 +172,7 @@
     }
 
     function getPoster() {
-      $.get('/posters?date=' + moment().format('YYYY-MM-DDTHH:mm:ss'), function(poster_data) {
+      $.get('/posters?date=' + moment().format('YYYY-MM-DDTHH:mm:ss') + '&room={{$room_code}}', function(poster_data) {
         posters = poster_data;
         if (posters && posters.length > 0) {
           setInterval(showPoster, 3600000);
@@ -185,7 +183,7 @@
     $(document).ready(function(){
       updateBoard();
       setCalendar();
-      updateTime()
+      updateTime();
       setRefresh();
       getPoster();
 
