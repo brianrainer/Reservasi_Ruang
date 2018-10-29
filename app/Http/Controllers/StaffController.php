@@ -8,10 +8,6 @@ use Validator;
 
 class StaffController extends Controller
 {
-    public function __construct(){
-        $this->middleware('auth');
-    }
-
     protected function create_validator($request){
       return Validator::make($request->all(), [
         'user_name' => 'required|string|max:100',

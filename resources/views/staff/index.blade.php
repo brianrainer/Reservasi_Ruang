@@ -8,15 +8,20 @@
 
     @include('layouts.status')
 
-    <a href="{{url('/staff/create')}}" class="btn waves-light waves-effect blue darken-4">
-      <i class="material-icons right">add</i>add
-    </a>
+    @if (Auth::check())
+      <a href="{{url('/staff/create')}}" class="btn waves-light waves-effect blue darken-4">
+        <i class="material-icons right">add</i>add
+      </a>
+    @endif
+
     <table class="centered responsive-table">
       <thead>
         <th>Nama</th>
         <th>Email</th>
         <th>Phone No.</th>
-        <th>Action</th>
+        @if (Auth::check())
+          <th>Action</th>
+        @endif
       </thead>
       <tbody>
         @foreach($users as $user)
@@ -30,9 +35,11 @@
               Not Set
             @endif
           </td>
-          <td>
-            <a href="{{url('staff/'.$user->id)}}" class="btn btn-primary blue darken-4">Edit</a> 
-          </td>
+          @if (Auth::check())
+            <td>
+              <a href="{{url('staff/'.$user->id)}}" class="btn btn-primary blue darken-4">Edit</a> 
+            </td>
+          @endif
         </tr>
         @endforeach
       </tbody>
