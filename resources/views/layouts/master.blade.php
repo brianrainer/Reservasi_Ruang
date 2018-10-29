@@ -26,6 +26,7 @@
     main {
       flex: 1 0 auto;
     }
+
   </style>
   @yield('css')
 </head>
@@ -33,9 +34,10 @@
   <div class="navbar-fixed">
     <nav class="blue darken-4">
       <div class="nav-wrapper">
-        <a href="/" class="brand-logo valign-wrapper">
-          <img src="{{url('/')}}/images/its.png" style="max-width:100px;"></img>
+        <a href="/">
+          <img class="icon" src="{{url('/')}}/images/its.png" style="max-width:100px;" alt="">
         </a>
+        <a href="/" class="brand-logo hide-on-med-and-down" style="font-size:1.2em;font-family:serif">PEMINJAMAN RUANG DEPARTEMEN INFORMATIKA</a>
         <a href="#" data-target="sidenav_id" class="sidenav-trigger">
           <i class="material-icons">menu</i>
         </a>
