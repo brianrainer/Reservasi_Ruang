@@ -135,7 +135,7 @@
       var midnight = moment().add(1, 'd').startOf('day').unix();
       var msUntilMidnight = (midnight - now) * 1000;
 
-      setTimeout(window.location.reload, msUntilMidnight);
+      setTimeout(window.location.reload.bind(window.location), msUntilMidnight);
     }
 
     function setCalendar() {

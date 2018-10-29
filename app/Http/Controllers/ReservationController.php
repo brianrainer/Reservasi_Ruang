@@ -186,6 +186,9 @@ class ReservationController extends Controller
         ]);
     }
 
+    /**
+     * Function to generate PDF - API
+     */
     protected function download_pdf($booking_id){
       $booking = Booking::find($booking_id);
       $booking_details = $this->get_all_detail($booking_id);
@@ -235,6 +238,9 @@ class ReservationController extends Controller
       return $pdf->stream('surat_ijin.pdf'); 
     }
     
+    /**
+     * Function to generate pdf v2 - API
+     */
     protected function download_pdf_v2($booking_id){
       $booking = Booking::find($booking_id);
       $booking_details = $this->get_all_detail($booking_id);
@@ -651,45 +657,63 @@ class ReservationController extends Controller
         $this->validator_room($request, true)->validate();
         $this->validator_form($request)->validate();
 
-        $booking = $this->create_booking($request);
-        if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
-            $booking->pic_title_2 = $request->pic_title_2;
-            $booking->pic_name_2 = $request->pic_name_2;
-            $booking->save();
-        }
-      
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
-        foreach ($request->room as $key => $value) {
-            $this->create_booking_detail(
-                $value,
-                $booking->id,
-                $start_time->toDateTimeString(),
-                $end_time->toDateTimeString()
-            );
-        }
-        for ($i=1; $i < $request->howmanytimes ; $i++) {
+
+        //Check if event crash with another
+        for ($i = 0; $i < $request->howmanytimes ; $i++) {
+          if ($i != 0) { 
             $start_time = $start_time->addSeconds($request->routine);
             $end_time = $end_time->addSeconds($request->routine);
-            foreach ($request->room as $key => $value) {
-                $this->create_booking_detail(
-                    $value,
-                    $booking->id,
-                    $start_time->toDateTimeString(),
-                    $end_time->toDateTimeString()
-                );
+          }
+          foreach ($request->room as $key => $value) {
+            if ($this->check_crash_v2($value, $start_time->toDateTimeString(), $end_time->toDateTimeString())) {
+              return redirect('reserve')->withInput($request->input())->withErrors(collect(['Reservasi gagal. Terdapat acara lain pada saat yang sama, mohon cek lagi waktu peminjaman anda.']));
             }
+          }
+        }
+ 
+        $start_time = new Carbon($request->start_date." ".$request->start_time);
+        $end_time = new Carbon($request->start_date." ".$request->end_time);
+
+        $booking = $this->create_booking($request);
+        if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
+          $booking->pic_title_2 = $request->pic_title_2;
+          $booking->pic_name_2 = $request->pic_name_2;
+          $booking->save();
+        }
+      
+        foreach ($request->room as $key => $value) {
+          $this->create_booking_detail(
+            $value,
+            $booking->id,
+            $start_time->toDateTimeString(),
+            $end_time->toDateTimeString()
+          );
+        }
+
+        for ($i=1; $i < $request->howmanytimes ; $i++) {
+          $start_time = $start_time->addSeconds($request->routine);
+          $end_time = $end_time->addSeconds($request->routine);
+          foreach ($request->room as $key => $value) {
+            $this->create_booking_detail(
+              $value,
+              $booking->id,
+              $start_time->toDateTimeString(),
+              $end_time->toDateTimeString()
+            );
+          }
         }
 
         if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
-            $image = $request->file('poster_imagepath');
-            $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
-            $image->storeAs('public/posters', $image_name);
-            $booking->poster_imagepath = 'storage/posters/'.$image_name;
-            $booking->save();
+          $image = $request->file('poster_imagepath');
+          $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
+          $image->storeAs('public/posters', $image_name);
+          $booking->poster_imagepath = 'storage/posters/'.$image_name;
+          $booking->save();
         }
 
-        return redirect('reserve')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id);
+        return redirect('reserve')->with('message', 'Berhasil Mengajukan Reservasi #'.$booking->id.'. Mohon segera mencetak surat ijin dan mengajukannya kepada Kepala Departemen.');
     }
 
     /**
@@ -755,8 +779,34 @@ class ReservationController extends Controller
             ->get();
     }
 
+    /**
+     * Helper function - Check crash v2
+     */
+    protected function check_crash_v2($room_id, $start, $end) {
+      $start_between = Booking::where('booking_status_id', '=', $this->accepted_booking_status_id)
+        ->join('booking_details', 'booking_details.booking_id', '=', 'bookings.id')
+        ->where('booking_details.room_id', $room_id)
+        ->where('booking_details.event_start', '<=', $start)
+        ->where('booking_details.event_end', '>', $start)
+        ->first();
+      $end_between = Booking::where('booking_status_id', '=', $this->accepted_booking_status_id)
+        ->join('booking_details', 'booking_details.booking_id', '=', 'bookings.id')
+        ->where('booking_details.room_id', $room_id)
+        ->where('booking_details.event_start', '<', $end)
+        ->where('booking_details.event_end', '>=', $end)
+        ->first();
+      $event_between= Booking::where('booking_status_id', '=', $this->accepted_booking_status_id)
+        ->join('booking_details', 'booking_details.booking_id', '=', 'bookings.id')
+        ->where('booking_details.room_id', $room_id)
+        ->where('booking_details.event_start', '>=', $start)
+        ->where('booking_details.event_end', '<=', $end)
+        ->first();
+
+      return $start_between || $end_between || $event_between;
+    }
+
     protected function error_message($booking_id, $detail_id){
-        return 'Gagal menerima Detail Reservasi #'.$booking_id.'-'.$detail_id.", Bentrok;  ";
+      return 'Gagal menerima Detail Reservasi #'.$booking_id.'-'.$detail_id.", Bentrok;  ";
     }
 
     public function accept_all_reservation(Request $request){
@@ -776,7 +826,7 @@ class ReservationController extends Controller
                     $detail->room_id,
                     $detail->event_start,
                     $detail->event_end
-                ); 
+                );
             if ( $crash->count() ) {
                 $this->reject_detail($request->booking_id);
                 $crash_id = array_add($crash_id, $crash_count, $detail->id);
