@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="container" style="width:80%">
-    <h3>Staff</h3>
+    <h1>Staff</h1>
 
     @include('layouts.status')
 
