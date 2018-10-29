@@ -102,7 +102,7 @@
 
             $('#now').html(current_event.event_title);
             $('#status').html(start + ' - ' + end);
-            $('#eventtitle').css('background', '#0d47a1');
+            $('#eventtitle').css('background', '#b71c1c');
             $('#eventbox').removeClass('free-room').addClass('used-room');
           }
           else {

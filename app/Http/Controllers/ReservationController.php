@@ -231,7 +231,7 @@ class ReservationController extends Controller
       $data['attachments'] = $attachment_data;
       $data['booking'] = $booking;
       $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
-      $data['head_of_informatic'] = env('KEPALA_DEPARTEMEN', "Darlis Herumurti S.Kom.,M.Kom");
+      $data['head_of_informatic'] = "Darlis Herumurti S.Kom.,M.Kom";
 
       $pdf = PDF::loadView('pdf.main', $data);
 
@@ -296,7 +296,7 @@ class ReservationController extends Controller
       $data['attachments'] = $attachment_data;
       $data['booking'] = (object) $event;
       $data['date'] = Carbon::parse($booking->created_at)->formatLocalized('%d %B %Y');
-      $data['head_of_informatic'] = env('KEPALA_DEPARTEMEN', "Darlis Herumurti S.Kom.,M.Kom");
+      $data['head_of_informatic'] = "Darlis Herumurti S.Kom.,M.Kom";
 
       $pdf = PDF::loadView('pdf.sub', $data);
 

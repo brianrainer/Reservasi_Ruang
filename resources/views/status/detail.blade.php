@@ -232,7 +232,7 @@
       @slot('routing') 
         {{url('/reserve/status/accept_all')}} 
       @endslot
-      @slot('button_class', 'green')
+      @slot('button_class', 'blue darken-4')
       @slot('button', 'Terima')
     @endcomponent
 
