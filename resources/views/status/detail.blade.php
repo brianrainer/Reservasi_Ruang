@@ -118,6 +118,17 @@
         </div>
       @endcomponent
 
+      @if ($booking->overall_status_id == $waiting_id)
+        @component('status.detail_div')
+          @slot('title', 'Print Surat Ijin')
+          <div class="row">
+            <div class="col s12 m6">
+              <a href="{{url('reserve/status/'.$booking->id.'/surat_ijin_v2')}}" class="btn waves-effect waves-light orange">Print Surat</a>
+            </div>
+          </div>
+        @endcomponent
+      @endif
+
       @if (Auth::check())
         @component('status.detail_div')
           @slot('title', 'Ubah Status')

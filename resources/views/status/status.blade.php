@@ -15,15 +15,15 @@
   @endif
   <div class="row">
     <form action="{{url('/reserve/status')}}" method="GET">
-      <div class="input-field col s3 m3 l3">
+      <div class="input-field col s12 m3 l4">
         <input type="text" name="peminjam" id="name-search" class="automplete" value="{{app('request')->input('peminjam')}}">
         <label for="name-search">Nama Peminjam</label>
       </div>
-      <div class="input-field col s3 m3 l3">
+      <div class="input-field col s12 m3 l4">
         <input type="text" name="kegiatan" id="kegiatan-search" class="automplete" value="{{app('request')->input('kegiatan')}}">
         <label for="kegiatan-search">Nama Kegiatan</label>
       </div>
-      <div class="input-field col s2 m2 l2">
+      <div class="input-field col s12 m3 l2">
         <select name="status" value="3">
           <option value="">SEMUA</option>
           <option value="2">DITERIMA</option>
@@ -32,7 +32,7 @@
         </select>
         <label>Status</label>
       </div> 
-      <div class="input-field col">
+      <div class="input-field col s12 m3 l2">
         <button class="waves-effect waves-light btn blue darken-3" type="submit"><i class="material-icons left">search</i>Search</button>
       </div>
     </form>

@@ -62,6 +62,7 @@ class ReservationController extends Controller
         $data['booking_details'] = $this->get_all_detail_paginate($booking_id); 
         $data['accepted_id'] = $this->accepted_booking_status_id;
         $data['rejected_id'] = $this->rejected_booking_status_id;
+        $data['waiting_id'] = $this->waiting_booking_status_id;
 
         return view('status.detail', $data);
     }
@@ -997,6 +998,7 @@ class ReservationController extends Controller
         $booking->save();
       }
 
+      $this->pending_detail($booking->id);
 
       return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail kegiatan reservasi #'.$request->booking_id);
     }
