@@ -708,48 +708,48 @@ class ReservationController extends Controller
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
-                    ->where('booking_details.event_start','>=', $event_start)
-                    ->where('booking_details.event_start', '<=', $event_end);
+                    ->where('booking_details.event_start','>', $event_start)
+                    ->where('booking_details.event_start', '<', $event_end);
                 })
             ->orWhere(function($query)  use ($detail_id, $room_id,$event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
-                    ->where('booking_details.event_end','>=', $event_start)
-                    ->where('booking_details.event_end', '<=', $event_end);
+                    ->where('booking_details.event_end','>', $event_start)
+                    ->where('booking_details.event_end', '<', $event_end);
                 })
             ->orWhere(function($query)  use ($detail_id, $room_id,$event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('booking_statuses.id', '=', $this->accepted_booking_status_id)
-                    ->where('booking_details.event_start','<=', $event_start)
-                    ->where('booking_details.event_end', '>=', $event_end);
+                    ->where('booking_details.event_start','<', $event_start)
+                    ->where('booking_details.event_end', '>', $event_end);
                 })
             ->orWhere(function($query)  use ($booking_id, $detail_id, $room_id,$event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('bookings.id', '=', $booking_id)
-                    ->where('booking_details.event_start','>=', $event_start)
-                    ->where('booking_details.event_start', '<=', $event_end);
+                    ->where('booking_details.event_start','>', $event_start)
+                    ->where('booking_details.event_start', '<', $event_end);
                 })
             ->orWhere(function($query)  use ($booking_id, $detail_id, $room_id,$event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('bookings.id', '=', $booking_id)
-                    ->where('booking_details.event_end','>=', $event_start)
-                    ->where('booking_details.event_end', '<=', $event_end);
+                    ->where('booking_details.event_end','>', $event_start)
+                    ->where('booking_details.event_end', '<', $event_end);
                 })
             ->orWhere(function($query)  use ($booking_id, $detail_id, $room_id,$event_start, $event_end){
                     $query
                     ->where('booking_details.id', '<>', $detail_id)
                     ->where('rooms.id', '=', $room_id)
                     ->where('bookings.id', '=', $booking_id)
-                    ->where('booking_details.event_start','<=', $event_start)
-                    ->where('booking_details.event_end', '>=', $event_end);
+                    ->where('booking_details.event_start','<', $event_start)
+                    ->where('booking_details.event_end', '>', $event_end);
                 })
             ->select(
                 'booking_details.id',
