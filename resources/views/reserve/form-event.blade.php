@@ -1,7 +1,7 @@
 <div class="row">
   <div class="input-field col s12">
     <i class="material-icons prefix">event</i>
-    <input type="text" value="{{ old('title') }}" name="title" id="event_title" class="validate" required>
+    <input type="text" value="{{ $title }}" name="title" id="event_title" class="validate" required>
     <label for="event_title">Nama Acara</label>
     <span class="helper-text">
       Masukkan Nama Acara Anda
@@ -31,7 +31,7 @@
 <div class="row">
   <div class="input-field col s12">
     <i class="material-icons prefix">event_note</i>
-    <textarea id='event_description' name='event_description' class='materialize-textarea' data-length='180' required>{{ old('event_description') }}</textarea>
+    <textarea id='event_description' name='event_description' class='materialize-textarea' data-length='180' required>{{ $event_description }}</textarea>
     <label for="event_description">Deskripsi Acara</label>
     <span class="helper-text">
       Berikan Deskripsi Singkat untuk Acara Anda

@@ -43,14 +43,17 @@ Route::prefix('room')->group(function(){
 Route::prefix('reserve')->group(function(){
 
   Route::get('/', 'ReservationController@index_multi_repeat');
+
+  Route::middleware('auth')->group(function(){
+    Route::get('edit/{booking}', 'ReservationController@index_edit_reservation');
+    Route::post('edit', 'ReservationController@edit_reservation_greater_detail');
+  });
  
   Route::get('status', 'ReservationController@index_status');
   Route::get('status/{booking}', 'ReservationController@index_detail');
   Route::get('status/{booking_id}/surat_ijin', 'ReservationController@download_pdf');
   Route::get('status/{booking_id}/surat_ijin_v2', 'ReservationController@download_pdf_v2');
-
   Route::post('multirepeat', 'ReservationController@multirepeat');
-
   Route::middleware('auth')->prefix('status')->group(function(){
     Route::post('reject', 'ReservationController@reject_one_reservation');
     Route::post('reject_all', 'ReservationController@reject_all_reservation');
@@ -62,6 +65,7 @@ Route::prefix('reserve')->group(function(){
     Route::post('add', 'ReservationController@add_one_reservation');
     Route::post('delete', 'ReservationController@delete_one_detail');
     Route::post('delete_all', 'ReservationController@delete_all_detail');
+    
   });
 });
 

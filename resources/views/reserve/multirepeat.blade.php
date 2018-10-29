@@ -19,7 +19,16 @@
           <div class="divider"></div>
           <p>Informasi peminjam dibutuhkan dalam memastikan keaslian peminjaman. Nomor Telepon dan Email dipergunakan untuk menghubungi peminjam saat ruangan tidak dapat dipinjam, atau ketika ruangan yang akan digunakan dialihkan untuk kegiatan lainnya. Penanggung Jawab Utama dan Sekunder akan disertakan secara otomatis dalam Surat Ijin Peminjaman.</p>
 
-          @include('reserve.form-user')
+          @component('reserve.form-user', ['agencies' => $agencies])
+            @slot('full_name', old('full_name'))
+            @slot('nrp_nip', old('nrp_nip'))
+            @slot('phone_number', old('phone_number'))
+            @slot('email', old('email'))
+            @slot('pic_title_1', old('pic_title_1'))
+            @slot('pic_name_1', old('pic_name_1'))
+            @slot('pic_title_2', old('pic_title_2'))
+            @slot('pic_name_2', old('pic_name_2'))
+          @endcomponent
         </div>
         <div class="section">
           <h5>Detail Peminjaman</h5>
@@ -36,7 +45,10 @@
           <div class="divider"></div>
           <p>Keterangan kegiatan diperlukan untuk memastikan keaslian peminjaman. Nama Acara akan ditampilkan di ruangan yang dipinjam, apabila peminjaman disetujui. Poster juga akan ditampilkan di ruangan</p>
 
-          @include('reserve.form-event')
+          @component('reserve.form-event', ['categories' => $categories])
+            @slot('title', old('event_title'))
+            @slot('event_description', old('event_description'))
+          @endcomponent
         </div>
         </form>
       </div>

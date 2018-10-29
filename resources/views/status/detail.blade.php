@@ -84,6 +84,19 @@
         @endif
       @endcomponent
 
+      @if (Auth::check())
+        @component('status.detail_div')
+          @slot('title')
+            Ubah Detail Reservasi
+          @endslot
+          <div class="row">
+            <div class="col s12">
+              <a class="btn waves-effect waves-light blue darken-4" href="{{url('reserve/edit/'.$booking->id)}}">Edit reservasi</a>
+            </div>
+          </div>
+        @endcomponent
+      @endif
+
       @component('status.detail_div')
         @slot('title', 'Status')
         <div class="row">

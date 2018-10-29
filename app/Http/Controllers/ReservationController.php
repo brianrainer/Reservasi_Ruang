@@ -57,13 +57,9 @@ class ReservationController extends Controller
     }
 
     public function index_detail($booking_id){
+        $data = $this->load_reserve_form();
         $data['booking'] = $this->get_one_booking($booking_id);
         $data['booking_details'] = $this->get_all_detail_paginate($booking_id); 
-        $data['rooms'] = Room::all();
-        $data['routines'] = Routine::all();
-        $data['agencies'] = Agency::all();
-        $data['categories'] = Category::all();
-
         $data['accepted_id'] = $this->accepted_booking_status_id;
         $data['rejected_id'] = $this->rejected_booking_status_id;
 
@@ -73,6 +69,12 @@ class ReservationController extends Controller
     public function index_multi_repeat(){
         $data = $this->load_reserve_form();
         return view('reserve.multirepeat', $data);
+    }
+
+    public function index_edit_reservation($booking_id){
+      $data = $this->load_reserve_form();
+      $data['booking'] = $this->get_one_booking($booking_id);
+      return view('reserve.edit', $data);
     }
 
     protected function load_reserve_form(){
@@ -966,6 +968,23 @@ class ReservationController extends Controller
         return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil menghapus seluruh detail reservasi #'.$request->booking_id);
     }
 
-    // to do : helper search, filter by organization, category, agency, status, etc. status approval
+    public function edit_reservation_greater_detail(Request $request){
+      // validate
 
+      $booking = Booking::findOrFail($request->booking_id);
+      $booking->name = $request->full_name;
+      $booking->nrp_nip = $request->nrp_nip;
+      $booking->phone_number = $request->phone_number;
+      $booking->email = $request->email;
+      $booking->pic_title_1 = $request->pic_title_1;
+      $booking->pic_title_2 = $request->pic_title_2;
+      $booking->pic_name_1 = $request->pic_name_1;
+      $booking->pic_name_2 = $request->pic_name_2;
+      $booking->event_title = $request->title;
+      $booking->event_description = $request->event_description;
+      $booking->save();
+
+
+      return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail kegiatan reservasi #'.$request->booking_id);
+    }
 }
