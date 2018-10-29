@@ -149,6 +149,7 @@
             <th>Ruangan</th>
             <th>Tanggal</th>
             <th>Waktu</th>
+            <th>Agenda</th>
             @if (Auth::check())
               <th>Aksi</th>
             @endif
@@ -164,6 +165,15 @@
               </td>
               <td>
                 {{ \Carbon\Carbon::parse($detail->event_start)->format('H:i') }} s/d {{ \Carbon\Carbon::parse($detail->event_end)->format('H:i') }}
+              </td>
+              <td>
+                <div class="row">
+                  <div class="col s12">
+                    <a href="{{url('/agenda/'.$detail->room_code)}}" class="btn waves-effect waves-light darken-4 blue">
+                      Agenda
+                    </a>
+                  </div>
+                </div>
               </td>
               @if (Auth::check())
                 <td>
