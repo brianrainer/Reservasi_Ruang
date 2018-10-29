@@ -17,13 +17,14 @@
         eventSources : [
           {
             url: 'calendar/accepted',
-            color: 'green',
+            color: '#1565c0',
             textColor: 'white',
             borderColor: 'black',
             cache: true
           }
         ],
-        timeFormat: 'H:mm'
+        timeFormat: 'H:mm',
+        eventLimit: true,
       })
     });
   </script>

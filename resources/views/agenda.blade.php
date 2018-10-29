@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.agenda')
 
 @section('title', 'ReservasiTC | Agenda')
 
@@ -16,6 +16,12 @@
     .used-room {
       border-color: #b71c1c; 
     }
+    .fc-event {
+      font-size: 1.75em;
+    }
+    .marquee {
+      overflow: hidden;
+    }
   </style>
 @endsection
 
@@ -26,7 +32,7 @@
       <div class="col s12 m12 l12 box" id="eventbox" style="text-align: center">
         <div class="row" id="eventtitle">
           <div class="col s12 m12 l12">
-            <h4 class="center-align"><strong>{{$room_code}}</strong></h4>
+            <h4 class="center-align" style="color: white"><strong>{{$room_code}}</strong></h4>
           </div>
         </div>
         <div class="row">
@@ -34,7 +40,7 @@
             <h5><strong id="time"></strong></h4>
             <h5 id="day"></h4>
           </div>
-          <div class="col s9 m9 l9">
+          <div class="col s9 m9 l9 marquee">
             <h3><strong id="now"></strong></h3>
             <h5 id="status"></h5>
           </div>
@@ -42,7 +48,10 @@
       </div>
     @endisset
     </div>
-    <div class="row" style="padding:20px;">
+    <div class="row center-align" style="padding:20px;">
+      <div id="poster">
+        <img id="poster-image" style="max-width: 100%; max-height:100%"/>
+      </div>
       <div id="calendar"></div>
     </div>
   </div>
@@ -53,7 +62,7 @@
     var calendarEvent = [
       {
         url: '/calendar/accepted',
-        color: 'green',
+        color: '#1565c0',
         textColor: 'white',
         borderColor: 'black',
         cache: true
@@ -64,7 +73,7 @@
       calendarEvent = [
         {
           url: '/calendar/accepted/' + '{{$room_code}}',
-          color: 'green',
+          color: '#0d47a1',
           textColor: 'white',
           borderColor: 'black',
           cache: true,
@@ -72,15 +81,19 @@
       ]
     @endisset
 
-    function update(){
-      var day = moment().format('dddd, Do of MMM YYYY');
-      var time = moment().format('HH:mm:ss');
-      
+    var posters;
+
+    
+
+    function updateTime(){
+      var day = moment().format('dddd, DD-MM-YYYY');
+      var time = moment().format('HH:mm');
+
       $('#day').html(day);
       $('#time').html(time);
     }
 
-    function update_board(){
+    function updateBoard(){
       @isset($room_code)
         $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(current_event){
           if (current_event){
@@ -89,7 +102,7 @@
 
             $('#now').html(current_event.event_title);
             $('#status').html(start + ' - ' + end);
-            $('#eventtitle').css('background', '#b71c1c');
+            $('#eventtitle').css('background', '#0d47a1');
             $('#eventbox').removeClass('free-room').addClass('used-room');
           }
           else {
@@ -117,7 +130,15 @@
       @endisset
     }
     
-    function setToCalendar() {
+    function setRefresh() {
+      var now = moment().unix();
+      var midnight = moment().add(1, 'd').startOf('day').unix();
+      var msUntilMidnight = (midnight - now) * 1000;
+
+      setTimeout(window.location.reload.bind(window.location), msUntilMidnight);
+    }
+
+    function setCalendar() {
       $('#calendar').fullCalendar({
         header: { 
           left: 'today prev,next',
@@ -129,21 +150,47 @@
         eventSources : calendarEvent, 
         nowIndicator: true,
       })
+
+      $('#poster').hide();
     }
 
-    function setToPoster() {
-      $('#calendar').html("");
+    function showCalendar() {
+      $('#poster').fadeOut('slow', function() {
+        $('#calendar').fadeIn('slow'); 
+      });
+    }
+
+    function getRandomInt(len) {
+      return Math.floor(Math.random() * Math.floor(len));
+    }
+
+    function showPoster() {
+      $('#poster-image').attr('src', posters[getRandomInt(posters.length)]);
+      $('#calendar').fadeOut('slow', function() {
+        $('#poster').fadeIn('slow');
+      });
+
+      setTimeout(showCalendar, 60000);
+    }
+
+    function getPoster() {
+      $.get('/posters?date=' + moment().format('YYYY-MM-DDTHH:mm:ss'), function(poster_data) {
+        posters = poster_data;
+        if (posters && posters.length > 0) {
+          setInterval(showPoster, 3600000);
+        }
+      })
     }
 
     $(document).ready(function(){
-      update_board();
-      setToCalendar();
-      setInterval(update, 1000);
-      setInterval(update_board, 60000);
-      //setInterval(setToCalendar, 3600000);
-      //setInterval(setToPoster, 3300000);
-      setInterval(setToCalendar, 40000);
-      setIntercal(setToPoster, 5000);
+      updateBoard();
+      setCalendar();
+      updateTime()
+      setRefresh();
+      getPoster();
+
+      setInterval(updateTime, 60000);
+      setInterval(updateBoard, 60000);
     });
   </script>
 @endsection
