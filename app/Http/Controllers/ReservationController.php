@@ -110,9 +110,8 @@ class ReservationController extends Controller
             'nrp_nip' => 'nullable|string|min:10|max:20',
             'phone_number' => 'required',
             'email' => 'required|email|max:100',
-            'agency' => 'required|numeric',
-            'start_date' => 'required|date|after:today',
-            'start_date' => 'required|date',
+            'agency' => 'required|numeric',  
+            'start_date' => 'required|date|after:yesterday',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
             'routine' => 'required|numeric',
@@ -643,6 +642,7 @@ class ReservationController extends Controller
     public function multirepeat(Request $request){
         $this->validator_room($request, true)->validate();
         $this->validator_form($request)->validate();
+        
 
         $booking = $this->create_booking($request);
         if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
