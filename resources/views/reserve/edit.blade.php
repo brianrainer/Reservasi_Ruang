@@ -10,7 +10,7 @@
   @include('layouts.status')
   @include('layouts.errors')
 
-  <form action="{{url('reserve/edit')}}" method="POST">
+  <form action="{{url('reserve/edit')}}" method="POST" enctype="multipart/form-data">
     {{csrf_field()}}
     <input type="hidden" name="booking_id" value="{{$booking->id}}">
 

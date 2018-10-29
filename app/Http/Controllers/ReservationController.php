@@ -984,6 +984,19 @@ class ReservationController extends Controller
       $booking->event_description = $request->event_description;
       $booking->save();
 
+      $start_time = BookingDetail::where( 'booking_details.booking_id', '=', $booking->id)
+      ->select('booking_details.event_start')
+      ->orderBy('booking_details.event_start', 'ASC')
+      ->first();
+
+      if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
+        $image = $request->file('poster_imagepath');
+        $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
+        $image->storeAs('public/posters', $image_name);
+        $booking->poster_imagepath = 'storage/posters/'.$image_name;
+        $booking->save();
+      }
+
 
       return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail kegiatan reservasi #'.$request->booking_id);
     }
