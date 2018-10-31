@@ -36,11 +36,11 @@
           </div>
         </div>
         <div class="row">
-          <div class="col s3 m3 l3" style="border-right-color: #1565c0">
+          <div class="col s12 m6 l4" style="border-right-color: #1565c0">
             <h5><strong id="time"></strong></h4>
             <h5 id="day"></h4>
           </div>
-          <div class="col s9 m9 l9">
+          <div class="col s12 m6 l8">
             <h3 class="marquee"><strong id="now"></strong></h3>
             <h5 id="status"></h5>
           </div>
