@@ -36,12 +36,12 @@
           </div>
         </div>
         <div class="row">
-          <div class="col s3 m3 l3">
+          <div class="col s3 m3 l3" style="border-right-color: #1565c0">
             <h5><strong id="time"></strong></h4>
             <h5 id="day"></h4>
           </div>
-          <div class="col s9 m9 l9 marquee">
-            <h3><strong id="now"></strong></h3>
+          <div class="col s9 m9 l9">
+            <h3 class="marquee"><strong id="now"></strong></h3>
             <h5 id="status"></h5>
           </div>
         </div>
@@ -81,6 +81,7 @@
       ]
     @endisset
 
+    var flag = 1;
     var posters;
 
     function updateTime(){
@@ -94,17 +95,26 @@
     function updateBoard(){
       @isset($room_code)
         $.get('/calendar/status?roomCode=' + '{{$room_code}}' + '&time=' + moment().format(), function(current_event){
-          if (current_event){
-            var start = moment(current_event.event_start).format('hh:mm:ss');
-            var end = moment(current_event.event_end).format('hh:mm:ss');
+          if (current_event && flag){
+            var start = moment(current_event.event_start).format('HH:mm');
+            var end = moment(current_event.event_end).format('HH:mm');
+            flag = 0;
 
             $('#now').html(current_event.event_title);
             $('#status').html(start + ' - ' + end);
             $('#eventtitle').css('background', '#b71c1c');
             $('#eventbox').removeClass('free-room').addClass('used-room');
-          }
-          else {
-            $('#now').html('Ruangan kosong');
+
+            $('.marquee').marquee({
+              duration: 5000,
+              delayBeforeStart: 0,
+              direction: 'left',
+            })
+          } else if (!current_event) {
+            flag = 1;
+
+            $('.marquee').marquee('destroy');
+            $('#now').html('Ruangan Kosong');
             $('#status').html('');
             $('#eventtitle').css('background', '#1565c0');
             $('#eventbox').removeClass('used-room').addClass('free-room');
@@ -180,15 +190,20 @@
       })
     }
 
-    $(document).ready(function(){
+    function init() {
       updateBoard();
       setCalendar();
       updateTime();
       setRefresh();
       getPoster();
+    }
 
+    $(document).ready(function(){
+      init();
+      
       setInterval(updateTime, 60000);
       setInterval(updateBoard, 60000);
     });
+
   </script>
 @endsection
