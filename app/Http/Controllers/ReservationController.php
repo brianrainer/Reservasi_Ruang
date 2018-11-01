@@ -1005,7 +1005,7 @@ class ReservationController extends Controller
 
       if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
         $image = $request->file('poster_imagepath');
-        $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
+        $image_name = $booking->id.'-'.(Carbon::parse($start_time->event_start)->timestamp).'.'.$image->getClientOriginalExtension();
         $image->storeAs('public/posters', $image_name);
         $booking->poster_imagepath = 'storage/posters/'.$image_name;
         $booking->save();
