@@ -88,28 +88,25 @@ class ReservationController extends Controller
 
     protected function validator_form(Request $request){
         return Validator::make($request->all(), [
-            'full_name' => 'required|string|max:100',
-            'nrp_nip' => 'nullable|string|min:10|max:20',
+            'full_name' => 'required|string',
+            'nrp_nip' => 'nullable|string',
             'phone_number' => 'required',
-            'email' => 'required|email|max:100',
+            'email' => 'required|email',
             'agency' => 'required|numeric',  
             'start_date' => 'required|date|after:yesterday',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
             'routine' => 'required|numeric',
             'howmanytimes' => 'required|numeric|min:1|max:20',
-            'title' => 'required|string|max:140',
+            'title' => 'required|string',
             'category' => 'required|numeric',
-            'event_description' => 'required|string|max:180',
+            'event_description' => 'required|string',
             'agree' => 'required|filled',
         ], [
             'full_name.required' => 'Nama Lengkap Dibutuhkan',
-            'nrp_nip.min' => 'Gunakan NRP / NIP lengkap',
-            'nrp_nip.max' => 'NRP / NIP terlalu panjang, silahkan coba lagi',
             'phone_number.required' => 'Nomor Telepon Dibutuhkan',
             'email.required' => 'Email Dibutuhkan',
             'email.email' => 'Email harus menggunakan format email yang benar',
-            'email.max' => 'Email terlalu panjang, gunakan email di bawah 100 karakter',
             'agency.required' => 'Organisasi Dibutuhkan',
             'agency.numeric' => 'Organisasi yang diwakilkan tidak valid',
             'start_date.required' => 'Tanggal Reservasi Dibutuhkan',
@@ -126,11 +123,9 @@ class ReservationController extends Controller
             'howmanytimes.max' => 'Banyak Perulangan Kegiatan Maximum adalah Dua Puluh Kali (20x)',
             'title.required' => 'Judul Kegiatan Diperlukan',
             'title.string' => 'Judul Kegiatan harus berupa String',
-            'title.max' => 'Maximal Judul Kegiatan adalah 140 Karakter',
             'category.required' => 'Kategori Kegiatan Dibutuhkan',
             'category.numeric' => 'Kategori Kegiatan Tidak Valid',
             'event_description.required' => 'Deskripsi Kegiatan Dibutuhkan',
-            'event_description.max' => 'Maximal Deskripsi Kegiatan adalah 180 Karakter',
             'agree.required' => 'Persetujuan Diperlukan',
             'agree.filled' => 'Anda Harus Setuju dengan Syarat dan Ketentuan Reservasi',
         ]);
@@ -692,6 +687,16 @@ class ReservationController extends Controller
         $start_time = new Carbon($request->start_date." ".$request->start_time);
         $end_time = new Carbon($request->start_date." ".$request->end_time);
 
+        if ($request->nrp_nip == ''){
+          $request->nrp_nip = '-';
+        }
+        if ($request->pic_title_1 == '') {
+          $request->pic_title_1 = 'Peminjam';
+        }
+        if ($request->pic_name_1 == ''){
+          $request->pic_name_1 = $request->full_name;
+        }
+
         $booking = $this->create_booking($request);
         if ($request->pic_title_2 !== '' && $request->pic_name_2 !== '') {
           $booking->pic_title_2 = $request->pic_title_2;
@@ -996,6 +1001,17 @@ class ReservationController extends Controller
       $booking->pic_name_2 = $request->pic_name_2;
       $booking->event_title = $request->title;
       $booking->event_description = $request->event_description;
+
+      if ($request->nrp_nip == ''){
+        $booking->nrp_nip = '-';
+      }
+      if ($request->pic_title_1 == '') {
+        $booking->pic_title_1 = 'Peminjam';
+      }
+      if ($request->pic_name_1 == ''){
+        $booking->pic_name_1 = $request->full_name;
+      }
+
       $booking->save();
 
       $start_time = BookingDetail::where( 'booking_details.booking_id', '=', $booking->id)

@@ -15,7 +15,7 @@
   
   <div class="input-field col s12 m6">
     <i class="material-icons prefix"></i> 
-    <input type="number" id="howmanytimes" name="howmanytimes" min="1" max="20" value="{{old('howmanytimes')}}" required>
+    <input type="number" id="howmanytimes" name="howmanytimes" value="1" min="1" max="20" value="{{old('howmanytimes')}}" required>
     <label for="howmanytimes">Berapa kali</label>
     <span class="helper-text">
       Masukkan banyak perulangan peminjaman
