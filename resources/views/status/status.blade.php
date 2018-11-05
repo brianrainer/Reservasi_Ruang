@@ -8,11 +8,6 @@
   @include('layouts.status')
   @include('layouts.errors')
 
-  @if (session('message'))
-    <div class="card-panel teal">
-      {{session('message')}}
-    </div>
-  @endif
   <div class="row">
     <form action="{{url('/reserve/status')}}" method="GET">
       <div class="input-field col s12 m3 l4">

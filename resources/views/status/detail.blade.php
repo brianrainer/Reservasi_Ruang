@@ -2,6 +2,14 @@
 
 @section('title','ReservasiTC | Detail')
 
+@section('css')
+  <style type="text/css">
+    .btn {
+      margin: 0.3rem;
+    }
+  </style>
+@endsection
+
 @section('content')
   <div class="container" style="width:80%">
   <h1>Detail Reservasi</h1>
@@ -87,10 +95,26 @@
       @if (Auth::check())
         @component('status.detail_div')
           @slot('title')
+            Hapus Gambar
+          @endslot
+          <div class="row">
+            <div class="col s12">
+              <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_image" onclick="fill_modal('delete_image', {{$booking->id}})">
+                Hapus Gambar
+              </button>
+            </div>
+          </div>
+        @endcomponent
+
+        @component('status.detail_div')
+          @slot('title')
             Ubah Detail Reservasi
           @endslot
           <div class="row">
             <div class="col s12">
+              <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_reservation" onclick="fill_modal('delete_reservation', {{$booking->id}})">
+                Hapus Reservasi
+              </button>
               <a class="btn waves-effect waves-light blue darken-4" href="{{url('reserve/edit/'.$booking->id)}}">Edit reservasi</a>
             </div>
           </div>
@@ -148,15 +172,14 @@
         @endcomponent
 
         @component('status.detail_div')
-          @slot('title', 'Ubah Detail Ruangan')
+          @slot('title', 'Ubah Detail Lokasi')
           <div class="row">
             <div class="col s12">
               <button class="btn waves-effect waves-light red modal-trigger" data-target="delete_all" onclick="fill_modal('delete_all', '{{$booking->id}}', '')">
-                {{-- <i class="material-icons left">warning</i> --}}
-                Hapus Semua
+                Hapus Semua Lokasi
               </button>
               <button class="btn waves-effect waves-light blue darken-4 modal-trigger" data-target="add_detail" onclick="fill_modal('add_detail', '{{$booking->id}}', '')">
-                Tambah
+                Tambah Lokasi
               </button>
             </div>
           </div>
@@ -165,7 +188,7 @@
 
 
       @if (count($booking_details))
-      <h4>Detail Ruangan</h4>
+      <h4>Detail Waktu dan Tempat</h4>
       <table class="responsive-table highlight centered">
         <thead>
           <tr>
@@ -273,7 +296,7 @@
     @component('status.detail_modal')
       @slot('modal_id', 'delete_detail')
       @slot('title', 'Konfirmasi Penghapusan Detail Reservasi')
-      @slot('content', 'Apakah anda yakin ingin menghapus detail reservasi ini ?')
+      @slot('content', 'Apakah anda yakin ingin menghapus detail lokasi ini ?')
       @slot('routing')
         {{url('/reserve/status/delete')}}
       @endslot
@@ -284,12 +307,34 @@
     @component('status.detail_modal')
       @slot('modal_id', 'delete_all')
       @slot('title', 'Konfirmasi Penghapusan Detail Reservasi')
-      @slot('content', 'Apakah anda yakin ingin menghapus SELURUH detail reservasi ini ?')
+      @slot('content', 'Apakah anda yakin ingin menghapus SELURUH detail lokasi ini ?')
       @slot('routing')
         {{url('/reserve/status/delete_all')}}
       @endslot
       @slot('button_class', 'red')
       @slot('button', 'Hapus Semua')
+    @endcomponent
+
+    @component('status.detail_modal')
+      @slot('modal_id', 'delete_image')
+      @slot('title', 'Konfirmasi Penghapusan Poster Kegiatan')
+      @slot('content', 'Apakah anda yakin ingin menghapus poster kegiatan ini? Gambar akan terhapus permanen')
+      @slot('routing')
+        {{url('/reserve/image/delete')}}
+      @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Hapus Gambar')
+    @endcomponent
+
+    @component('status.detail_modal')
+      @slot('modal_id', 'delete_reservation')
+      @slot('title', 'Konfirmasi Penghapusan Reservasi')
+      @slot('content', 'Apakah anda yakin ingin menghapus reservasi ini? (Reservasi yang terhapus masih dapat dilihat dalam database)')
+      @slot('routing')
+        {{url('/reserve/delete')}}
+      @endslot
+      @slot('button_class', 'red')
+      @slot('button', 'Hapus Reservasi')
     @endcomponent
 
     <div id="edit_detail" class="modal">

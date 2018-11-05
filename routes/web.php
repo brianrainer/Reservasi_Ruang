@@ -47,6 +47,8 @@ Route::prefix('reserve')->group(function(){
   Route::middleware('auth')->group(function(){
     Route::get('edit/{booking}', 'ReservationController@index_edit_reservation');
     Route::post('edit', 'ReservationController@edit_reservation_greater_detail');
+    Route::post('image/delete', 'ReservationController@delete_image');
+    Route::post('delete', 'ReservationController@delete_reservation');
   });
  
   Route::get('status', 'ReservationController@index_status');

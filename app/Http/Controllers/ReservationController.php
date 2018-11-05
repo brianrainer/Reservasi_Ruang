@@ -1031,4 +1031,29 @@ class ReservationController extends Controller
 
       return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil mengubah detail kegiatan reservasi #'.$request->booking_id);
     }
+
+    public function delete_image(Request $request){
+      $booking = Booking::findOrFail($request->booking_id);
+      if (File::exists($booking->poster_imagepath)){
+        File::delete($booking->poster_imagepath);
+      }
+      $booking->poster_imagepath = '';
+      $booking->save();
+
+      return redirect('reserve/status/'.$request->booking_id)->with('message', 'Berhasil menghapus poster kegiatan reservasi #'.$request->booking_id);
+    }
+
+    public function delete_reservation(Request $request){
+      $booking = Booking::findOrFail($request->booking_id);
+      $booking->bookingDetail()->delete();
+
+      if (File::exists($booking->poster_imagepath)){
+        File::delete($booking->poster_imagepath);
+      }
+      $booking->poster_imagepath = '';
+
+      $booking->delete();
+
+      return redirect('reserve/status')->with('message', 'Berhasil menghapus data kegiatan reservasi #'.$request->booking_id);
+    }
 }
