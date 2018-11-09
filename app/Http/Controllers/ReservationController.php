@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use DB;
 use PDF;
 use File;
+use QrCode;
 
 class ReservationController extends Controller
 {
@@ -523,8 +524,23 @@ class ReservationController extends Controller
       return $this->get_booking_calendar($this->rejected_booking_status_id, $request->start, $request->end);
     }
 
+    /**
+     * API to get current event and qr code
+     */
     protected function get_room_status(Request $request){
-      return  $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
+      $event = $this->get_room_booking_status($this->accepted_booking_status_id, $request->roomCode, $request->time);
+
+      if (!$event) {
+        return null;
+      }
+
+      //qr->generate return html element
+      //we replace \" and \n so it can be read by jquery .append
+      $qr = QrCode::size(100)->generate($request->roomCode.', '.$event->event_title);
+      $data['qr'] = str_replace('\n', '', str_replace('"', '\'', $qr));
+      $data['event'] = $event;
+
+      return $data;
     }
 
     protected function get_one_booking($booking_id){
