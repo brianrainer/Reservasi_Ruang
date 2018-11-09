@@ -27,160 +27,164 @@ class ReservationController extends Controller
     protected $rejected_booking_status_id = 3;
 
     public function index_welcome(){
-        $data['bookings'] = $this->get_all_booking_today();
-        return view('welcome', $data);
+      return view('welcome');
     }
 
     public function index_calendar(){
-        return view('calendar');
+      $data['rooms'] = Room::get();
+
+      return view('calendar', $data);
     }
 
     public function index_agenda(){
-        return view('agenda');
+      return view('agenda');
     }
 
     public function index_room_agenda($room_code){
-        $data['room_code'] = $room_code;
+      $data['room_code'] = $room_code;
 
-        return view('agenda', $data);
+      return view('agenda', $data);
     }
 
     public function index_status(Request $request){
-        if($request->kegiatan || $request->status || $request->peminjam) {
-          $data['bookings'] = $this->get_booking_by_params($request->peminjam, $request->kegiatan, $request->status);
-        }
-        else {
-          $data['bookings'] = $this->get_all_booking();
-        }
+      if($request->kegiatan || $request->status || $request->peminjam) {
+        $data['bookings'] = $this->get_booking_by_params($request->peminjam, $request->kegiatan, $request->status);
+      }
+      else {
+        $data['bookings'] = $this->get_all_booking();
+      }
 
-        return view('status.status', $data);
+      return view('status.status', $data);
     }
 
     public function index_detail($booking_id){
-        $data = $this->load_reserve_form();
-        $data['booking'] = $this->get_one_booking($booking_id);
-        $data['booking_details'] = $this->get_all_detail_paginate($booking_id); 
-        $data['accepted_id'] = $this->accepted_booking_status_id;
-        $data['rejected_id'] = $this->rejected_booking_status_id;
-        $data['waiting_id'] = $this->waiting_booking_status_id;
+      $data = $this->load_reserve_form();
+      $data['booking'] = $this->get_one_booking($booking_id);
+      $data['booking_details'] = $this->get_all_detail_paginate($booking_id); 
+      $data['accepted_id'] = $this->accepted_booking_status_id;
+      $data['rejected_id'] = $this->rejected_booking_status_id;
+      $data['waiting_id'] = $this->waiting_booking_status_id;
 
-        return view('status.detail', $data);
+      return view('status.detail', $data);
     }
 
     public function index_multi_repeat(){
-        $data = $this->load_reserve_form();
-        return view('reserve.multirepeat', $data);
+      $data = $this->load_reserve_form();
+
+      return view('reserve.multirepeat', $data);
     }
 
     public function index_edit_reservation($booking_id){
       $data = $this->load_reserve_form();
       $data['booking'] = $this->get_one_booking($booking_id);
+
       return view('reserve.edit', $data);
     }
 
     protected function load_reserve_form(){
-        $data['rooms'] = Room::all();
-        $data['routines'] = Routine::all();
-        $data['agencies'] = Agency::all();
-        $data['categories'] = Category::all();
-        return $data;
+      $data['rooms'] = Room::all();
+      $data['routines'] = Routine::all();
+      $data['agencies'] = Agency::all();
+      $data['categories'] = Category::all();
+
+      return $data;
     }
 
     protected function validator_form(Request $request){
-        return Validator::make($request->all(), [
-            'full_name' => 'required|string',
-            'nrp_nip' => 'nullable|string',
-            'phone_number' => 'required',
-            'email' => 'required|email',
-            'agency' => 'required|numeric',  
-            'start_date' => 'required|date|after:yesterday',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'routine' => 'required|numeric',
-            'howmanytimes' => 'required|numeric|min:1|max:20',
-            'title' => 'required|string',
-            'category' => 'required|numeric',
-            'event_description' => 'required|string',
-            'agree' => 'required|filled',
-        ], [
-            'full_name.required' => 'Nama Lengkap Dibutuhkan',
-            'phone_number.required' => 'Nomor Telepon Dibutuhkan',
-            'email.required' => 'Email Dibutuhkan',
-            'email.email' => 'Email harus menggunakan format email yang benar',
-            'agency.required' => 'Organisasi Dibutuhkan',
-            'agency.numeric' => 'Organisasi yang diwakilkan tidak valid',
-            'start_date.required' => 'Tanggal Reservasi Dibutuhkan',
-            'start_date.date' => 'Tanggal Reservasi harus menggunakan format tanggal yang benar',
-            'start_date.after' => 'Reservasi dapat dilakukan maksimal satu hari sebelum kegiatan',
-            'start_time.required' => 'Waktu Mulai Dibutuhkan',
-            'end_time.required' => 'Waktu Selesai Dibutuhkan',
-            'end_time.after' => 'Waktu Selesai harus setelah Waktu Mulai',
-            'routine.required' => 'Tipe Jeda Rutinitas Kegiatan Dibutuhkan',
-            'routine.numeric' => 'Tipe Jeda Rutinitas Kegiatan Tidak Valid',
-            'howmanytimes.required' => 'Banyak Perulangan Kegiatan Dibutuhkan',
-            'howmanytimes.numeric' => 'Banyak Perulangan Kegiatan harus berupa angka',
-            'howmanytimes.min' => 'Banyak Perulangan Kegiatan Minimum adalah Sekali (1x)',
-            'howmanytimes.max' => 'Banyak Perulangan Kegiatan Maximum adalah Dua Puluh Kali (20x)',
-            'title.required' => 'Judul Kegiatan Diperlukan',
-            'title.string' => 'Judul Kegiatan harus berupa String',
-            'category.required' => 'Kategori Kegiatan Dibutuhkan',
-            'category.numeric' => 'Kategori Kegiatan Tidak Valid',
-            'event_description.required' => 'Deskripsi Kegiatan Dibutuhkan',
-            'agree.required' => 'Persetujuan Diperlukan',
-            'agree.filled' => 'Anda Harus Setuju dengan Syarat dan Ketentuan Reservasi',
-        ]);
+      return Validator::make($request->all(), [
+        'full_name' => 'required|string',
+        'nrp_nip' => 'nullable|string',
+        'phone_number' => 'required',
+        'email' => 'required|email',
+        'agency' => 'required|numeric',  
+        'start_date' => 'required|date|after:yesterday',
+        'start_time' => 'required',
+        'end_time' => 'required|after:start_time',
+        'routine' => 'required|numeric',
+        'howmanytimes' => 'required|numeric|min:1|max:20',
+        'title' => 'required|string',
+        'category' => 'required|numeric',
+        'event_description' => 'required|string',
+        'agree' => 'required|filled',
+      ], [
+        'full_name.required' => 'Nama Lengkap Dibutuhkan',
+        'phone_number.required' => 'Nomor Telepon Dibutuhkan',
+        'email.required' => 'Email Dibutuhkan',
+        'email.email' => 'Email harus menggunakan format email yang benar',
+        'agency.required' => 'Organisasi Dibutuhkan',
+        'agency.numeric' => 'Organisasi yang diwakilkan tidak valid',
+        'start_date.required' => 'Tanggal Reservasi Dibutuhkan',
+        'start_date.date' => 'Tanggal Reservasi harus menggunakan format tanggal yang benar',
+        'start_date.after' => 'Reservasi dapat dilakukan maksimal satu hari sebelum kegiatan',
+        'start_time.required' => 'Waktu Mulai Dibutuhkan',
+        'end_time.required' => 'Waktu Selesai Dibutuhkan',
+        'end_time.after' => 'Waktu Selesai harus setelah Waktu Mulai',
+        'routine.required' => 'Tipe Jeda Rutinitas Kegiatan Dibutuhkan',
+        'routine.numeric' => 'Tipe Jeda Rutinitas Kegiatan Tidak Valid',
+        'howmanytimes.required' => 'Banyak Perulangan Kegiatan Dibutuhkan',
+        'howmanytimes.numeric' => 'Banyak Perulangan Kegiatan harus berupa angka',
+        'howmanytimes.min' => 'Banyak Perulangan Kegiatan Minimum adalah Sekali (1x)',
+        'howmanytimes.max' => 'Banyak Perulangan Kegiatan Maximum adalah Dua Puluh Kali (20x)',
+        'title.required' => 'Judul Kegiatan Diperlukan',
+        'title.string' => 'Judul Kegiatan harus berupa String',
+        'category.required' => 'Kategori Kegiatan Dibutuhkan',
+        'category.numeric' => 'Kategori Kegiatan Tidak Valid',
+        'event_description.required' => 'Deskripsi Kegiatan Dibutuhkan',
+        'agree.required' => 'Persetujuan Diperlukan',
+        'agree.filled' => 'Anda Harus Setuju dengan Syarat dan Ketentuan Reservasi',
+      ]);
     }
 
     protected function validator_room(Request $request, $is_array){
-        if ($is_array) {
-            return Validator::make($request->all(), [
-                'room' => 'required|array',
-                'room.*' => 'numeric',
-            ], [
-                'room.required' => 'Ruangan Harus Dipilih',
-                'room.array' => 'Ruangan Harus Berupa Array',
-                'room.*.numeric' => 'Ruangan Tidak Valid',
-            ]);
-        } else {
-            return Validator::make($request->all(), [
-                'room' => 'required|numeric',
-            ], [                
-                'room.required' => 'Ruangan Harus Dipilih',
-                'room.numeric' => 'Ruangan Tidak Valid',
-            ]);
-        }
+      if ($is_array) {
+        return Validator::make($request->all(), [
+          'room' => 'required|array',
+          'room.*' => 'numeric',
+        ], [
+          'room.required' => 'Ruangan Harus Dipilih',
+          'room.array' => 'Ruangan Harus Berupa Array',
+          'room.*.numeric' => 'Ruangan Tidak Valid',
+        ]);
+      } else {
+        return Validator::make($request->all(), [
+          'room' => 'required|numeric',
+        ], [                
+          'room.required' => 'Ruangan Harus Dipilih',
+          'room.numeric' => 'Ruangan Tidak Valid',
+        ]);
+      }
     }
 
     protected function validator_time(Request $request){
-        return Validator::make($request->all(), [
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-        ], [
-            'start_time.required' => 'Waktu Mulai Dibutuhkan',
-            'end_time.required' => 'Waktu Selesai Dibutuhkan',
-            'end_time.after' => 'Waktu Selesai harus setelah Waktu Mulai',
-        ]);
+      return Validator::make($request->all(), [
+        'start_time' => 'required',
+        'end_time' => 'required|after:start_time',
+      ], [
+        'start_time.required' => 'Waktu Mulai Dibutuhkan',
+        'end_time.required' => 'Waktu Selesai Dibutuhkan',
+        'end_time.after' => 'Waktu Selesai harus setelah Waktu Mulai',
+      ]);
     }
 
     protected function validator_booking(Request $request){
-        return Validator::make($request->all(), [
-            'booking_id' => 'required|numeric',
-        ], [
-            'booking_id.required' => 'Nomor Reservasi Diperlukan',
-            'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
-        ]);        
+      return Validator::make($request->all(), [
+        'booking_id' => 'required|numeric',
+      ], [
+        'booking_id.required' => 'Nomor Reservasi Diperlukan',
+        'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
+      ]);        
     }
 
     protected function validator_detail(Request $request){
-        return Validator::make($request->all(), [
-            'booking_id' => 'required|numeric',
-            'detail_id' => 'required|numeric',
-        ], [
-            'booking_id.required' => 'Nomor Reservasi Diperlukan',
-            'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
-            'detail_id.required' => 'Nomor Detail Reservasi Diperlukan',
-            'detail_id.numeric' => 'Nomor Detail Reservasi Tidak Valid',
-        ]);
+      return Validator::make($request->all(), [
+        'booking_id' => 'required|numeric',
+        'detail_id' => 'required|numeric',
+      ], [
+        'booking_id.required' => 'Nomor Reservasi Diperlukan',
+        'booking_id.numeric' => 'Nomor Reservasi Tidak Valid',
+        'detail_id.required' => 'Nomor Detail Reservasi Diperlukan',
+        'detail_id.numeric' => 'Nomor Detail Reservasi Tidak Valid',
+      ]);
     }
 
     /**
@@ -279,7 +283,11 @@ class ReservationController extends Controller
       $start = Carbon::parse($booking_details->sortBy('event_start')->first()->event_start);
       $end = Carbon::parse($booking_details->sortByDesc('event_end')->first()->event_end);
 
-      $event['date'] = $start->formatLocalized('%A, %d %B %Y').' s/d '.$end->formatLocalized('%A, %d %B %Y');
+      if ($start->copy()->startOfDay()->eq($end->copy()->startOfDay())){
+        $event['date'] = $start->formatLocalized('%A, %d %B %Y');
+      } else {
+        $event['date'] = $start->formatLocalized('%A, %d %B %Y').' s/d '.$end->formatLocalized('%A, %d %B %Y');
+      }
       $event['time'] = $start->format('H:i').' - '.$end->format('H:i');
       $event['rooms'] = $booking_details->unique('room_code')->implode('room_code', ', ');
       $event['title'] = $booking->event_title;
@@ -300,41 +308,51 @@ class ReservationController extends Controller
       return $pdf->stream('surat_ijin.pdf'); 
     }
 
+    /**
+     * API to get all posters that can be shown
+     * 1 week before event start until event end
+     *
+     * query string:
+     * - date
+     * - room (optional) - room_code, include in request if you want to get posters for spesific room
+     */
     protected function get_eligible_posters(Request $request) {
       if (!$request->date) {
         return "Please provide date";
       }
 
-      $now = Carbon::parse($request->date)->addDays(1)->startOfDay()->timestamp;
-      $until = Carbon::createFromTimestamp($now)->addDays(7)->timestamp;
+      $now = Carbon::parse($request->date)->startOfDay()->timestamp;
 
-      $raw_posters = collect(File::allFiles('storage/posters/'))->map(function($item) {
-        $obj['filename'] = $item->getFilename();
-        $obj['pathname'] = asset($item->getPathname());
+      $posters = collect(File::allFiles('storage/posters/'))->reduce(function($carry, $item) use ($now, $request) {
+        $file_data = explode('-', $item->getFilename());
+        $end_time = (int)$file_data[1];
 
-        return (object)$obj;
-      });
-
-      $posters = $raw_posters->reduce(function($carry, $file) use ($now, $until, $request) {
-        $file_data = explode('-', $file->filename);
-        $booking = Booking::find($file_data[0]);
-        $time = (int)$file_data[1];
-
-        if ($time >= $now && $time <= $until && $booking->booking_status_id == $this->accepted_booking_status_id) {
+        if ($now < $end_time) {
           if ($request->room) {
-            $in_room = BookingDetail::where('booking_id', $booking->id)
+            $booking_detail = BookingDetail::where('booking_id', $file_data[0])
               ->join('rooms', 'booking_details.room_id', '=', 'rooms.id')
               ->where('rooms.room_code', '=', $request->room)
-              ->get();
+              ->select('booking_details.event_start')
+              ->orderBy('booking_details.event_start', 'ASC')
+              ->first();
 
-            if ($in_room->count()) {
-              return $carry->push($file->pathname);
+            if ($booking_detail) {
+              $start = Carbon::parse($booking_detail->event_start)->startOfDay()->subDays(7)->timestamp;
+              if ($now >= $start) {
+                return $carry->push(asset($item->getPathname()));
+              }
             }
+          } else {
+            $booking_detail = BookingDetail::where('booking_id', $file_data[0])
+              ->select('event_start')
+              ->orderBy('event_start', 'ASC')
+              ->first();
 
-            return $carry;
+            $start = Carbon::parse($booking_detail->event_start)->startOfDay()->subDays(7)->timestamp;
+            if ($now >= $start) {
+              return $carry->push(asset($item->getPathname()));
+            }
           }
-
-          return $carry->push($file->pathname);
         }
 
         return $carry;
@@ -728,7 +746,7 @@ class ReservationController extends Controller
 
         if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
           $image = $request->file('poster_imagepath');
-          $image_name = $booking->id.'-'.($start_time->timestamp).'.'.$image->getClientOriginalExtension();
+          $image_name = $booking->id.'-'.($end_time->timestamp).'.'.$image->getClientOriginalExtension();
           $image->storeAs('public/posters', $image_name);
           $booking->poster_imagepath = 'storage/posters/'.$image_name;
           $booking->save();
@@ -1014,14 +1032,14 @@ class ReservationController extends Controller
 
       $booking->save();
 
-      $start_time = BookingDetail::where( 'booking_details.booking_id', '=', $booking->id)
-      ->select('booking_details.event_start')
-      ->orderBy('booking_details.event_start', 'ASC')
+      $end_time = BookingDetail::where( 'booking_details.booking_id', '=', $booking->id)
+      ->select('booking_details.event_end')
+      ->orderBy('booking_details.event_end', 'DESC')
       ->first();
 
       if ($request->hasFile('poster_imagepath') && $request->file('poster_imagepath')->isValid()) {
         $image = $request->file('poster_imagepath');
-        $image_name = $booking->id.'-'.(Carbon::parse($start_time->event_start)->timestamp).'.'.$image->getClientOriginalExtension();
+        $image_name = $booking->id.'-'.(Carbon::parse($end_time->event_end)->timestamp).'.'.$image->getClientOriginalExtension();
         $image->storeAs('public/posters', $image_name);
         $booking->poster_imagepath = 'storage/posters/'.$image_name;
         $booking->save();

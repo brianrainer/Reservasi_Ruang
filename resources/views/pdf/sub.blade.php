@@ -78,7 +78,7 @@
         @endforeach
       </ol>
     </div>
-    @if($attachments)
+    @if($attachments->isNotEmpty())
       <div style="page-break-before: always">
         <h3><b>Kegiatan Lain di Saat yang Sama</b></h3>
         @foreach($attachments as $key => $attachment)

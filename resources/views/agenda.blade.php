@@ -36,12 +36,12 @@
           </div>
         </div>
         <div class="row">
-          <div class="col s12 m6 l4" style="border-right-color: #1565c0">
+          <div class="col s12 m5 l4" style="border-right-color: #1565c0">
             <h5><strong id="time"></strong></h4>
             <h5 id="day"></h4>
           </div>
-          <div class="col s12 m6 l8">
-            <h3 class="marquee"><strong id="now"></strong></h3>
+          <div class="col s12 m7 l8">
+            <h4 class="marquee"><strong id="now"></strong></h4>
             <h5 id="status"></h5>
           </div>
         </div>
@@ -120,21 +120,6 @@
             $('#eventbox').removeClass('used-room').addClass('free-room');
           }
         });
-      @else
-        $.get('/calendar/status?'+ '&time=' + moment().format(), function(data){
-          if (data){
-            $('#now').html(data);
-            $('#status').html('Ruangan sedang dipakai');
-            document.getElementById('eventbox').style.backgroundColor = '#e53935';
-            document.getElementById('eventbox').style.borderColor = '#d32f2f';
-          }
-          else {
-            $('#now').html('-');
-            $('#status').html('Ruangan kosong');
-            document.getElementById('eventbox').style.backgroundColor = '#9e9e9e';
-            document.getElementById('eventbox').style.borderColor = '#757575';
-          }
-        });
       @endisset
     }
     
@@ -153,6 +138,7 @@
           right: 'agendaDay, agendaWeek'
         },
         defaultView: 'agendaDay',
+        slotLabelFormat: 'HH:mm',
         height: 'auto',
         minTime: '06:00:00',
         eventSources : calendarEvent, 
