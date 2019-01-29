@@ -172,7 +172,7 @@
         $('#poster').fadeIn('slow');
       });
 
-      setTimeout(showCalendar, 60000);
+      setTimeout(showCalendar, 300000);
     }
 
     function getPoster() {
