@@ -151,9 +151,7 @@ class RoomController extends Controller
     }
 
     protected function get_all_room_technician(){
-      return User::join('users_roles', 'users.id','=','users_roles.user_id')
-          ->join('roles', 'roles.id','=','users_roles.role_id')
-          ->where('roles.role_name', 'manage_room')
+      return User::all()
           ->select(
               'users.id'
               ,'users.user_name as name'
