@@ -501,6 +501,22 @@
 
 @section('js')
   <script type="text/javascript">
+    $(document).ready(function(){
+      $('.modal').modal();
+      $('select').formSelect();
+      $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+      $('.datepicker').datepicker({
+        container: 'body',
+        format: 'yyyy-mm-dd',
+      });
+      $('.timepicker').timepicker({
+        container: 'body',
+        twelveHour: false,
+      });
+      $('.tooltipped').tooltip();
+
+    })
+    
     function fill_modal(modal_id, booking_id, detail_id){
       if(booking_id){
         $("#"+modal_id+" input[name='booking_id']").val(booking_id);
@@ -523,22 +539,6 @@
       $('#edit_detail select[name="room"]').val(room_id);
       $('select').formSelect();
     }
-
-    $(document).ready(function(){
-      $('.modal').modal();
-      $('select').formSelect();
-      $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
-      $('.datepicker').datepicker({
-        container: 'body',
-        format: 'yyyy-mm-dd',
-      });
-      $('.timepicker').timepicker({
-        container: 'body',
-        twelveHour: false,
-      });
-      $('.tooltipped').tooltip();
-
-    })
   </script>
   </div>
 @endsection
