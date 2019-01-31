@@ -151,8 +151,7 @@ class RoomController extends Controller
     }
 
     protected function get_all_room_technician(){
-      return User::all()
-          ->select(
+      return User::select(
               'users.id'
               ,'users.user_name as name'
               ,'users.user_phone_number as phone'
