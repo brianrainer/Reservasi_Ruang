@@ -15,7 +15,7 @@
                   <p>
                     <a href="{{url('/room/detail/'.$room->room_code)}}">Detail Ruangan</a>
                   </p>
-                  @if (Auth::check() && Auth::user()->hasRole('manage_room'))
+                  @if (Auth::check())
                     <p>
                       <a href="{{url('/room/edit/'.$room->id)}}">Edit Ruangan</a>
                     </p>
