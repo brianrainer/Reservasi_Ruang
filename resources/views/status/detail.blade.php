@@ -365,7 +365,7 @@
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">date_range</i>
-              <input type="text" class="datepicker validate" id="start_date_edit" required>
+              <input type="text" class="datepicker validate" id="start_date_edit" name="start_date" required>
               <span class="helper-text">
                 Pilih Tanggal Acara Anda (Format: YYYY-MM-DD)
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan hari yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -375,7 +375,7 @@
           <div class="row">
             <div class="input-field col s12 m6">
               <i class="material-icons prefix">access_time</i>
-              <input type="text" class="timepicker validate" id="start_time_edit" required>
+              <input type="text" class="timepicker validate" id="start_time_edit" name="start_time" required>
               <span class="helper-text">
                 Pilih Waktu Mulai Acara
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -383,7 +383,7 @@
             </div>
             <div class="input-field col s12 m6">
               <i class="material-icons prefix"></i>
-              <input type="text" class="timepicker validate" id="end_time_edit" required>
+              <input type="text" class="timepicker validate" id="end_time_edit" name="end_time" required>
               <span class="helper-text">
                 Pilih Waktu Selesai Acara
                 <i class="material-icons tiny tooltipped" data-position="bottom" data-tooltip="Pastikan waktu yang anda pilih sesuai dengan syarat dan ketentuan">help</i>
@@ -431,7 +431,7 @@
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">date_range</i>
-              <input type="text" class="datepicker validate" id="start_date" required>
+              <input type="text" class="datepicker validate" id="start_date" name="start_date" required>
               <label class="active" for="start_date">Tanggal</label>
               <span class="helper-text">
                 Pilih Tanggal Acara Anda (Format: YYYY-MM-DD)
@@ -442,7 +442,7 @@
           <div class="row">
             <div class="input-field col s12 m6">
               <i class="material-icons prefix">access_time</i>
-              <input type="text" class="timepicker validate" id="start_time" required>
+              <input type="text" class="timepicker validate" id="start_time" name="start_time" required>
               <label class="active" for="start_time">Waktu Mulai</label>
               <span class="helper-text">
                 Pilih Waktu Mulai Acara
@@ -451,7 +451,7 @@
             </div>
             <div class="input-field col s12 m6">
               <i class="material-icons prefix"></i>
-              <input type="text" class="timepicker validate" id="end_time" required>
+              <input type="text" class="timepicker validate" id="end_time" name="end_time" required>
               <label class="active" for="end_time">Waktu Selesai</label>
               <span class="helper-text">
                 Pilih Waktu Selesai Acara
